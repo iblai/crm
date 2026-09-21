@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "checkpoints": [
+    {
+      "id": "A1",
+      "journey": "auth",
+      "name": "authenticated user lands on their organization's home",
+      "spec": "journeys/auth.journey.spec.ts"
+    },
+    {
+      "id": "A2",
+      "journey": "auth",
+      "name": "auth tokens and the organization list are stored",
+      "spec": "journeys/auth.journey.spec.ts"
+    },
+    {
+      "id": "A3",
+      "journey": "auth",
+      "name": "URL organization matches the session organization",
+      "spec": "journeys/auth.journey.spec.ts"
+    },
+    {
+      "id": "S1",
+      "journey": "shell",
+      "name": "sidebar reaches every workspace object",
+      "spec": "journeys/shell.journey.spec.ts"
+    },
+    {
+      "id": "S2",
+      "journey": "shell",
+      "name": "⌘K opens the command palette",
+      "spec": "journeys/shell.journey.spec.ts"
+    },
+    {
+      "id": "S3",
+      "journey": "shell",
+      "name": "organization switcher lists the session's organizations",
+      "spec": "journeys/shell.journey.spec.ts"
+    },
+    {
+      "id": "S4",
+      "journey": "shell",
+      "name": "Settings hidden outside Admin mode; /settings redirects home",
+      "spec": "journeys/shell.journey.spec.ts"
+    },
+    {
+      "id": "C1",
+      "journey": "crm",
+      "name": "create a person and open its page",
+      "spec": "journeys/crm.journey.spec.ts"
+    },
+    {
+      "id": "C2",
+      "journey": "crm",
+      "name": "create an organization and see it in the list",
+      "spec": "journeys/crm.journey.spec.ts"
+    },
+    {
+      "id": "C3",
+      "journey": "crm",
+      "name": "create a deal, see it on the kanban, mark it won",
+      "spec": "journeys/crm.journey.spec.ts"
+    },
+    {
+      "id": "C4",
+      "journey": "crm",
+      "name": "log an activity on a person and mark it done",
+      "spec": "journeys/crm.journey.spec.ts"
+    },
+    {
+      "id": "C5",
+      "journey": "crm",
+      "name": "create and delete a tag",
+      "spec": "journeys/crm.journey.spec.ts"
+    }
+  ]
+}
