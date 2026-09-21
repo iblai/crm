@@ -10,7 +10,7 @@ export function UpNextList({ activities }: { activities: Activity[] }) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
         <CalendarCheck2 className="size-5 text-gray-300" />
-        <p className="text-sm text-muted-foreground">Nothing scheduled. You are all caught up.</p>
+        <p className="text-muted-foreground text-sm">Nothing scheduled. You are all caught up.</p>
       </div>
     );
   }

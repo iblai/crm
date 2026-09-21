@@ -49,6 +49,9 @@ function Button({
     <ButtonPrimitive
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      // Rendered as a link (`render={<Link/>}` / `<a/>`) the element is not a
+      // native <button>; tell Base UI so it neither warns nor forces `type`.
+      nativeButton={props.render ? false : undefined}
       {...props}
     />
   )

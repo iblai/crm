@@ -255,7 +255,7 @@ export function ActivityDialog({
               </PopoverTrigger>
               <PopoverContent className="w-72 p-0" align="start">
                 <Command shouldFilter>
-                  <CommandInput placeholder="Search people…" />
+                  <CommandInput autoFocus placeholder="Search people…" />
                   <CommandList>
                     <CommandEmpty>No person found.</CommandEmpty>
                     <CommandGroup>

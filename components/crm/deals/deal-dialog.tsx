@@ -36,7 +36,20 @@ import type { Deal } from "@/lib/crm/types";
 import config from "@/lib/iblai/config";
 import { cn } from "@/lib/utils";
 
-const CURRENCIES = ["USD", "EUR", "GBP", "CAD", "AUD", "CHF", "JPY", "INR", "BRL", "MXN", "SGD", "ZAR"];
+const CURRENCIES = [
+  "USD",
+  "EUR",
+  "GBP",
+  "CAD",
+  "AUD",
+  "CHF",
+  "JPY",
+  "INR",
+  "BRL",
+  "MXN",
+  "SGD",
+  "ZAR",
+];
 
 /** Create a deal — the one place deals are born (person and stage required). */
 export function DealDialog({
@@ -202,7 +215,7 @@ export function DealDialog({
               </PopoverTrigger>
               <PopoverContent className="w-80 p-0" align="start">
                 <Command>
-                  <CommandInput placeholder="Search people…" />
+                  <CommandInput autoFocus placeholder="Search people…" />
                   <CommandList>
                     <CommandEmpty>No person found.</CommandEmpty>
                     <CommandGroup>
@@ -220,7 +233,7 @@ export function DealDialog({
                           <span className="min-w-0 flex-1 truncate">
                             {p.name}
                             {p.primary_email ? (
-                              <span className="ml-1.5 text-xs text-muted-foreground">
+                              <span className="text-muted-foreground ml-1.5 text-xs">
                                 {p.primary_email}
                               </span>
                             ) : null}

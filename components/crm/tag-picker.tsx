@@ -103,6 +103,7 @@ export function TagPicker({
           <PopoverContent className="w-64 p-0" align="start">
             <Command shouldFilter>
               <CommandInput
+                autoFocus
                 placeholder="Find or create a tag…"
                 value={query}
                 onValueChange={setQuery}

@@ -36,7 +36,7 @@ export function Panel({
         <div className="min-w-0">
           <h2 className="truncate text-sm font-semibold text-gray-900">{title}</h2>
           {description ? (
-            <p className="truncate text-xs text-muted-foreground">{description}</p>
+            <p className="text-muted-foreground truncate text-xs">{description}</p>
           ) : null}
         </div>
         {action ??

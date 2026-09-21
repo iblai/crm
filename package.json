@@ -21,7 +21,8 @@
     "tauri:ios:init": "tauri ios init",
     "tauri:ios:dev": "tauri ios dev",
     "tauri:android:init": "tauri android init",
-    "tauri:android:dev": "tauri android dev"
+    "tauri:android:dev": "tauri android dev",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

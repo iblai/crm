@@ -95,6 +95,15 @@ function Providers({ children }: { children: ReactNode }) {
     pathname.startsWith("/error/") ||
     pathname.startsWith("/version");
 
+  // Cross-SPA cookie sync mirrors the session into `ibl_*` cookies on the
+  // parent domain so sibling apps (os.ibl.ai, lms.ibl.ai, crm.ibl.ai) notice a
+  // sign-in or sign-out. On localhost cookies are shared by every dev server on
+  // the machine regardless of port, so another app's session would be read as
+  // "logged out elsewhere" and force a logout loop — keep the sync for real
+  // hosts only.
+  const enableStorageSync =
+    typeof window !== "undefined" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname);
+
   const LOADING = <LoadingScreen />;
   if (!isInitialized || !mounted) return LOADING;
 
@@ -113,7 +122,7 @@ function Providers({ children }: { children: ReactNode }) {
         pathname={pathname}
         storageService={storageService}
         middleware={PUBLIC_ROUTES}
-        enableStorageSync
+        enableStorageSync={enableStorageSync}
         fallback={LOADING}
       >
         <TenantProvider

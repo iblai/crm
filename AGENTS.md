@@ -25,7 +25,9 @@ seeds), `iblai-vibe-auth` → "Going multi-org", `iblai-vibe-admin`,
 2. **SDK components first.** Profile dropdown, notifications, Account /
    Management, invitations, tenant switching all come from
    `@iblai/iblai-js`. Then shadcn/ui (`components/ui`, Base UI — use the
-   `render` prop, not `asChild`). Custom components last.
+   `render` prop, not `asChild`; a `DropdownMenuLabel` must sit inside a
+   `DropdownMenuGroup`; `CommandDialog` needs its own `<Command>` root; give
+   popover search inputs `autoFocus`). Custom components last.
 3. **CRM API is the contract.** Types in `lib/crm/types.ts`, hooks in
    `lib/crm/api.ts`. Deal `status`/`closed_at` are server-managed — use
    `move-stage/`, `won/`, `lost/`. Tags attach/detach through the host's

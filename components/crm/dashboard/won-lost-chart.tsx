@@ -17,13 +17,13 @@ export function WonLostChart({ data, currency }: { data: MonthDatum[]; currency:
   const empty = data.every((d) => d.won === 0 && d.lost === 0);
   if (empty) {
     return (
-      <p className="flex h-56 items-center justify-center text-sm text-muted-foreground">
+      <p className="text-muted-foreground flex h-56 items-center justify-center text-sm">
         Nothing closed in the last six months.
       </p>
     );
   }
   return (
-    <div className="h-56 w-full">
+    <div className="h-56 w-full min-w-0 overflow-hidden">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -20 }} barGap={4}>
           <XAxis
@@ -65,8 +65,22 @@ export function WonLostChart({ data, currency }: { data: MonthDatum[]; currency:
             iconSize={8}
             wrapperStyle={{ fontSize: 11, color: "#6b7280" }}
           />
-          <Bar dataKey="won" name="Won" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={22} />
-          <Bar dataKey="lost" name="Lost" fill="#fb7185" radius={[4, 4, 0, 0]} maxBarSize={22} />
+          <Bar
+            isAnimationActive={false}
+            dataKey="won"
+            name="Won"
+            fill="#10b981"
+            radius={[4, 4, 0, 0]}
+            maxBarSize={22}
+          />
+          <Bar
+            isAnimationActive={false}
+            dataKey="lost"
+            name="Lost"
+            fill="#fb7185"
+            radius={[4, 4, 0, 0]}
+            maxBarSize={22}
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>

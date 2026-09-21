@@ -72,8 +72,10 @@ components live under `components/crm/<module>/`.
 pnpm typecheck && pnpm lint && pnpm test && pnpm build
 ```
 
-Then open the page you touched and take a screenshot for the PR
-(`docs/images/` holds the README captures).
+Then open the page you touched and take a screenshot for the PR.
+`pnpm screenshots` regenerates the README captures in `docs/images/` from the
+Playwright session (`pnpm exec playwright test --project=setup-chromium` once,
+with your credentials in `e2e/.env.development`).
 
 ## Native shell
 

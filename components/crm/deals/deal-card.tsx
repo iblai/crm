@@ -10,6 +10,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -101,7 +102,7 @@ export function DealCard({
           <span className="min-w-0 flex-1 truncate text-xs text-gray-600">{personName}</span>
         </span>
         {organizationName ? (
-          <span className="mt-1 block truncate pl-6.5 text-[11px] text-muted-foreground">
+          <span className="text-muted-foreground mt-1 block truncate pl-6.5 text-[11px]">
             {organizationName}
           </span>
         ) : null}
@@ -159,19 +160,21 @@ export function DealCard({
               <MoveRight />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Move to…</DropdownMenuLabel>
-              {others.map((s) => (
-                <DropdownMenuItem key={s.id} onClick={() => onMove?.(s.id)}>
-                  <span
-                    className={cn(
-                      "size-1.5 rounded-full",
-                      s.is_won ? "bg-emerald-500" : s.is_lost ? "bg-rose-500" : "bg-[#0058cc]",
-                    )}
-                    aria-hidden
-                  />
-                  {s.name}
-                </DropdownMenuItem>
-              ))}
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Move to…</DropdownMenuLabel>
+                {others.map((s) => (
+                  <DropdownMenuItem key={s.id} onClick={() => onMove?.(s.id)}>
+                    <span
+                      className={cn(
+                        "size-1.5 rounded-full",
+                        s.is_won ? "bg-emerald-500" : s.is_lost ? "bg-rose-500" : "bg-[#0058cc]",
+                      )}
+                      aria-hidden
+                    />
+                    {s.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

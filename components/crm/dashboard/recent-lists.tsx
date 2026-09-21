@@ -11,7 +11,7 @@ import type { Deal, Person } from "@/lib/crm/types";
 export function RecentPeopleList({ people }: { people: Person[] }) {
   const { href } = useSession();
   if (people.length === 0) {
-    return <p className="py-6 text-center text-sm text-muted-foreground">No people yet.</p>;
+    return <p className="text-muted-foreground py-6 text-center text-sm">No people yet.</p>;
   }
   return (
     <ul className="divide-y divide-gray-100">
@@ -24,7 +24,7 @@ export function RecentPeopleList({ people }: { people: Person[] }) {
             <EntityAvatar name={p.name} seed={p.id} size="sm" />
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-medium text-gray-900">{p.name}</span>
-              <span className="block truncate text-xs text-muted-foreground">
+              <span className="text-muted-foreground block truncate text-xs">
                 {p.job_title || p.primary_email || "—"}
               </span>
             </span>
@@ -46,7 +46,7 @@ export function RecentDealsList({
 }) {
   const { href } = useSession();
   if (deals.length === 0) {
-    return <p className="py-6 text-center text-sm text-muted-foreground">No deals yet.</p>;
+    return <p className="text-muted-foreground py-6 text-center text-sm">No deals yet.</p>;
   }
   return (
     <ul className="divide-y divide-gray-100">
@@ -59,7 +59,7 @@ export function RecentDealsList({
             <EntityAvatar name={d.title} seed={d.id} kind="deal" size="sm" />
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-medium text-gray-900">{d.title}</span>
-              <span className="block truncate text-xs text-muted-foreground">
+              <span className="text-muted-foreground block truncate text-xs">
                 {personName(d.person)} · added {formatRelative(d.created_at)}
               </span>
             </span>

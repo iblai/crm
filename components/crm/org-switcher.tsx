@@ -62,10 +62,10 @@ export function OrgSwitcher({ collapsed }: { collapsed?: boolean }) {
         side="bottom"
         sideOffset={6}
       >
-        <DropdownMenuLabel className="text-muted-foreground text-xs">
-          Organizations
-        </DropdownMenuLabel>
         <DropdownMenuGroup>
+          <DropdownMenuLabel className="text-muted-foreground text-xs">
+            Organizations
+          </DropdownMenuLabel>
           <DropdownMenuItem className="gap-2 p-2" disabled>
             <EntityAvatar name={name} seed={tenantKey} kind="organization" size="sm" />
             <span className="flex-1 truncate font-medium text-gray-900">{name}</span>

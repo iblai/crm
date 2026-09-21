@@ -12,22 +12,16 @@ export interface StageDatum {
 const SERIES = ["#0058cc", "#0a72e0", "#00b0ef", "#6cc4f5", "#93C5FD"];
 
 /** Open pipeline value per stage of the default pipeline. */
-export function DealsByStageChart({
-  data,
-  currency,
-}: {
-  data: StageDatum[];
-  currency: string;
-}) {
+export function DealsByStageChart({ data, currency }: { data: StageDatum[]; currency: string }) {
   if (data.every((d) => d.count === 0)) {
     return (
-      <p className="flex h-56 items-center justify-center text-sm text-muted-foreground">
+      <p className="text-muted-foreground flex h-56 items-center justify-center text-sm">
         No open deals in this pipeline yet.
       </p>
     );
   }
   return (
-    <div className="h-56 w-full">
+    <div className="h-56 w-full min-w-0 overflow-hidden">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} layout="vertical" margin={{ top: 4, right: 56, bottom: 4, left: 4 }}>
           <XAxis type="number" hide />
@@ -55,6 +49,7 @@ export function DealsByStageChart({
             }}
           />
           <Bar
+            isAnimationActive={false}
             dataKey="value"
             radius={[0, 6, 6, 0]}
             barSize={18}

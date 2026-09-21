@@ -21,6 +21,7 @@ import {
   Users,
 } from "lucide-react";
 import {
+  Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -124,102 +125,105 @@ function CommandPalette({
       description="Search people, organizations and deals, or jump to a page."
       className="max-w-xl"
     >
-      <CommandInput
-        placeholder="Search people, organizations, deals…"
-        value={query}
-        onValueChange={setQuery}
-      />
-      <CommandList className="max-h-[60vh]">
-        <CommandEmpty>No results.</CommandEmpty>
-        {matchedPeople.length ? (
-          <CommandGroup heading="People">
-            {matchedPeople.map((p) => (
-              <CommandItem
-                key={p.id}
-                value={`person-${p.id}-${p.name}`}
-                onSelect={() => go(`/people/${p.id}`)}
-              >
-                <EntityAvatar name={p.name} seed={p.id} size="sm" />
-                <span className="truncate">{p.name}</span>
-                {p.primary_email ? (
-                  <span className="text-muted-foreground ml-auto truncate text-xs">
-                    {p.primary_email}
+      <Command shouldFilter={false} className="rounded-xl">
+        <CommandInput
+          autoFocus
+          placeholder="Search people, organizations, deals…"
+          value={query}
+          onValueChange={setQuery}
+        />
+        <CommandList className="max-h-[60vh]">
+          <CommandEmpty>No results.</CommandEmpty>
+          {matchedPeople.length ? (
+            <CommandGroup heading="People">
+              {matchedPeople.map((p) => (
+                <CommandItem
+                  key={p.id}
+                  value={`person-${p.id}-${p.name}`}
+                  onSelect={() => go(`/people/${p.id}`)}
+                >
+                  <EntityAvatar name={p.name} seed={p.id} size="sm" />
+                  <span className="truncate">{p.name}</span>
+                  {p.primary_email ? (
+                    <span className="text-muted-foreground ml-auto truncate text-xs">
+                      {p.primary_email}
+                    </span>
+                  ) : null}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ) : null}
+          {matchedOrgs.length ? (
+            <CommandGroup heading="Organizations">
+              {matchedOrgs.map((o) => (
+                <CommandItem
+                  key={o.id}
+                  value={`org-${o.id}-${o.name}`}
+                  onSelect={() => go(`/organizations/${o.id}`)}
+                >
+                  <EntityAvatar name={o.name} seed={o.id} kind="organization" size="sm" />
+                  <span className="truncate">{o.name}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ) : null}
+          {matchedDeals.length ? (
+            <CommandGroup heading="Deals">
+              {matchedDeals.map((d) => (
+                <CommandItem
+                  key={d.id}
+                  value={`deal-${d.id}-${d.title}`}
+                  onSelect={() => go(`/deals/${d.id}`)}
+                >
+                  <Handshake className="size-4 text-[#0058cc]" />
+                  <span className="truncate">{d.title}</span>
+                  <span className="text-muted-foreground ml-auto text-xs">
+                    {formatCurrency(d.lead_value, d.currency)}
                   </span>
-                ) : null}
-              </CommandItem>
-            ))}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ) : null}
+          <CommandSeparator />
+          <CommandGroup heading="Create">
+            <CommandItem value="new person" onSelect={() => go("/people?new=1")}>
+              <Plus className="size-4" /> New person
+            </CommandItem>
+            <CommandItem value="new organization" onSelect={() => go("/organizations?new=1")}>
+              <Plus className="size-4" /> New organization
+            </CommandItem>
+            <CommandItem value="new deal" onSelect={() => go("/deals?new=1")}>
+              <Plus className="size-4" /> New deal
+            </CommandItem>
+            <CommandItem value="new activity" onSelect={() => go("/activities?new=1")}>
+              <Plus className="size-4" /> New activity
+            </CommandItem>
           </CommandGroup>
-        ) : null}
-        {matchedOrgs.length ? (
-          <CommandGroup heading="Organizations">
-            {matchedOrgs.map((o) => (
-              <CommandItem
-                key={o.id}
-                value={`org-${o.id}-${o.name}`}
-                onSelect={() => go(`/organizations/${o.id}`)}
-              >
-                <EntityAvatar name={o.name} seed={o.id} kind="organization" size="sm" />
-                <span className="truncate">{o.name}</span>
-              </CommandItem>
-            ))}
+          <CommandGroup heading="Go to">
+            <CommandItem value="go home" onSelect={() => go("")}>
+              <Home className="size-4" /> Home
+            </CommandItem>
+            <CommandItem value="go people" onSelect={() => go("/people")}>
+              <Users className="size-4" /> People
+            </CommandItem>
+            <CommandItem value="go organizations" onSelect={() => go("/organizations")}>
+              <Building2 className="size-4" /> Organizations
+            </CommandItem>
+            <CommandItem value="go deals" onSelect={() => go("/deals")}>
+              <Handshake className="size-4" /> Deals
+            </CommandItem>
+            <CommandItem value="go activities" onSelect={() => go("/activities")}>
+              <CalendarCheck2 className="size-4" /> Activities
+            </CommandItem>
+            <CommandItem value="go tags" onSelect={() => go("/tags")}>
+              <Tag className="size-4" /> Tags
+            </CommandItem>
+            <CommandItem value="go settings" onSelect={() => go("/settings")}>
+              <Settings className="size-4" /> Settings
+            </CommandItem>
           </CommandGroup>
-        ) : null}
-        {matchedDeals.length ? (
-          <CommandGroup heading="Deals">
-            {matchedDeals.map((d) => (
-              <CommandItem
-                key={d.id}
-                value={`deal-${d.id}-${d.title}`}
-                onSelect={() => go(`/deals/${d.id}`)}
-              >
-                <Handshake className="size-4 text-[#0058cc]" />
-                <span className="truncate">{d.title}</span>
-                <span className="text-muted-foreground ml-auto text-xs">
-                  {formatCurrency(d.lead_value, d.currency)}
-                </span>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        ) : null}
-        <CommandSeparator />
-        <CommandGroup heading="Create">
-          <CommandItem value="new person" onSelect={() => go("/people?new=1")}>
-            <Plus className="size-4" /> New person
-          </CommandItem>
-          <CommandItem value="new organization" onSelect={() => go("/organizations?new=1")}>
-            <Plus className="size-4" /> New organization
-          </CommandItem>
-          <CommandItem value="new deal" onSelect={() => go("/deals?new=1")}>
-            <Plus className="size-4" /> New deal
-          </CommandItem>
-          <CommandItem value="new activity" onSelect={() => go("/activities?new=1")}>
-            <Plus className="size-4" /> New activity
-          </CommandItem>
-        </CommandGroup>
-        <CommandGroup heading="Go to">
-          <CommandItem value="go home" onSelect={() => go("")}>
-            <Home className="size-4" /> Home
-          </CommandItem>
-          <CommandItem value="go people" onSelect={() => go("/people")}>
-            <Users className="size-4" /> People
-          </CommandItem>
-          <CommandItem value="go organizations" onSelect={() => go("/organizations")}>
-            <Building2 className="size-4" /> Organizations
-          </CommandItem>
-          <CommandItem value="go deals" onSelect={() => go("/deals")}>
-            <Handshake className="size-4" /> Deals
-          </CommandItem>
-          <CommandItem value="go activities" onSelect={() => go("/activities")}>
-            <CalendarCheck2 className="size-4" /> Activities
-          </CommandItem>
-          <CommandItem value="go tags" onSelect={() => go("/tags")}>
-            <Tag className="size-4" /> Tags
-          </CommandItem>
-          <CommandItem value="go settings" onSelect={() => go("/settings")}>
-            <Settings className="size-4" /> Settings
-          </CommandItem>
-        </CommandGroup>
-      </CommandList>
+        </CommandList>
+      </Command>
     </CommandDialog>
   );
 }
