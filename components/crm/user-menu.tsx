@@ -7,14 +7,34 @@ import { useTenantMetadata, type Tenant } from "@iblai/iblai-js/web-utils";
 import { useSession } from "@/hooks/use-session";
 import config from "@/lib/iblai/config";
 import { handleLogout, handleTenantSwitch } from "@/lib/iblai/auth-utils";
+import {
+  isUnnamedTenant,
+  shortTenantKey,
+  tenantDisplayName,
+  type TenantEntry,
+} from "@/lib/iblai/tenant";
 
 /**
  * The SDK's profile dropdown — avatar, profile & account modal, organization
  * switcher, help, logout — wired to this app's multi-org session.
  */
 export function UserMenu() {
-  const { tenantKey, username, email, isAdmin, tenants, currentTenant } = useSession();
+  const {
+    tenantKey,
+    username,
+    email,
+    isAdmin,
+    tenants: rawTenants,
+    currentTenant: rawCurrent,
+  } = useSession();
   const router = useRouter();
+  // The SDK dropdown prints `platform_name`; give unnamed orgs a readable one.
+  const friendly = (t: TenantEntry) =>
+    isUnnamedTenant(t)
+      ? { ...t, platform_name: `${tenantDisplayName(t)} ${shortTenantKey(t.key)}` }
+      : t;
+  const tenants = rawTenants.map(friendly);
+  const currentTenant = rawCurrent ? friendly(rawCurrent) : undefined;
   const { metadata, metadataLoaded } = useTenantMetadata({ org: tenantKey });
 
   const onTenantUpdate = useCallback(

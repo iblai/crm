@@ -14,6 +14,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
 import { TagList } from "@/components/crm/tag-chip";
 import { OwnerAvatar } from "@/components/crm/deals/owner-avatar";
@@ -34,6 +35,8 @@ export interface DealCardProps {
   organizationName?: string;
   /** Open past its pipeline's `rotten_days` — Twenty's "rotten" deal. */
   stale?: boolean;
+  /** The pipeline's rotten threshold, named in the stale badge's tooltip. */
+  rottenDays?: number;
   /** Stages offered by the card's "Move to…" menu (keyboard-less fallback). */
   stages?: PipelineStage[];
   onMove?: (stageId: number) => void;
@@ -45,6 +48,7 @@ export function DealCard({
   personName,
   organizationName,
   stale,
+  rottenDays,
   stages,
   onMove,
   dragging,
@@ -117,21 +121,43 @@ export function DealCard({
         {due || stale ? (
           <span className="mt-2 flex flex-wrap items-center gap-1.5">
             {due ? (
-              <span
-                className={cn(
-                  "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium",
-                  overdue ? "bg-rose-50 text-rose-600" : "bg-gray-100 text-gray-600",
-                )}
-              >
-                <CalendarDays className="size-3" />
-                {overdue ? "Overdue · " : ""}
-                {formatDate(deal.expected_close_date, "MMM d")}
-              </span>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <span
+                      className={cn(
+                        "inline-flex cursor-default items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium",
+                        overdue ? "bg-rose-50 text-rose-600" : "bg-gray-100 text-gray-600",
+                      )}
+                    />
+                  }
+                >
+                  <CalendarDays className="size-3" />
+                  {overdue ? "Overdue · " : ""}
+                  {formatDate(deal.expected_close_date, "MMM d")}
+                </TooltipTrigger>
+                <TooltipContent>
+                  {overdue
+                    ? `Expected to close ${formatDate(deal.expected_close_date)} — that date has passed`
+                    : `Expected to close ${formatDate(deal.expected_close_date)}`}
+                </TooltipContent>
+              </Tooltip>
             ) : null}
             {stale ? (
-              <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
-                <Clock className="size-3" /> Stale
-              </span>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <span className="inline-flex cursor-default items-center gap-1 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700" />
+                  }
+                >
+                  <Clock className="size-3" /> Stale
+                </TooltipTrigger>
+                <TooltipContent>
+                  {rottenDays
+                    ? `No movement for ${rottenDays} days — the pipeline's rotten threshold`
+                    : "No movement since the pipeline's rotten threshold"}
+                </TooltipContent>
+              </Tooltip>
             ) : null}
           </span>
         ) : null}
@@ -146,19 +172,26 @@ export function DealCard({
       {showMenu ? (
         <div className="absolute top-1.5 right-1.5">
           <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon-xs"
-                  aria-label="Move deal to another stage"
-                  className="text-gray-400 opacity-0 group-hover/card:opacity-100 aria-expanded:opacity-100"
-                />
-              }
-              onPointerDown={(e) => e.stopPropagation()}
-            >
-              <MoveRight />
-            </DropdownMenuTrigger>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <DropdownMenuTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        aria-label="Move deal to another stage"
+                        className="text-gray-400 opacity-0 group-hover/card:opacity-100 aria-expanded:opacity-100"
+                      />
+                    }
+                    onPointerDown={(e) => e.stopPropagation()}
+                  />
+                }
+              >
+                <MoveRight />
+              </TooltipTrigger>
+              <TooltipContent>Move to another stage without dragging</TooltipContent>
+            </Tooltip>
             <DropdownMenuContent align="end">
               <DropdownMenuGroup>
                 <DropdownMenuLabel>Move to…</DropdownMenuLabel>

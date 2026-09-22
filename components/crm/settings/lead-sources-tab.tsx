@@ -24,7 +24,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { EmptyState } from "@/components/crm/empty-state";
+import { InfoTip } from "@/components/crm/info-tip";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { InlineText } from "@/components/crm/inline-field";
 import { slugify, toastSettingsError } from "@/components/crm/settings/utils";
@@ -45,12 +47,22 @@ export function LeadSourcesTab() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-muted-foreground text-sm">
-          Where deals come from — referrals, inbound, events, partners. Deals point at one source.
+        <p className="text-muted-foreground flex items-center gap-1 text-sm">
+          Where deals come from — referrals, inbound, events, partners.
+          <InfoTip label="About lead sources">
+            Where deals come from — set on each deal, then filtered on the board
+          </InfoTip>
         </p>
-        <Button size="sm" className="ibl-button-primary" onClick={() => setCreating(true)}>
-          <Plus data-icon="inline-start" /> New lead source
-        </Button>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button size="sm" className="ibl-button-primary" onClick={() => setCreating(true)} />
+            }
+          >
+            <Plus data-icon="inline-start" /> New lead source
+          </TooltipTrigger>
+          <TooltipContent side="bottom">Add a channel you can then pick on any deal</TooltipContent>
+        </Tooltip>
       </div>
 
       {isLoading ? (
@@ -125,15 +137,22 @@ function LeadSourceRow({ source }: { source: LeadSource }) {
         {formatDate(source.created_at)}
       </TableCell>
       <TableCell className="py-1.5 text-right">
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="text-gray-400 hover:text-rose-600"
-          onClick={() => setConfirm(true)}
-          aria-label={`Delete lead source ${source.name}`}
-        >
-          <Trash2 />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="text-gray-400 hover:text-rose-600"
+                onClick={() => setConfirm(true)}
+                aria-label={`Delete lead source ${source.name}`}
+              />
+            }
+          >
+            <Trash2 />
+          </TooltipTrigger>
+          <TooltipContent side="left">Deals keep their data but lose this source</TooltipContent>
+        </Tooltip>
         <ConfirmDialog
           open={confirm}
           onOpenChange={setConfirm}

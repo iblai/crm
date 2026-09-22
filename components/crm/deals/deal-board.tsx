@@ -14,6 +14,8 @@ import {
 } from "@dnd-kit/core";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { InfoTip } from "@/components/crm/info-tip";
 import { DealCard, DraggableDealCard } from "@/components/crm/deals/deal-card";
 import { errorMessage, useMoveDealStageMutation } from "@/lib/crm/api";
 import { dealValue, formatCompactCurrency, sortStages, toDate } from "@/lib/crm/format";
@@ -106,7 +108,9 @@ export function DealBoard({
   };
 
   const onDragStart = (e: DragStartEvent) =>
-    setActiveId(Number((e.active.data.current as { dealId?: number } | undefined)?.dealId ?? 0) || null);
+    setActiveId(
+      Number((e.active.data.current as { dealId?: number } | undefined)?.dealId ?? 0) || null,
+    );
 
   const onDragEnd = (e: DragEndEvent) => {
     setActiveId(null);
@@ -133,7 +137,7 @@ export function DealBoard({
 
   if (!pipeline || stages.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center p-6 text-sm text-muted-foreground">
+      <div className="text-muted-foreground flex h-full items-center justify-center p-6 text-sm">
         This pipeline has no stages yet. An admin can add them in Settings.
       </div>
     );
@@ -173,6 +177,7 @@ export function DealBoard({
             personName={personName(activeDeal.person)}
             organizationName={organizationName(activeDeal.organization)}
             stale={isStale(activeDeal, pipeline.rotten_days)}
+            rottenDays={pipeline.rotten_days}
             overlay
           />
         ) : null}
@@ -198,7 +203,10 @@ function BoardColumn({
   organizationName: (id?: string | null) => string;
   onMove: (deal: Deal, stageId: number) => void;
 }) {
-  const { setNodeRef, isOver } = useDroppable({ id: `stage-${stage.id}`, data: { stageId: stage.id } });
+  const { setNodeRef, isOver } = useDroppable({
+    id: `stage-${stage.id}`,
+    data: { stageId: stage.id },
+  });
   const total = deals.reduce((sum, d) => sum + dealValue(d), 0);
   const currency = deals[0]?.currency || "USD";
   const tone = stage.is_won ? "won" : stage.is_lost ? "lost" : "open";
@@ -234,22 +242,45 @@ function BoardColumn({
           {stage.name}
         </h2>
         {typeof stage.probability === "number" && !stage.is_won && !stage.is_lost ? (
-          <span className="shrink-0 rounded-full bg-gray-100 px-1.5 py-px text-[10px] font-medium text-gray-500">
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-gray-100 px-1.5 py-px text-[10px] font-medium text-gray-500">
             {stage.probability}%
+            <InfoTip label={`What ${stage.probability}% means`} className="text-gray-400">
+              Win probability used for the weighted pipeline
+            </InfoTip>
           </span>
         ) : null}
-        <span className="shrink-0 rounded-full bg-gray-100 px-1.5 py-px text-[10px] font-medium text-gray-600 tabular-nums">
-          {deals.length}
-        </span>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <span className="shrink-0 cursor-default rounded-full bg-gray-100 px-1.5 py-px text-[10px] font-medium text-gray-600 tabular-nums" />
+            }
+          >
+            {deals.length}
+          </TooltipTrigger>
+          <TooltipContent>
+            {deals.length === 1 ? "1 deal in this stage" : `${deals.length} deals in this stage`}
+          </TooltipContent>
+        </Tooltip>
       </header>
-      <p
-        className={cn(
-          "shrink-0 px-3 py-1.5 text-[11px] font-medium tabular-nums",
-          tone === "won" ? "text-emerald-700" : tone === "lost" ? "text-rose-700" : "text-gray-500",
-        )}
-      >
-        {formatCompactCurrency(total, currency)}
-      </p>
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <p
+              className={cn(
+                "shrink-0 cursor-default px-3 py-1.5 text-left text-[11px] font-medium tabular-nums",
+                tone === "won"
+                  ? "text-emerald-700"
+                  : tone === "lost"
+                    ? "text-rose-700"
+                    : "text-gray-500",
+              )}
+            />
+          }
+        >
+          {formatCompactCurrency(total, currency)}
+        </TooltipTrigger>
+        <TooltipContent side="bottom">Total value of the deals in this stage</TooltipContent>
+      </Tooltip>
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-2 pb-3">
         {deals.map((deal) => (
           <DraggableDealCard
@@ -258,13 +289,14 @@ function BoardColumn({
             personName={personName(deal.person)}
             organizationName={organizationName(deal.organization)}
             stale={isStale(deal, rottenDays)}
+            rottenDays={rottenDays}
             stages={stages}
             onMove={(stageId) => onMove(deal, stageId)}
           />
         ))}
         {deals.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-gray-200 px-3 py-6 text-center text-[11px] text-muted-foreground">
-            Drop a deal here
+          <p className="text-muted-foreground rounded-lg border border-dashed border-gray-200 px-3 py-6 text-center text-[11px]">
+            Drag a deal here to move it to {stage.name}
           </p>
         ) : null}
       </div>

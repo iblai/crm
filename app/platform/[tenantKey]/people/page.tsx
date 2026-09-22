@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { Plus, Search, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageHeader } from "@/components/crm/page-header";
+import { InfoTip } from "@/components/crm/info-tip";
 import { EmptyState } from "@/components/crm/empty-state";
 import { PaginationBar } from "@/components/crm/pagination-bar";
 import { SimpleSelect } from "@/components/crm/simple-select";
@@ -91,9 +93,16 @@ export default function PeoplePage() {
         count={data?.count ?? null}
         description="Contacts across every organization you work with"
         actions={
-          <Button className="ibl-button-primary" onClick={() => setCreateOpen(true)}>
-            <Plus data-icon="inline-start" strokeWidth={1.75} /> New person
-          </Button>
+          <Tooltip>
+            <TooltipTrigger
+              render={<Button className="ibl-button-primary" onClick={() => setCreateOpen(true)} />}
+            >
+              <Plus data-icon="inline-start" strokeWidth={1.75} /> New person
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              Add a contact — deals and activities hang off people
+            </TooltipContent>
+          </Tooltip>
         }
         toolbar={
           <>
@@ -110,17 +119,22 @@ export default function PeoplePage() {
                 aria-label="Search people"
               />
             </div>
-            <SimpleSelect
-              value={lifecycle}
-              onChange={setLifecycle}
-              options={LIFECYCLE_STAGES}
-              allowEmpty
-              emptyLabel="All stages"
-              placeholder="All stages"
-              size="sm"
-              className="w-40"
-              aria-label="Filter by lifecycle stage"
-            />
+            <span className="flex items-center gap-1">
+              <SimpleSelect
+                value={lifecycle}
+                onChange={setLifecycle}
+                options={LIFECYCLE_STAGES}
+                allowEmpty
+                emptyLabel="All stages"
+                placeholder="All stages"
+                size="sm"
+                className="w-40"
+                aria-label="Filter by lifecycle stage"
+              />
+              <InfoTip label="About lifecycle stages">
+                How far along a contact is: Lead → Qualified → Opportunity → Customer · Churned
+              </InfoTip>
+            </span>
             <div className="w-44">
               <OwnerSelect value={owner} onChange={setOwner} size="sm" />
             </div>

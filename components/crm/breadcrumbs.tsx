@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { useSession } from "@/hooks/use-session";
-import { tenantDisplayName } from "@/lib/iblai/tenant";
+import { shortTenantKey, tenantDisplayName } from "@/lib/iblai/tenant";
 
 export interface Crumb {
   label: ReactNode;
@@ -67,7 +67,7 @@ export function Breadcrumbs() {
           }));
 
   const items: Crumb[] = [
-    { label: tenantDisplayName(currentTenant) || tenantKey, href: href() },
+    { label: tenantDisplayName(currentTenant) || shortTenantKey(tenantKey), href: href() },
     ...derived,
   ];
 

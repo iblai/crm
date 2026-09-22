@@ -7,11 +7,13 @@ import { CalendarCheck2, ChevronDown, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageHeader } from "@/components/crm/page-header";
 import { EmptyState } from "@/components/crm/empty-state";
 import { PaginationBar } from "@/components/crm/pagination-bar";
 import { SimpleSelect } from "@/components/crm/simple-select";
 import { ActivityRow } from "@/components/crm/activity-timeline";
+import { InfoTip } from "@/components/crm/info-tip";
 import { ActivityDialog } from "@/components/crm/activities/activity-dialog";
 import { useBreadcrumbs } from "@/components/crm/breadcrumbs";
 import { useSession } from "@/hooks/use-session";
@@ -192,9 +194,18 @@ function ActivitiesView() {
         count={data?.count ?? null}
         description="Calls, meetings, tasks and notes across every deal and contact"
         actions={
-          <Button size="sm" className="ibl-button-primary" onClick={() => openEdit()}>
-            <Plus data-icon="inline-start" /> New activity
-          </Button>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button size="sm" className="ibl-button-primary" onClick={() => openEdit()} />
+              }
+            >
+              <Plus data-icon="inline-start" /> New activity
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              Log a call or note, or schedule a task or meeting
+            </TooltipContent>
+          </Tooltip>
         }
         toolbar={
           <>
@@ -210,18 +221,34 @@ function ActivitiesView() {
               spacing={0}
               aria-label="Owner scope"
             >
-              <ToggleGroupItem
-                value="mine"
-                className="data-pressed:bg-[#eef6fc] data-pressed:text-[#0058cc]"
-              >
-                Mine
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value="everyone"
-                className="data-pressed:bg-[#eef6fc] data-pressed:text-[#0058cc]"
-              >
-                Everyone
-              </ToggleGroupItem>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <ToggleGroupItem
+                      value="mine"
+                      className="data-pressed:bg-[#eef6fc] data-pressed:text-[#0058cc]"
+                    />
+                  }
+                >
+                  Mine
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Mine — activities you own</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <ToggleGroupItem
+                      value="everyone"
+                      className="data-pressed:bg-[#eef6fc] data-pressed:text-[#0058cc]"
+                    />
+                  }
+                >
+                  Everyone
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  Everyone — activities owned by anyone on the team
+                </TooltipContent>
+              </Tooltip>
             </ToggleGroup>
 
             <ToggleGroup
@@ -236,24 +263,45 @@ function ActivitiesView() {
               spacing={0}
               aria-label="Status"
             >
-              <ToggleGroupItem
-                value="open"
-                className="data-pressed:bg-[#eef6fc] data-pressed:text-[#0058cc]"
-              >
-                Open
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value="done"
-                className="data-pressed:bg-[#eef6fc] data-pressed:text-[#0058cc]"
-              >
-                Done
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value="all"
-                className="data-pressed:bg-[#eef6fc] data-pressed:text-[#0058cc]"
-              >
-                All
-              </ToggleGroupItem>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <ToggleGroupItem
+                      value="open"
+                      className="data-pressed:bg-[#eef6fc] data-pressed:text-[#0058cc]"
+                    />
+                  }
+                >
+                  Open
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Open — still to do</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <ToggleGroupItem
+                      value="done"
+                      className="data-pressed:bg-[#eef6fc] data-pressed:text-[#0058cc]"
+                    />
+                  }
+                >
+                  Done
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Done — already completed</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <ToggleGroupItem
+                      value="all"
+                      className="data-pressed:bg-[#eef6fc] data-pressed:text-[#0058cc]"
+                    />
+                  }
+                >
+                  All
+                </TooltipTrigger>
+                <TooltipContent side="bottom">All — open and done together</TooltipContent>
+              </Tooltip>
             </ToggleGroup>
 
             <SimpleSelect
@@ -294,8 +342,8 @@ function ActivitiesView() {
               title="Nothing scheduled here"
               description={
                 scope === "mine"
-                  ? "No activities match these filters for you. Try “Everyone”, widen the date range, or log something new."
-                  : "No activities match these filters. Widen the date range or log something new."
+                  ? "Nothing of yours matches these filters. Try “Everyone”, widen the date range, or log a call or task from a person or deal page."
+                  : "Nothing matches these filters. Widen the date range, or log a call or task from a person or deal page."
               }
               action={
                 <Button className="ibl-button-primary" onClick={() => openEdit()}>
@@ -305,10 +353,32 @@ function ActivitiesView() {
             />
           ) : (
             <div className="flex flex-col gap-6">
-              <Section title="Overdue" tone="overdue" items={groups.overdue} onEdit={openEdit} />
-              <Section title="Today" tone="today" items={groups.today} onEdit={openEdit} />
-              <Section title="Upcoming" items={groups.upcoming} onEdit={openEdit} />
-              <Section title="Unscheduled" items={groups.unscheduled} onEdit={openEdit} />
+              <Section
+                title="Overdue"
+                tone="overdue"
+                info="Scheduled before today and still not done."
+                items={groups.overdue}
+                onEdit={openEdit}
+              />
+              <Section
+                title="Today"
+                tone="today"
+                info="Scheduled for today and still open."
+                items={groups.today}
+                onEdit={openEdit}
+              />
+              <Section
+                title="Upcoming"
+                info="Scheduled after today."
+                items={groups.upcoming}
+                onEdit={openEdit}
+              />
+              <Section
+                title="Unscheduled"
+                info="Open work with no date yet — newest first."
+                items={groups.unscheduled}
+                onEdit={openEdit}
+              />
               {groups.done.length ? (
                 <section>
                   <button
@@ -370,11 +440,14 @@ function Section({
   title,
   items,
   tone = "default",
+  info,
   onEdit,
 }: {
   title: string;
   items: Activity[];
   tone?: keyof typeof TONES;
+  /** One short sentence explaining what lands in this bucket. */
+  info?: string;
   onEdit: (activity: Activity) => void;
 }) {
   if (!items.length) return null;
@@ -390,6 +463,7 @@ function Section({
         <span className="rounded-full bg-gray-100 px-1.5 py-px text-[11px] font-medium text-gray-600 normal-case">
           {items.length}
         </span>
+        {info ? <InfoTip label={`About ${title.toLowerCase()}`}>{info}</InfoTip> : null}
       </h2>
       <ul className="space-y-2">
         {items.map((a) => (

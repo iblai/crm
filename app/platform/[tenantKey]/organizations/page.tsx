@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Building2, Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageHeader } from "@/components/crm/page-header";
 import { EmptyState } from "@/components/crm/empty-state";
 import { PaginationBar } from "@/components/crm/pagination-bar";
@@ -76,9 +77,16 @@ export default function OrganizationsPage() {
         count={data?.count ?? null}
         description="The companies your people and deals belong to"
         actions={
-          <Button className="ibl-button-primary" onClick={() => setCreateOpen(true)}>
-            <Plus data-icon="inline-start" strokeWidth={1.75} /> New organization
-          </Button>
+          <Tooltip>
+            <TooltipTrigger
+              render={<Button className="ibl-button-primary" onClick={() => setCreateOpen(true)} />}
+            >
+              <Plus data-icon="inline-start" strokeWidth={1.75} /> New organization
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              Add a company, then attach its people and deals
+            </TooltipContent>
+          </Tooltip>
         }
         toolbar={
           <>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -113,15 +114,22 @@ export function TagColorPicker({
   const [open, setOpen] = useState(false);
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        disabled={disabled}
-        aria-label={label}
-        className={cn(
-          "shrink-0 rounded-lg ring-1 ring-black/10 transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-[#0058cc] disabled:cursor-not-allowed disabled:opacity-60",
-          size === "sm" ? "size-5" : "size-7",
-        )}
-        style={{ backgroundColor: isValidHex(color) ? color : "#888888" }}
-      />
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <PopoverTrigger
+              disabled={disabled}
+              aria-label={label}
+              className={cn(
+                "shrink-0 rounded-lg ring-1 ring-black/10 transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-[#0058cc] disabled:cursor-not-allowed disabled:opacity-60",
+                size === "sm" ? "size-5" : "size-7",
+              )}
+              style={{ backgroundColor: isValidHex(color) ? color : "#888888" }}
+            />
+          }
+        />
+        <TooltipContent>Change color</TooltipContent>
+      </Tooltip>
       <PopoverContent className="w-60" align="start">
         <TagColorSwatches color={color} onChange={onChange} />
       </PopoverContent>

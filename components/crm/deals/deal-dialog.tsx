@@ -27,6 +27,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
+import { InfoTip } from "@/components/crm/info-tip";
 import { SimpleSelect } from "@/components/crm/simple-select";
 import { OwnerSelect } from "@/components/crm/owner-select";
 import { openStages, useDealLookups } from "@/components/crm/deals/use-lookups";
@@ -192,7 +193,12 @@ export function DealDialog({
           </div>
 
           <div className="grid gap-1.5 sm:col-span-2">
-            <Label>Person</Label>
+            <Label className="flex items-center gap-1">
+              Person
+              <InfoTip label="About the person field">
+                Every deal belongs to one person; add them first under People
+              </InfoTip>
+            </Label>
             <Popover open={personOpen} onOpenChange={setPersonOpen}>
               <PopoverTrigger
                 render={
@@ -263,7 +269,12 @@ export function DealDialog({
           </div>
 
           <div className="grid gap-1.5">
-            <Label>Pipeline</Label>
+            <Label className="flex items-center gap-1">
+              Pipeline
+              <InfoTip label="About the pipeline field">
+                The set of stages this deal moves through
+              </InfoTip>
+            </Label>
             <SimpleSelect
               value={pipelineId}
               onChange={setPipelineId}
@@ -272,7 +283,12 @@ export function DealDialog({
             />
           </div>
           <div className="grid gap-1.5">
-            <Label>Stage</Label>
+            <Label className="flex items-center gap-1">
+              Stage
+              <InfoTip label="About the stage field">
+                Deals start here; move them from the board
+              </InfoTip>
+            </Label>
             <SimpleSelect
               value={stageId}
               onChange={setStageId}
@@ -282,7 +298,12 @@ export function DealDialog({
           </div>
 
           <div className="grid gap-1.5">
-            <Label htmlFor="deal-value">Value</Label>
+            <Label htmlFor="deal-value" className="flex items-center gap-1">
+              Value
+              <InfoTip label="About the value field">
+                What the deal is worth; it feeds the pipeline totals
+              </InfoTip>
+            </Label>
             <Input
               id="deal-value"
               type="number"
@@ -295,12 +316,22 @@ export function DealDialog({
             />
           </div>
           <div className="grid gap-1.5">
-            <Label>Currency</Label>
+            <Label className="flex items-center gap-1">
+              Currency
+              <InfoTip label="About the currency field">
+                Set per deal — totals are added up as-is, not converted
+              </InfoTip>
+            </Label>
             <SimpleSelect value={currency} onChange={setCurrency} options={currencyOptions} />
           </div>
 
           <div className="grid gap-1.5">
-            <Label>Source</Label>
+            <Label className="flex items-center gap-1">
+              Source
+              <InfoTip label="About the source field">
+                Where the deal came from; admins manage the list in Settings
+              </InfoTip>
+            </Label>
             <SimpleSelect
               value={sourceId}
               onChange={setSourceId}
@@ -311,7 +342,12 @@ export function DealDialog({
             />
           </div>
           <div className="grid gap-1.5">
-            <Label htmlFor="deal-close">Expected close</Label>
+            <Label htmlFor="deal-close" className="flex items-center gap-1">
+              Expected close
+              <InfoTip label="About the expected close field">
+                When you expect to close; the card flags it once it passes
+              </InfoTip>
+            </Label>
             <Input
               id="deal-close"
               type="date"

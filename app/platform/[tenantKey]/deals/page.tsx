@@ -6,6 +6,7 @@ import { Handshake, Kanban, Plus, Search, Table2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageHeader } from "@/components/crm/page-header";
 import { EmptyState } from "@/components/crm/empty-state";
 import { PaginationBar } from "@/components/crm/pagination-bar";
@@ -120,7 +121,13 @@ function DealsPageContent() {
   );
 
   const count = view === "kanban" ? visibleBoardDeals.length : (tableDeals?.count ?? null);
-  const filtersActive = !!(owner || sourceId || tagId || q || (view === "table" && status !== "open"));
+  const filtersActive = !!(
+    owner ||
+    sourceId ||
+    tagId ||
+    q ||
+    (view === "table" && status !== "open")
+  );
   const clearFilters = () => {
     setOwner(null);
     setSourceId("");
@@ -143,6 +150,7 @@ function DealsPageContent() {
         icon={<Handshake />}
         title="Deals"
         count={count}
+        description="Opportunities moving through your pipeline stages"
         actions={
           <>
             <ToggleGroup
@@ -155,23 +163,44 @@ function DealsPageContent() {
               className="rounded-lg border border-[var(--border-color,#e5e7eb)] bg-white p-0.5"
               aria-label="Deals view"
             >
-              <ToggleGroupItem value="kanban" size="sm" aria-label="Kanban view" title="Kanban">
-                <Kanban />
-              </ToggleGroupItem>
-              <ToggleGroupItem value="table" size="sm" aria-label="Table view" title="Table">
-                <Table2 />
-              </ToggleGroupItem>
+              <Tooltip>
+                <TooltipTrigger
+                  render={<ToggleGroupItem value="kanban" size="sm" aria-label="Kanban view" />}
+                >
+                  <Kanban />
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Kanban — drag deals between stages</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger
+                  render={<ToggleGroupItem value="table" size="sm" aria-label="Table view" />}
+                >
+                  <Table2 />
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  Table — sort, filter and page through deals
+                </TooltipContent>
+              </Tooltip>
             </ToggleGroup>
-            <Button
-              size="sm"
-              className="ibl-button-primary"
-              onClick={() => {
-                setSeed({});
-                setNewOpen(true);
-              }}
-            >
-              <Plus data-icon="inline-start" /> New deal
-            </Button>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    size="sm"
+                    className="ibl-button-primary"
+                    onClick={() => {
+                      setSeed({});
+                      setNewOpen(true);
+                    }}
+                  />
+                }
+              >
+                <Plus data-icon="inline-start" /> New deal
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                Open a deal for a person; it starts in the first stage
+              </TooltipContent>
+            </Tooltip>
           </>
         }
         toolbar={
@@ -242,7 +271,7 @@ function DealsPageContent() {
           <EmptyState
             icon={<Handshake />}
             title="No deals yet"
-            description="A deal tracks an opportunity with a person through the stages of a pipeline."
+            description="Open a deal for a person — it starts in the first stage, and you move it along the board as things progress."
             action={
               <Button
                 className="ibl-button-primary"
@@ -278,7 +307,7 @@ function DealsPageContent() {
               sourceName={lookups.sourceName}
             />
             {!tableLoading && visibleTableDeals.length === 0 ? (
-              <p className="py-10 text-center text-sm text-muted-foreground">
+              <p className="text-muted-foreground py-10 text-center text-sm">
                 No deals match these filters.
               </p>
             ) : null}

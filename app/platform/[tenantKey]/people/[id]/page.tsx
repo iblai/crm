@@ -148,15 +148,31 @@ export default function PersonDetailPage() {
                   renderValue={(v) => <LifecycleBadge stage={v as LifecycleStage} />}
                 />
                 {person.platform_user ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[#eef6fc] px-2 py-0.5 text-[11px] font-medium text-[#0058cc] ring-1 ring-[#0058cc]/20 ring-inset">
-                    <Link2 className="size-3" strokeWidth={1.75} /> Linked to platform user #
-                    {person.platform_user}
-                  </span>
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <span className="inline-flex cursor-default items-center gap-1 rounded-full bg-[#eef6fc] px-2 py-0.5 text-[11px] font-medium text-[#0058cc] ring-1 ring-[#0058cc]/20 ring-inset" />
+                      }
+                    >
+                      <Link2 className="size-3" strokeWidth={1.75} /> Linked to platform user #
+                      {person.platform_user}
+                    </TooltipTrigger>
+                    <TooltipContent>This person can sign in to the platform</TooltipContent>
+                  </Tooltip>
                 ) : null}
                 {!person.active ? (
-                  <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600 ring-1 ring-gray-500/20 ring-inset">
-                    Inactive
-                  </span>
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <span className="inline-flex cursor-default items-center rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600 ring-1 ring-gray-500/20 ring-inset" />
+                      }
+                    >
+                      Inactive
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Archived — kept for history, not worked any more
+                    </TooltipContent>
+                  </Tooltip>
                 ) : null}
               </div>
             </div>
@@ -164,9 +180,16 @@ export default function PersonDetailPage() {
 
           <div className="flex shrink-0 items-center gap-2">
             {canInvite ? (
-              <Button variant="outline" onClick={() => setInviteOpen(true)}>
-                <UserPlus data-icon="inline-start" strokeWidth={1.75} /> Invite to platform
-              </Button>
+              <Tooltip>
+                <TooltipTrigger
+                  render={<Button variant="outline" onClick={() => setInviteOpen(true)} />}
+                >
+                  <UserPlus data-icon="inline-start" strokeWidth={1.75} /> Invite to platform
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  Emails an ibl.ai invitation; the person becomes a platform user
+                </TooltipContent>
+              </Tooltip>
             ) : (
               <Tooltip>
                 <TooltipTrigger
@@ -179,11 +202,20 @@ export default function PersonDetailPage() {
               </Tooltip>
             )}
             <DropdownMenu>
-              <DropdownMenuTrigger
-                render={<Button variant="outline" size="icon" aria-label="More actions" />}
-              >
-                <MoreHorizontal strokeWidth={1.75} />
-              </DropdownMenuTrigger>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <DropdownMenuTrigger
+                      render={<Button variant="outline" size="icon" aria-label="More actions" />}
+                    />
+                  }
+                >
+                  <MoreHorizontal strokeWidth={1.75} />
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  Link to a user, merge duplicates, delete
+                </TooltipContent>
+              </Tooltip>
               <DropdownMenuContent align="end" className="w-52">
                 <DropdownMenuItem onClick={() => setLinkOpen(true)}>
                   <Link2 strokeWidth={1.75} /> Link to user
@@ -224,14 +256,14 @@ export default function PersonDetailPage() {
                   )}
                 />
               </FieldRow>
-              <FieldRow label="Other emails">
+              <FieldRow label="Other emails" hint="Comma-separated.">
                 <InlineText
                   value={(person.emails ?? []).join(", ")}
                   onSave={(v) => save({ emails: toList(v) })}
                   placeholder="Add emails, comma separated"
                 />
               </FieldRow>
-              <FieldRow label="Phones">
+              <FieldRow label="Phones" hint="Comma-separated.">
                 <InlineText
                   value={(person.contact_numbers ?? []).join(", ")}
                   onSave={(v) => save({ contact_numbers: toList(v) })}
@@ -265,7 +297,7 @@ export default function PersonDetailPage() {
                   ) : null}
                 </div>
               </FieldRow>
-              <FieldRow label="Owner">
+              <FieldRow label="Owner" hint="The teammate responsible for this contact.">
                 <OwnerSelect
                   value={person.owner}
                   onChange={(owner) => void save({ owner })}
@@ -273,21 +305,24 @@ export default function PersonDetailPage() {
                   className="h-8 border-transparent bg-transparent shadow-none hover:bg-gray-50"
                 />
               </FieldRow>
-              <FieldRow label="Lifecycle">
+              <FieldRow
+                label="Lifecycle"
+                hint="How far along this contact is: Lead → Qualified → Opportunity → Customer · Churned."
+              >
                 <InlineSelect
                   value={person.lifecycle_stage ?? "lead"}
                   options={LIFECYCLE_STAGES}
                   onSave={(v) => save({ lifecycle_stage: (v || "lead") as LifecycleStage })}
                 />
               </FieldRow>
-              <FieldRow label="External id">
+              <FieldRow label="External id" hint="Id from another system, unique per organization.">
                 <InlineText
                   value={person.unique_id}
                   onSave={(v) => save({ unique_id: v.trim() })}
                   placeholder="Add an external id"
                 />
               </FieldRow>
-              <FieldRow label="Tags">
+              <FieldRow label="Tags" hint="Shared labels; manage them under Tags.">
                 <TagPicker
                   tags={person.tags ?? []}
                   onAttach={(tag_id) => attachTag({ id: person.id, tag_id }).unwrap()}

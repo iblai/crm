@@ -29,6 +29,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Spinner } from "@/components/ui/spinner";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
+import { InfoTip } from "@/components/crm/info-tip";
 import { SimpleSelect } from "@/components/crm/simple-select";
 import { OwnerSelect } from "@/components/crm/owner-select";
 import { useSession } from "@/hooks/use-session";
@@ -190,8 +191,14 @@ export function ActivityDialog({
 
         <div className="grid gap-3.5 px-4 pb-4 sm:grid-cols-2">
           <div className="grid gap-1.5">
-            <Label htmlFor="activity-type" className="text-muted-foreground text-xs">
+            <Label
+              htmlFor="activity-type"
+              className="text-muted-foreground flex items-center gap-1 text-xs"
+            >
               Type
+              <InfoTip label="About the type field">
+                Notes are logged as done; calls, meetings and tasks can be scheduled
+              </InfoTip>
             </Label>
             <SimpleSelect
               value={draft.type}
@@ -203,8 +210,14 @@ export function ActivityDialog({
           </div>
 
           <div className="grid gap-1.5">
-            <Label htmlFor="activity-owner" className="text-muted-foreground text-xs">
+            <Label
+              htmlFor="activity-owner"
+              className="text-muted-foreground flex items-center gap-1 text-xs"
+            >
               Owner
+              <InfoTip label="About the owner field">
+                Whose list this shows up on under “Mine”
+              </InfoTip>
             </Label>
             <OwnerSelect value={draft.owner} onChange={(v) => set("owner", v)} size="sm" />
           </div>
@@ -324,8 +337,14 @@ export function ActivityDialog({
           )}
 
           <div className="grid gap-1.5">
-            <Label htmlFor="activity-from" className="text-muted-foreground text-xs">
+            <Label
+              htmlFor="activity-from"
+              className="text-muted-foreground flex items-center gap-1 text-xs"
+            >
               Starts
+              <InfoTip label="About the start time">
+                Leave empty for unscheduled work; a time is needed for reminders
+              </InfoTip>
             </Label>
             <Input
               id="activity-from"

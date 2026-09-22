@@ -14,6 +14,7 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TagChip } from "@/components/crm/tag-chip";
 import { errorMessage, useCreateTagMutation, useListTagsQuery } from "@/lib/crm/api";
 import type { TagChip as TagChipType } from "@/lib/crm/types";
@@ -88,18 +89,32 @@ export function TagPicker({
       ))}
       {!disabled ? (
         <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger
-            render={
-              <Button
-                variant="outline"
-                size={compact ? "xs" : "sm"}
-                className={cn("text-muted-foreground rounded-full border-dashed", compact && "h-6")}
-              />
-            }
-          >
-            {tags.length ? <Plus data-icon="inline-start" /> : <TagIcon data-icon="inline-start" />}
-            {tags.length ? "Add" : "Add tag"}
-          </PopoverTrigger>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <PopoverTrigger
+                  render={
+                    <Button
+                      variant="outline"
+                      size={compact ? "xs" : "sm"}
+                      className={cn(
+                        "text-muted-foreground rounded-full border-dashed",
+                        compact && "h-6",
+                      )}
+                    />
+                  }
+                />
+              }
+            >
+              {tags.length ? (
+                <Plus data-icon="inline-start" />
+              ) : (
+                <TagIcon data-icon="inline-start" />
+              )}
+              {tags.length ? "Add" : "Add tag"}
+            </TooltipTrigger>
+            <TooltipContent>Attach an existing tag or create one</TooltipContent>
+          </Tooltip>
           <PopoverContent className="w-64 p-0" align="start">
             <Command shouldFilter>
               <CommandInput

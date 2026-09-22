@@ -32,6 +32,7 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { OrgSwitcher } from "@/components/crm/org-switcher";
 import { useAdminMode } from "@/components/crm/admin-mode";
 import { useCommandPalette } from "@/components/crm/command-palette";
@@ -115,17 +116,26 @@ export function AppSidebar() {
         </SidebarMenu>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={openPalette}
-              tooltip="Search (⌘K)"
-              className="text-muted-foreground h-8 gap-2.5 rounded-md border border-[#e6e6e8] bg-[#fafbfc] text-[13px] hover:bg-white hover:text-gray-900"
-            >
-              <Search className="size-4 shrink-0" strokeWidth={1.75} />
-              <span className="flex-1 truncate text-left">Search…</span>
-              <kbd className="text-muted-foreground rounded border border-[#e6e6e8] bg-white px-1 font-sans text-[10px] group-data-[collapsible=icon]:hidden">
-                ⌘K
-              </kbd>
-            </SidebarMenuButton>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <SidebarMenuButton
+                    onClick={openPalette}
+                    aria-label="Search"
+                    className="text-muted-foreground h-8 gap-2.5 rounded-md border border-[#e6e6e8] bg-[#fafbfc] text-[13px] hover:bg-white hover:text-gray-900"
+                  />
+                }
+              >
+                <Search className="size-4 shrink-0" strokeWidth={1.75} />
+                <span className="flex-1 truncate text-left">Search…</span>
+                <kbd className="text-muted-foreground rounded border border-[#e6e6e8] bg-white px-1 font-sans text-[10px] group-data-[collapsible=icon]:hidden">
+                  ⌘K
+                </kbd>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                Search people, organizations and deals — ⌘K
+              </TooltipContent>
+            </Tooltip>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -152,32 +162,52 @@ export function AppSidebar() {
       <SidebarFooter className="px-2 pb-3">
         <SidebarMenu className="gap-0.5">
           <SidebarMenuItem>
-            <SidebarMenuButton
-              render={
-                <a
-                  href={`${config.osUrl()}/platform/${encodeURIComponent(tenantKey)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                />
-              }
-              tooltip="Agentic OS"
-              className="h-8 gap-2.5 rounded-md text-[13px] text-[#4a5568] hover:bg-[#f0f4fa]"
-            >
-              <ExternalLink className="size-4 shrink-0 text-[#5f5f61]" strokeWidth={1.75} />
-              <span className="truncate">Agentic OS</span>
-            </SidebarMenuButton>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <SidebarMenuButton
+                    render={
+                      <a
+                        href={`${config.osUrl()}/platform/${encodeURIComponent(tenantKey)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Agentic OS"
+                      />
+                    }
+                    className="h-8 gap-2.5 rounded-md text-[13px] text-[#4a5568] hover:bg-[#f0f4fa]"
+                  />
+                }
+              >
+                <ExternalLink className="size-4 shrink-0 text-[#5f5f61]" strokeWidth={1.75} />
+                <span className="truncate">Agentic OS</span>
+              </TooltipTrigger>
+              <TooltipContent side="right">Open this organization in the Agentic OS</TooltipContent>
+            </Tooltip>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              render={
-                <a href={config.documentationUrl()} target="_blank" rel="noopener noreferrer" />
-              }
-              tooltip="Documentation"
-              className="h-8 gap-2.5 rounded-md text-[13px] text-[#4a5568] hover:bg-[#f0f4fa]"
-            >
-              <BookOpen className="size-4 shrink-0 text-[#5f5f61]" strokeWidth={1.75} />
-              <span className="truncate">Documentation</span>
-            </SidebarMenuButton>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <SidebarMenuButton
+                    render={
+                      <a
+                        href={config.documentationUrl()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Documentation"
+                      />
+                    }
+                    className="h-8 gap-2.5 rounded-md text-[13px] text-[#4a5568] hover:bg-[#f0f4fa]"
+                  />
+                }
+              >
+                <BookOpen className="size-4 shrink-0 text-[#5f5f61]" strokeWidth={1.75} />
+                <span className="truncate">Documentation</span>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                Guides and API reference for ibl.ai/crm — opens in a new tab
+              </TooltipContent>
+            </Tooltip>
           </SidebarMenuItem>
         </SidebarMenu>
         <div className="mt-2 flex items-center justify-center gap-1.5 px-1 group-data-[collapsible=icon]:hidden">

@@ -151,8 +151,39 @@ export function tenantKeyFromPath(pathname: string): string | null {
   return m ? decodeURIComponent(m[1]) : null;
 }
 
-/** Display name for an org, falling back to its key. */
+/**
+ * Organizations created programmatically often carry a generated key as their
+ * name (`2c0da5f7216d4b639f7a2b200307ebd2`). That is an identifier, not a name
+ * — never show it as one.
+ */
+export function isHashLike(value?: string | null): boolean {
+  if (!value) return false;
+  return (
+    /^[0-9a-f]{20,}$/i.test(value) ||
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)
+  );
+}
+
+/** A short, readable id for an org key (`2c0da5f7`), for secondary lines. */
+export function shortTenantKey(key?: string | null): string {
+  if (!key) return "";
+  return isHashLike(key) ? key.slice(0, 8) : key;
+}
+
+/**
+ * Display name for an org: its real name when it has one, otherwise a friendly
+ * label ("Organization"). Pair with `shortTenantKey` in lists where several
+ * unnamed organizations must stay distinguishable.
+ */
 export function tenantDisplayName(t?: TenantEntry | null): string {
   if (!t) return "";
-  return (t.platform_name || t.name || t.org || t.key) as string;
+  const candidates = [t.platform_name, t.name, t.org, t.key] as Array<string | undefined>;
+  const named = candidates.find((c) => c && !isHashLike(c));
+  return named ?? "Organization";
+}
+
+/** `true` when the org has no human name (its label is the generic fallback). */
+export function isUnnamedTenant(t?: TenantEntry | null): boolean {
+  if (!t) return false;
+  return tenantDisplayName(t) === "Organization";
 }

@@ -16,7 +16,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ActivityIcon } from "@/components/crm/activity-icon";
+import { InfoTip } from "@/components/crm/info-tip";
 import { ActivityTypeBadge } from "@/components/crm/badges";
 import { SimpleSelect } from "@/components/crm/simple-select";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
@@ -95,8 +97,11 @@ export function ActivityTimeline({
 
       {open.length ? (
         <section>
-          <h3 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
+          <h3 className="text-muted-foreground mb-2 flex items-center gap-1 text-xs font-semibold tracking-wide uppercase">
             Open · {open.length}
+            <InfoTip label="About open activities">
+              Not done yet — tick the circle to complete one
+            </InfoTip>
           </h3>
           <ul className="space-y-2">
             {open.map((a) => (
@@ -108,8 +113,11 @@ export function ActivityTimeline({
 
       {done.length ? (
         <section>
-          <h3 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
+          <h3 className="text-muted-foreground mb-2 flex items-center gap-1 text-xs font-semibold tracking-wide uppercase">
             History · {done.length}
+            <InfoTip label="About the history">
+              Everything already done, newest first — notes land here too
+            </InfoTip>
           </h3>
           <ul className="relative space-y-2 before:absolute before:top-3 before:bottom-3 before:left-[15px] before:w-px before:bg-gray-200">
             {done.map((a) => (
@@ -216,20 +224,38 @@ export function ActivityRow({
         </div>
       </div>
       <div className="flex shrink-0 items-start gap-1">
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => void toggleDone()}
-          disabled={marking}
-          aria-label={activity.is_done ? "Mark as not done" : "Mark as done"}
-          className={activity.is_done ? "text-emerald-600" : "text-gray-400 hover:text-emerald-600"}
-        >
-          {activity.is_done ? <Check /> : <Circle />}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => void toggleDone()}
+                disabled={marking}
+                aria-label={activity.is_done ? "Mark as not done" : "Mark as done"}
+                className={
+                  activity.is_done ? "text-emerald-600" : "text-gray-400 hover:text-emerald-600"
+                }
+              />
+            }
+          >
+            {activity.is_done ? <Check /> : <Circle />}
+          </TooltipTrigger>
+          <TooltipContent>{activity.is_done ? "Mark not done" : "Mark done"}</TooltipContent>
+        </Tooltip>
         <DropdownMenu>
-          <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" aria-label="More" />}>
-            <MoreHorizontal />
-          </DropdownMenuTrigger>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <DropdownMenuTrigger
+                  render={<Button variant="ghost" size="icon-sm" aria-label="More actions" />}
+                />
+              }
+            >
+              <MoreHorizontal />
+            </TooltipTrigger>
+            <TooltipContent>More actions for this activity</TooltipContent>
+          </Tooltip>
           <DropdownMenuContent align="end">
             <DropdownMenuItem variant="destructive" onClick={() => setConfirmDelete(true)}>
               <Trash2 /> Delete
@@ -313,14 +339,21 @@ export function ActivityComposer({
   return (
     <div className="rounded-xl border border-[var(--border-color,#e5e7eb)] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
       <div className="flex flex-wrap items-center gap-2">
-        <SimpleSelect
-          value={type}
-          onChange={(v) => setType(v as ActivityType)}
-          options={ACTIVITY_TYPES}
-          size="sm"
-          className="w-32"
-          aria-label="Activity type"
-        />
+        <Tooltip>
+          <TooltipTrigger render={<span className="inline-flex w-32" />}>
+            <SimpleSelect
+              value={type}
+              onChange={(v) => setType(v as ActivityType)}
+              options={ACTIVITY_TYPES}
+              size="sm"
+              className="w-32"
+              aria-label="Activity type"
+            />
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            Notes are logged as done; calls, meetings and tasks can be scheduled
+          </TooltipContent>
+        </Tooltip>
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -357,8 +390,14 @@ export function ActivityComposer({
             />
           </div>
           <div className="grid gap-1.5">
-            <Label htmlFor="activity-schedule" className="text-muted-foreground text-xs">
+            <Label
+              htmlFor="activity-schedule"
+              className="text-muted-foreground flex items-center gap-1 text-xs"
+            >
               When
+              <InfoTip label="About the when field">
+                Leave empty to log it now; set a time to schedule it
+              </InfoTip>
             </Label>
             <Input
               id="activity-schedule"
@@ -381,7 +420,14 @@ export function ActivityComposer({
               className="h-8 text-sm"
             />
           </div>
-          <label className="text-muted-foreground flex items-center gap-2 text-xs sm:col-span-2">
+          <label
+            className="text-muted-foreground flex items-center gap-2 text-xs sm:col-span-2"
+            title={
+              scheduleFrom
+                ? "A reminder is sent to the owner at the scheduled time"
+                : "Set a time under “When” first"
+            }
+          >
             <input
               type="checkbox"
               checked={reminder}
@@ -390,6 +436,9 @@ export function ActivityComposer({
               className="size-3.5 accent-[#0058cc]"
             />
             Remind the owner at the scheduled time
+            {!scheduleFrom ? (
+              <span className="text-muted-foreground/70">— needs a time</span>
+            ) : null}
           </label>
         </div>
       ) : null}

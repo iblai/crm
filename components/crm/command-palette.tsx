@@ -223,6 +223,22 @@ function CommandPalette({
             </CommandItem>
           </CommandGroup>
         </CommandList>
+        <div className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-gray-100 px-3 py-2 text-[11px]">
+          <span>
+            <kbd className="rounded border border-gray-200 bg-white px-1 font-sans">↑</kbd>
+            <kbd className="ml-0.5 rounded border border-gray-200 bg-white px-1 font-sans">
+              ↓
+            </kbd>{" "}
+            to navigate
+          </span>
+          <span>
+            <kbd className="rounded border border-gray-200 bg-white px-1 font-sans">↵</kbd> to open
+          </span>
+          <span>
+            <kbd className="rounded border border-gray-200 bg-white px-1 font-sans">esc</kbd> to
+            close
+          </span>
+        </div>
       </Command>
     </CommandDialog>
   );

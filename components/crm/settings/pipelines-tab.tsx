@@ -43,7 +43,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { EmptyState } from "@/components/crm/empty-state";
+import { InfoTip } from "@/components/crm/info-tip";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { InlineText } from "@/components/crm/inline-field";
 import { SimpleSelect } from "@/components/crm/simple-select";
@@ -220,39 +222,60 @@ function PipelineEditor({ pipeline, onDeleted }: { pipeline: Pipeline; onDeleted
           </div>
           <div className="flex shrink-0 items-center gap-2">
             {!pipeline.is_default ? (
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={makingDefault}
-                onClick={async () => {
-                  setMakingDefault(true);
-                  try {
-                    await update({ id: pipeline.id, body: { is_default: true } }).unwrap();
-                    toast.success(`“${pipeline.name}” is now the default pipeline`);
-                  } catch (err) {
-                    toastSettingsError(err);
-                  } finally {
-                    setMakingDefault(false);
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={makingDefault}
+                      onClick={async () => {
+                        setMakingDefault(true);
+                        try {
+                          await update({ id: pipeline.id, body: { is_default: true } }).unwrap();
+                          toast.success(`“${pipeline.name}” is now the default pipeline`);
+                        } catch (err) {
+                          toastSettingsError(err);
+                        } finally {
+                          setMakingDefault(false);
+                        }
+                      }}
+                    />
                   }
-                }}
-              >
-                <Star data-icon="inline-start" /> Make default
-              </Button>
+                >
+                  <Star data-icon="inline-start" /> Make default
+                </TooltipTrigger>
+                <TooltipContent side="bottom">New deals use the default pipeline</TooltipContent>
+              </Tooltip>
             ) : null}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-gray-500 hover:text-rose-600"
-              onClick={() => setConfirm(true)}
-            >
-              <Trash2 data-icon="inline-start" /> Delete
-            </Button>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-500 hover:text-rose-600"
+                    onClick={() => setConfirm(true)}
+                  />
+                }
+              >
+                <Trash2 data-icon="inline-start" /> Delete
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                Only possible when no deals reference this pipeline
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
 
         <dl className="mt-4 grid gap-3 border-t border-gray-100 pt-3 sm:grid-cols-2">
           <div className="grid grid-cols-[8rem_minmax(0,1fr)] items-center gap-2">
-            <dt className="text-muted-foreground text-xs font-medium">Rotten after</dt>
+            <dt className="text-muted-foreground flex items-center gap-1 text-xs font-medium">
+              Rotten after
+              <InfoTip label="About the rotten threshold">
+                Deals idle longer than this are flagged stale on the board
+              </InfoTip>
+            </dt>
             <dd className="flex items-center gap-1.5 text-sm text-gray-900">
               <div className="w-20">
                 <InlineText
@@ -433,15 +456,22 @@ function StageRow({ stage, pipelineId }: { stage: PipelineStage; pipelineId: num
         isDragging && "relative z-10 rounded-lg shadow-[0_6px_16px_rgba(16,24,40,0.12)]",
       )}
     >
-      <button
-        type="button"
-        className="shrink-0 cursor-grab touch-none rounded p-1 text-gray-300 hover:text-gray-500 active:cursor-grabbing"
-        aria-label={`Reorder ${stage.name}`}
-        {...attributes}
-        {...listeners}
-      >
-        <GripVertical className="size-4" strokeWidth={1.75} />
-      </button>
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <button
+              type="button"
+              className="shrink-0 cursor-grab touch-none rounded p-1 text-gray-300 hover:text-gray-500 active:cursor-grabbing"
+              aria-label={`Reorder ${stage.name}`}
+              {...attributes}
+              {...listeners}
+            />
+          }
+        >
+          <GripVertical className="size-4" strokeWidth={1.75} />
+        </TooltipTrigger>
+        <TooltipContent side="right">Drag to reorder — the board follows this order</TooltipContent>
+      </Tooltip>
 
       <div className="min-w-40 flex-1 text-sm font-medium text-gray-900">
         <InlineText
@@ -467,36 +497,53 @@ function StageRow({ stage, pipelineId }: { stage: PipelineStage; pipelineId: num
             }}
           />
         </div>
-        <span className="text-muted-foreground text-[11px]">%</span>
+        <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
+          %
+          <InfoTip label="About the stage probability">
+            Chance of winning from this stage — it drives the weighted pipeline
+          </InfoTip>
+        </span>
         <div className="h-1.5 w-20 overflow-hidden rounded-full bg-gray-100" aria-hidden>
           <div className="h-full rounded-full bg-[#0058cc]" style={{ width: `${probability}%` }} />
         </div>
       </div>
 
-      <div className="w-32 shrink-0">
-        <SimpleSelect
-          value={terminal}
-          onChange={(v) => void patch(terminalBody(v as Terminal))}
-          options={TERMINAL_OPTIONS}
-          size="sm"
-          aria-label={`Outcome of ${stage.name}`}
-        />
-      </div>
+      <Tooltip>
+        <TooltipTrigger render={<div className="w-32 shrink-0" />}>
+          <SimpleSelect
+            value={terminal}
+            onChange={(v) => void patch(terminalBody(v as Terminal))}
+            options={TERMINAL_OPTIONS}
+            size="sm"
+            aria-label={`Outcome of ${stage.name}`}
+          />
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+          Won and Lost stages close the deal; In flight keeps it open
+        </TooltipContent>
+      </Tooltip>
 
       <span className="hidden w-5 shrink-0 sm:block">
         {terminal === "won" ? <CheckCircle2 className="size-4 text-emerald-500" /> : null}
         {terminal === "lost" ? <XCircle className="size-4 text-rose-500" /> : null}
       </span>
 
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        className="shrink-0 text-gray-400 hover:text-rose-600"
-        onClick={() => setConfirm(true)}
-        aria-label={`Delete stage ${stage.name}`}
-      >
-        <Trash2 />
-      </Button>
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="shrink-0 text-gray-400 hover:text-rose-600"
+              onClick={() => setConfirm(true)}
+              aria-label={`Delete stage ${stage.name}`}
+            />
+          }
+        >
+          <Trash2 />
+        </TooltipTrigger>
+        <TooltipContent side="left">Only possible once no deal sits in this stage</TooltipContent>
+      </Tooltip>
 
       <ConfirmDialog
         open={confirm}
@@ -618,8 +665,14 @@ function PipelineDialog({
             </p>
           </div>
           <div className="grid gap-1.5">
-            <Label htmlFor="pipeline-rotten" className="text-muted-foreground text-xs">
+            <Label
+              htmlFor="pipeline-rotten"
+              className="text-muted-foreground flex items-center gap-1 text-xs"
+            >
               Rotten after (days)
+              <InfoTip label="About the rotten threshold">
+                Deals idle longer than this are flagged stale on the board
+              </InfoTip>
             </Label>
             <Input
               id="pipeline-rotten"

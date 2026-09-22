@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useBreadcrumbs } from "@/components/crm/breadcrumbs";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { EmptyState } from "@/components/crm/empty-state";
@@ -151,15 +152,31 @@ export default function OrganizationDetailPage() {
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            <Button className="ibl-button-primary" onClick={() => setAddPersonOpen(true)}>
-              <Plus data-icon="inline-start" strokeWidth={1.75} /> Add person
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={<Button variant="outline" size="icon" aria-label="More actions" />}
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button className="ibl-button-primary" onClick={() => setAddPersonOpen(true)} />
+                }
               >
-                <MoreHorizontal strokeWidth={1.75} />
-              </DropdownMenuTrigger>
+                <Plus data-icon="inline-start" strokeWidth={1.75} /> Add person
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                Create a contact already attached to this organization
+              </TooltipContent>
+            </Tooltip>
+            <DropdownMenu>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <DropdownMenuTrigger
+                      render={<Button variant="outline" size="icon" aria-label="More actions" />}
+                    />
+                  }
+                >
+                  <MoreHorizontal strokeWidth={1.75} />
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Delete this organization</TooltipContent>
+              </Tooltip>
               <DropdownMenuContent align="end" className="w-52">
                 <DropdownMenuItem variant="destructive" onClick={() => setConfirmDelete(true)}>
                   <Trash2 strokeWidth={1.75} /> Delete organization
@@ -189,7 +206,7 @@ export default function OrganizationDetailPage() {
                   />
                 </FieldRow>
               ))}
-              <FieldRow label="Owner">
+              <FieldRow label="Owner" hint="The teammate responsible for this organization.">
                 <OwnerSelect
                   value={organization.owner}
                   onChange={(owner) => void save({ owner })}
@@ -197,7 +214,7 @@ export default function OrganizationDetailPage() {
                   className="h-8 border-transparent bg-transparent shadow-none hover:bg-gray-50"
                 />
               </FieldRow>
-              <FieldRow label="Tags">
+              <FieldRow label="Tags" hint="Shared labels; manage them under Tags.">
                 <TagPicker
                   tags={organization.tags ?? []}
                   onAttach={(tag_id) => attachTag({ id: organization.id, tag_id }).unwrap()}

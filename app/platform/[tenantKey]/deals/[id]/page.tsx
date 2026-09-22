@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DealStatusBadge } from "@/components/crm/badges";
 import { EmptyState } from "@/components/crm/empty-state";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
@@ -45,7 +46,20 @@ import { formatCurrency, formatDate, formatDateTime, formatRelative } from "@/li
 import type { DealInput, PipelineStage } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
 
-const CURRENCIES = ["USD", "EUR", "GBP", "CAD", "AUD", "CHF", "JPY", "INR", "BRL", "MXN", "SGD", "ZAR"];
+const CURRENCIES = [
+  "USD",
+  "EUR",
+  "GBP",
+  "CAD",
+  "AUD",
+  "CHF",
+  "JPY",
+  "INR",
+  "BRL",
+  "MXN",
+  "SGD",
+  "ZAR",
+];
 
 export default function DealDetailPage() {
   const params = useParams<{ id: string }>();
@@ -53,7 +67,11 @@ export default function DealDetailPage() {
   const router = useRouter();
   const { href } = useSession();
 
-  const { data: deal, isLoading, error } = useGetDealQuery(dealId, { skip: !Number.isFinite(dealId) });
+  const {
+    data: deal,
+    isLoading,
+    error,
+  } = useGetDealQuery(dealId, { skip: !Number.isFinite(dealId) });
   const lookups = useDealLookups();
   const [updateDeal] = useUpdateDealMutation();
   const [moveStage, { isLoading: moving }] = useMoveDealStageMutation();
@@ -79,7 +97,9 @@ export default function DealDetailPage() {
   const pipeline = deal ? lookups.pipelineById.get(deal.pipeline) : undefined;
   const stage = deal ? lookups.stageById.get(deal.stage) : undefined;
   const person = deal ? lookups.personById.get(deal.person) : undefined;
-  const organization = deal?.organization ? lookups.organizationById.get(deal.organization) : undefined;
+  const organization = deal?.organization
+    ? lookups.organizationById.get(deal.organization)
+    : undefined;
   const firstOpenStage = openStages(pipeline)[0];
 
   const patch = async (body: DealInput) => {
@@ -179,7 +199,7 @@ export default function DealDetailPage() {
                 <p className="mt-1 text-2xl font-semibold tracking-tight text-gray-900 tabular-nums">
                   {formatCurrency(deal.lead_value, deal.currency)}
                 </p>
-                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                <div className="text-muted-foreground mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
                   <Link
                     href={href(`/people/${deal.person}`)}
                     className="inline-flex items-center gap-1 text-[#0058cc] hover:underline"
@@ -209,47 +229,84 @@ export default function DealDetailPage() {
 
             <div className="flex shrink-0 flex-wrap items-center gap-2">
               {closed ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={!firstOpenStage || moving}
-                  onClick={() => firstOpenStage && setPendingStage(firstOpenStage)}
-                >
-                  <RotateCcw data-icon="inline-start" /> Reopen
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={!firstOpenStage || moving}
+                        onClick={() => firstOpenStage && setPendingStage(firstOpenStage)}
+                      />
+                    }
+                  >
+                    <RotateCcw data-icon="inline-start" /> Reopen
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    Put the deal back in {firstOpenStage?.name ?? "the first stage"} and clear its
+                    close date
+                  </TooltipContent>
+                </Tooltip>
               ) : (
                 <>
-                  <Button
-                    size="sm"
-                    className="bg-emerald-600 text-white hover:bg-emerald-700"
-                    onClick={() => setConfirmWon(true)}
-                    disabled={winning}
-                  >
-                    <CircleCheckBig data-icon="inline-start" /> Mark won
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-rose-200 text-rose-700 hover:bg-rose-50"
-                    onClick={() => {
-                      setLostStage(null);
-                      setLostOpen(true);
-                    }}
-                    disabled={losing}
-                  >
-                    <CircleX data-icon="inline-start" /> Mark lost
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <Button
+                          size="sm"
+                          className="bg-emerald-600 text-white hover:bg-emerald-700"
+                          onClick={() => setConfirmWon(true)}
+                          disabled={winning}
+                        />
+                      }
+                    >
+                      <CircleCheckBig data-icon="inline-start" /> Mark won
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      Close the deal as won at its current value
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-rose-200 text-rose-700 hover:bg-rose-50"
+                          onClick={() => {
+                            setLostStage(null);
+                            setLostOpen(true);
+                          }}
+                          disabled={losing}
+                        />
+                      }
+                    >
+                      <CircleX data-icon="inline-start" /> Mark lost
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      Close the deal as lost — you are asked for a reason
+                    </TooltipContent>
+                  </Tooltip>
                 </>
               )}
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Delete deal"
-                className="text-gray-400 hover:text-rose-600"
-                onClick={() => setConfirmDelete(true)}
-              >
-                <Trash2 />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label="Delete deal"
+                      className="text-gray-400 hover:text-rose-600"
+                      onClick={() => setConfirmDelete(true)}
+                    />
+                  }
+                >
+                  <Trash2 />
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  Delete this deal and its activity — this cannot be undone
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
 
@@ -267,7 +324,7 @@ export default function DealDetailPage() {
         {/* --------------------------------------------- fields + timeline */}
         <div className="grid gap-4 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
           <aside className="rounded-xl border border-[var(--border-color,#e5e7eb)] bg-white p-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
-            <h2 className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+            <h2 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
               Details
             </h2>
             <dl className="divide-y divide-gray-100">
@@ -306,7 +363,7 @@ export default function DealDetailPage() {
                 <span className="text-gray-700">{pipeline?.name ?? `#${deal.pipeline}`}</span>
               </FieldRow>
 
-              <FieldRow label="Stage">
+              <FieldRow label="Stage" hint="Move the deal with the stage pills above.">
                 <span className="text-gray-700">{stage?.name ?? `#${deal.stage}`}</span>
               </FieldRow>
 
@@ -328,7 +385,7 @@ export default function DealDetailPage() {
                 />
               </FieldRow>
 
-              <FieldRow label="Source">
+              <FieldRow label="Source" hint="Where this deal came from; managed in Settings.">
                 <InlineSelect
                   value={deal.source ? String(deal.source) : ""}
                   options={lookups.sources.map((s) => ({ value: String(s.id), label: s.name }))}
@@ -348,14 +405,19 @@ export default function DealDetailPage() {
                 />
               </FieldRow>
 
-              <FieldRow label="Expected close">
+              <FieldRow
+                label="Expected close"
+                hint="Turns red once the date passes while the deal is open."
+              >
                 <InlineText
                   value={deal.expected_close_date ?? ""}
                   type="date"
                   onSave={(v) => patch({ expected_close_date: v || null })}
                   placeholder="No date"
                   render={(v) => (
-                    <span className={cn(overdue && "font-medium text-rose-600")}>{formatDate(v)}</span>
+                    <span className={cn(overdue && "font-medium text-rose-600")}>
+                      {formatDate(v)}
+                    </span>
                   )}
                 />
               </FieldRow>
@@ -372,7 +434,7 @@ export default function DealDetailPage() {
                 </FieldRow>
               ) : null}
 
-              <FieldRow label="Tags">
+              <FieldRow label="Tags" hint="Shared labels; manage them under Tags.">
                 <TagPicker
                   tags={deal.tags ?? []}
                   onAttach={(tagId) => attachTag({ id: deal.id, tag_id: tagId }).unwrap()}
@@ -405,7 +467,7 @@ export default function DealDetailPage() {
           </aside>
 
           <section className="min-w-0">
-            <h2 className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+            <h2 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
               Activity
             </h2>
             <ActivityTimeline deal={deal.id} />

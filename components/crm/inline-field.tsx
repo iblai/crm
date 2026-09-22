@@ -6,15 +6,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { SimpleSelect, type SelectOption } from "@/components/crm/simple-select";
+import { InfoTip } from "@/components/crm/info-tip";
 import { cn } from "@/lib/utils";
 
 /** A labelled row in a record's field panel (Twenty's "show page" left column). */
 export function FieldRow({
   label,
+  hint,
   children,
   className,
 }: {
   label: ReactNode;
+  /** One short sentence explaining the field, shown as an info tip. */
+  hint?: ReactNode;
   children: ReactNode;
   className?: string;
 }) {
@@ -22,7 +26,14 @@ export function FieldRow({
     <div
       className={cn("grid grid-cols-[7.5rem_minmax(0,1fr)] items-start gap-2 py-1.5", className)}
     >
-      <dt className="text-muted-foreground pt-1 text-xs font-medium">{label}</dt>
+      <dt className="text-muted-foreground flex items-center gap-1 pt-1 text-xs font-medium">
+        <span className="min-w-0 truncate">{label}</span>
+        {hint ? (
+          <InfoTip label={typeof label === "string" ? `About ${label}` : "About this field"}>
+            {hint}
+          </InfoTip>
+        ) : null}
+      </dt>
       <dd className="min-w-0 text-sm text-gray-900">{children}</dd>
     </div>
   );
@@ -81,6 +92,7 @@ export function InlineText({
         type="button"
         disabled={disabled}
         onClick={() => setEditing(true)}
+        title={disabled ? undefined : "Click to edit"}
         className={cn(
           "group/field -mx-1.5 flex w-[calc(100%+0.75rem)] min-w-0 items-start justify-between gap-2 rounded-md px-1.5 py-1 text-left hover:bg-gray-50 disabled:hover:bg-transparent",
           className,

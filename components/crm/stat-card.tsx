@@ -1,19 +1,26 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { InfoTip } from "@/components/crm/info-tip";
 import { cn } from "@/lib/utils";
 
 export function StatCard({
   label,
+  labelText,
   value,
   hint,
+  info,
   icon,
   tone = "default",
   className,
 }: {
   label: ReactNode;
+  /** Plain-text label, used to name the info tip for screen readers. */
+  labelText?: string;
   value: ReactNode;
   hint?: ReactNode;
+  /** One short sentence explaining how the number is calculated. */
+  info?: ReactNode;
   icon?: ReactNode;
   tone?: "default" | "brand" | "success" | "warning" | "danger";
   className?: string;
@@ -33,7 +40,10 @@ export function StatCard({
       )}
     >
       <div className="min-w-0">
-        <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">{label}</p>
+        <p className="text-muted-foreground flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
+          <span className="truncate">{label}</span>
+          {info ? <InfoTip label={`About ${labelText ?? "this metric"}`}>{info}</InfoTip> : null}
+        </p>
         <p className="mt-1.5 truncate text-2xl font-semibold tracking-tight text-gray-900">
           {value}
         </p>

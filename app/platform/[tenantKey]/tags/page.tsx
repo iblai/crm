@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageHeader } from "@/components/crm/page-header";
 import { EmptyState } from "@/components/crm/empty-state";
 import { PaginationBar } from "@/components/crm/pagination-bar";
@@ -67,9 +68,22 @@ export default function TagsPage() {
         count={data?.count ?? null}
         description="One shared vocabulary for people, organizations and deals"
         actions={
-          <Button size="sm" className="ibl-button-primary" onClick={() => setCreating(true)}>
-            <Plus data-icon="inline-start" /> New tag
-          </Button>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  size="sm"
+                  className="ibl-button-primary"
+                  onClick={() => setCreating(true)}
+                />
+              }
+            >
+              <Plus data-icon="inline-start" /> New tag
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              Create a label you can attach to people, organizations and deals
+            </TooltipContent>
+          </Tooltip>
         }
         toolbar={
           <div className="relative w-full max-w-xs">
@@ -167,15 +181,22 @@ function TagCard({ tag }: { tag: Tag }) {
             Created {formatDate(tag.created_at)}
           </p>
         </div>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="text-gray-400 hover:text-rose-600"
-          onClick={() => setConfirm(true)}
-          aria-label={`Delete tag ${tag.name}`}
-        >
-          <Trash2 />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="text-gray-400 hover:text-rose-600"
+                onClick={() => setConfirm(true)}
+                aria-label={`Delete tag ${tag.name}`}
+              />
+            }
+          >
+            <Trash2 />
+          </TooltipTrigger>
+          <TooltipContent>Removes the tag from every person, organization and deal</TooltipContent>
+        </Tooltip>
       </div>
 
       <div className="flex items-center justify-between gap-2 border-t border-gray-100 pt-2.5">

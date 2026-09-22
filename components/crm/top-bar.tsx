@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Menu, PanelLeft } from "lucide-react";
 import { NotificationDropdown } from "@iblai/iblai-js/web-containers";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSidebar } from "@/components/ui/sidebar";
 import { UserMenu } from "@/components/crm/user-menu";
 import { AdminModeSwitch } from "@/components/crm/admin-mode-switch";
@@ -31,15 +32,22 @@ export function TopBar() {
   return (
     <header className="z-10 flex h-14 shrink-0 items-center justify-between border-b border-[#D0E0FF] bg-white pr-3 pl-2 md:h-16 md:pr-4">
       <div className="flex min-w-0 items-center gap-1">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="cursor-pointer text-[#5f5f61]"
-          onClick={toggleSidebar}
-          aria-label="Toggle sidebar"
-        >
-          {isMobile ? <Menu className="size-5" /> : <PanelLeft className="size-5" />}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon"
+                className="cursor-pointer text-[#5f5f61]"
+                onClick={toggleSidebar}
+                aria-label="Toggle sidebar"
+              />
+            }
+          >
+            {isMobile ? <Menu className="size-5" /> : <PanelLeft className="size-5" />}
+          </TooltipTrigger>
+          <TooltipContent side="bottom">Collapse or expand the sidebar (⌘B)</TooltipContent>
+        </Tooltip>
         <Breadcrumbs />
       </div>
       <div className="flex items-center gap-3 md:gap-5">
