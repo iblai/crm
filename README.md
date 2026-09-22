@@ -132,22 +132,7 @@ The native apps are [Tauri 2](https://tauri.app) WebView shells around the hoste
 
 <div align="center">
 
-<img src="docs/images/home.png" alt="Home dashboard" width="820">
-
-<sub>**Home** — pipeline at a glance: open deals, weighted value, what's due, deals by stage</sub>
-
-<br><br>
-
-<table>
-<tr>
-<td width="50%"><img src="docs/images/deals-kanban.png" alt="Deals kanban"><br><sub><b>Deals</b> — drag deals across the pipeline's stages</sub></td>
-<td width="50%"><img src="docs/images/people.png" alt="People"><br><sub><b>People</b> — lifecycle, organization, owner, tags</sub></td>
-</tr>
-<tr>
-<td width="50%"><img src="docs/images/person.png" alt="Person page"><br><sub><b>Person page</b> — fields, tags, timeline, deals, invite &amp; merge</sub></td>
-<td width="50%"><img src="docs/images/settings-pipelines.png" alt="Pipeline settings"><br><sub><b>Settings</b> — pipelines, stages, lead sources, roles</sub></td>
-</tr>
-</table>
+<sub>Screenshots of the seeded walkthrough organization are on their way — run <code>pnpm screenshots</code> to regenerate them into <code>docs/images/</code> (see <a href="docs/development.md">docs/development.md</a>).</sub>
 
 </div>
 
