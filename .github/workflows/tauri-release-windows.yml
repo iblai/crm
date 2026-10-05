@@ -123,7 +123,7 @@ jobs:
       # Build + sign the NSIS installer. MSI/WiX doesn't support arm64, so NSIS is
       # the only bundle type that builds for both x64 and arm64.
       - name: Build & sign NSIS installer
-        uses: tauri-apps/tauri-action@84b9d35b5fc46c1e45415bdb6144030364f7ebc5 # v0
+        uses: tauri-apps/tauri-action@1deb371b0cd8bd54025b384f1cd735e725c4060f # v1.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # This app shell's compile-time flags (read via option_env! in Rust).
