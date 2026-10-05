@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: "%s · ibl.ai/crm",
   },
   description:
-    "The open-source CRM for organizations on the ibl.ai platform — people, companies, deals, activities.",
+    "The open-source CRM for organizations on the ibl.ai platform — people, organizations, deals, activities.",
   applicationName: "ibl.ai/crm",
   icons: { icon: "/favicon.ico" },
 };

@@ -58,7 +58,7 @@
     {
       "id": "C2",
       "journey": "crm",
-      "name": "create a company and see it in the list",
+      "name": "create an organization and see it in the list",
       "spec": "journeys/crm.journey.spec.ts"
     },
     {
@@ -82,7 +82,7 @@
     {
       "id": "C6",
       "journey": "crm",
-      "name": "log a note on a company's timeline",
+      "name": "log a note on an organization's timeline",
       "spec": "journeys/crm.journey.spec.ts"
     },
     {

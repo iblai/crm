@@ -10,6 +10,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageHeader } from "@/components/crm/page-header";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { PaginationBar } from "@/components/crm/pagination-bar";
 import { SimpleSelect } from "@/components/crm/simple-select";
 import { ActivityRow } from "@/components/crm/activity-timeline";
@@ -90,7 +91,7 @@ function ActivitiesView() {
     };
   }, [page, scope, status, type, range, userId]);
 
-  const { data, isLoading, isFetching } = useListActivitiesQuery(params);
+  const { data, isLoading, isFetching, error } = useListActivitiesQuery(params);
   const rows = useMemo(() => data?.results ?? [], [data]);
   const groups = useMemo(() => groupActivities(rows), [rows]);
   const hasRows = rows.length > 0;
@@ -256,6 +257,8 @@ function ActivitiesView() {
         <div className="flex-1 p-4 md:p-6">
           {isLoading ? (
             <ListSkeleton />
+          ) : error ? (
+            <LoadError error={error} />
           ) : !hasRows ? (
             <EmptyState
               icon={<CalendarCheck2 />}
@@ -377,7 +380,7 @@ function RowShell({
   const tc = useTranslations("common");
   return (
     <div className="group/row relative">
-      <ActivityRow activity={activity} showDealLink showPersonLink />
+      <ActivityRow activity={activity} showDealLink showPersonLink showOrganizationLink />
       <button
         type="button"
         onClick={() => onEdit(activity)}

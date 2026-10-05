@@ -19,16 +19,16 @@
     },
     "dialog": {
       "alreadyDone": "Déjà terminée",
-      "company": "Entreprise",
+      "organization": "Organisation",
       "create": "Créer l’activité",
       "deal": "Affaire",
-      "description": "Les appels, réunions, tâches et notes appartiennent toujours à une personne ou à une affaire.",
+      "description": "Les appels, réunions, tâches et notes appartiennent à une personne, une affaire ou une organisation.",
       "detailsPlaceholder": "Ordre du jour, résultat, prochaines étapes…",
       "editTitle": "Modifier l’activité",
       "ends": "Fin",
-      "linkHint": "Choisissez une personne, une affaire, ou les deux.",
-      "linkRequired": "Rattachez l’activité à une personne, une entreprise ou une affaire.",
-      "noCompany": "Aucune entreprise",
+      "linkHint": "Choisissez une personne, une affaire ou une organisation.",
+      "linkRequired": "Rattachez l’activité à une personne, une organisation ou une affaire.",
+      "noOrganization": "Aucune organisation",
       "noDeal": "Aucune affaire",
       "noPerson": "Aucune personne",
       "ownerAbout": "À propos du champ responsable",
@@ -105,7 +105,8 @@
       "moreHint": "Plus d’actions pour cette activité",
       "openAbout": "À propos des activités ouvertes",
       "openHint": "Pas encore terminées — cochez le cercle pour en terminer une",
-      "viewPerson": "Voir la personne"
+      "viewPerson": "Voir la personne",
+      "viewOrganization": "Voir l’organisation"
     },
     "toast": {
       "created": "Activité créée",
@@ -180,12 +181,14 @@
     "unscheduled": "Non planifié",
     "updated": "Mis à jour",
     "user": "Utilisateur",
-    "yes": "Oui"
+    "yes": "Oui",
+    "errorLoadTitle": "Chargement impossible",
+    "errorProtectedByDeals": "{count, plural, one {# affaire fait encore référence} other {# affaires font encore référence}} à cette fiche."
   },
-  "companies": {
+  "organizations": {
     "actions": {
-      "new": "Nouvelle entreprise",
-      "newHint": "Ajoutez une entreprise, puis rattachez-y ses personnes et ses affaires"
+      "new": "Nouvelle organisation",
+      "newHint": "Ajoutez une organisation, puis rattachez-y ses personnes et ses affaires"
     },
     "address": {
       "add": {
@@ -210,40 +213,40 @@
     },
     "detail": {
       "addPerson": "Ajouter une personne",
-      "addPersonHint": "Créez un contact déjà rattaché à cette entreprise",
-      "back": "Retour aux entreprises",
-      "breadcrumb": "Entreprise",
-      "delete": "Supprimer l’entreprise",
-      "deleteError": "Impossible de supprimer cette entreprise",
-      "deleteHint": "L’entreprise est supprimée. Ses personnes et ses affaires restent dans le CRM — elles perdent simplement leur entreprise.",
+      "addPersonHint": "Créez un contact déjà rattaché à cette organisation",
+      "back": "Retour aux organisations",
+      "breadcrumb": "Organisation",
+      "delete": "Supprimer l’organisation",
+      "deleteError": "Impossible de supprimer cette organisation",
+      "deleteHint": "L’organisation est supprimée. Ses personnes et ses affaires restent et perdent leur organisation ; les activités rattachées uniquement à elle sont supprimées.",
       "deleteTitle": "Supprimer {name} ?",
-      "moreHint": "Supprimer cette entreprise",
+      "moreHint": "Supprimer cette organisation",
       "noDeals": "Aucune affaire ouverte avec {name} pour l’instant.",
       "noPeople": "Aucune personne pour l’instant",
       "noPeopleHint": "Ajoutez les contacts avec qui vous travaillez chez {name}.",
-      "notFound": "Cette entreprise n’existe plus",
+      "notFound": "Cette organisation n’existe plus",
       "notFoundHint": "Elle a peut-être été supprimée par un autre membre de votre équipe.",
-      "ownerHint": "Le membre de l’équipe responsable de cette entreprise.",
+      "ownerHint": "Le membre de l’équipe responsable de cette organisation.",
       "peopleCount": "{count, plural, one {# personne} other {# personnes}}",
-      "unnamed": "Entreprise sans nom"
+      "unnamed": "Organisation sans nom"
     },
     "dialog": {
-      "added": "Entreprise ajoutée : {name}",
-      "createError": "Impossible de créer cette entreprise",
-      "description": "Les entreprises regroupent les personnes avec qui vous échangez et les affaires que vous menez avec elles.",
+      "added": "Organisation ajoutée : {name}",
+      "createError": "Impossible de créer cette organisation",
+      "description": "Les organisations regroupent les personnes avec qui vous échangez et les affaires que vous menez avec elles.",
       "namePlaceholder": "Université Acme",
-      "submit": "Créer l’entreprise"
+      "submit": "Créer l’organisation"
     },
     "list": {
-      "addFirst": "Ajoutez votre première entreprise",
-      "description": "Les entreprises auxquelles appartiennent vos personnes et vos affaires",
-      "emptyHint": "Ajoutez les entreprises auxquelles vous vendez, puis rattachez-y des personnes et des affaires.",
-      "emptyTitle": "Aucune entreprise pour l’instant",
-      "noMatchFilters": "Aucune entreprise ne correspond à ces filtres",
+      "addFirst": "Ajoutez votre première organisation",
+      "description": "Les organisations auxquelles appartiennent vos personnes et vos affaires",
+      "emptyHint": "Ajoutez les organisations auxquelles vous vendez, puis rattachez-y des personnes et des affaires.",
+      "emptyTitle": "Aucune organisation pour l’instant",
+      "noMatchFilters": "Aucune organisation ne correspond à ces filtres",
       "noMatchFiltersHint": "Essayez un autre nom, responsable ou étiquette.",
-      "paginationLabel": "entreprises",
-      "searchLabel": "Rechercher des entreprises",
-      "searchPlaceholder": "Rechercher des entreprises par nom…"
+      "paginationLabel": "organisations",
+      "searchLabel": "Rechercher des organisations",
+      "searchPlaceholder": "Rechercher des organisations par nom…"
     },
     "table": {
       "location": "Localisation"
@@ -258,7 +261,7 @@
     },
     "onboarding": {
       "addPerson": "Ajouter une personne",
-      "body": "Commencez par ajouter une personne, puis ouvrez une affaire pour elle. Tout le reste — entreprises, activités et étiquettes — s’y rattache.",
+      "body": "Commencez par ajouter une personne, puis ouvrez une affaire pour elle. Tout le reste — organisations, activités et étiquettes — s’y rattache.",
       "createDeal": "Créer une affaire",
       "steps": {
         "activity": {
@@ -377,7 +380,8 @@
       "probabilityHint": "Probabilité de gain utilisée pour le pipeline pondéré",
       "probabilityLabel": "Ce que signifie {probability} %",
       "stageLabel": "Étape {stage}",
-      "totalHint": "Montant total des affaires à cette étape"
+      "totalHint": "Montant total des affaires à cette étape",
+      "noPipeline": "Aucun pipeline pour l’instant. Un administrateur peut en créer un dans les Paramètres."
     },
     "card": {
       "moveHint": "Passer à une autre étape sans glisser-déposer",
@@ -422,7 +426,7 @@
       "noValue": "Aucun montant",
       "notFoundDescription": "Cette affaire a peut-être été supprimée, ou elle appartient à une autre organisation.",
       "notFoundTitle": "Affaire introuvable",
-      "openCompany": "Ouvrir l’entreprise",
+      "openOrganization": "Ouvrir l’organisation",
       "reopenHint": "Remettre l’affaire dans {stage} et effacer sa date de clôture",
       "sourceHint": "D’où vient cette affaire ; la liste se gère dans les Paramètres.",
       "stageHint": "Déplacez l’affaire avec les étapes ci-dessus.",
@@ -446,11 +450,11 @@
     },
     "fields": {
       "closedAt": "Clôturée le",
-      "company": "Entreprise",
+      "organization": "Organisation",
       "currency": "Devise",
       "expectedClose": "Clôture prévue",
       "lostReason": "Motif de perte",
-      "noCompany": "Aucune entreprise",
+      "noOrganization": "Aucune organisation",
       "noSource": "Aucune source",
       "person": "Personne",
       "pipeline": "Pipeline",
@@ -514,8 +518,7 @@
       "moved": "Déplacée vers {stage}",
       "reopened": "Affaire rouverte",
       "won": "Affaire gagnée 🎉"
-    },
-    "unknownPerson": "Personne inconnue"
+    }
   },
   "enums": {
     "activityType": {
@@ -571,7 +574,7 @@
       "created_at": "Créé",
       "deal": "Affaire",
       "is_done": "Terminé",
-      "organization": "Entreprise",
+      "organization": "Organisation",
       "owner": "Responsable",
       "person": "Personne",
       "schedule_from": "Planifié",
@@ -583,7 +586,7 @@
       "created_at": "Créé",
       "expected_close_date": "Clôture prévue",
       "lead_value": "Valeur",
-      "organization": "Entreprise",
+      "organization": "Organisation",
       "owner": "Responsable",
       "person": "Personne",
       "source": "Source",
@@ -616,7 +619,7 @@
       "job_title": "Poste",
       "lifecycle_stage": "Cycle de vie",
       "name": "Nom",
-      "organization": "Entreprise",
+      "organization": "Organisation",
       "owner": "Responsable",
       "primary_email": "E-mail",
       "tags": "Étiquettes",
@@ -646,7 +649,7 @@
       "update": "a modifié"
     },
     "empty": "vide",
-    "emptyDescription": "Chaque modification de cette fiche apparaîtra ici.",
+    "emptyDescription": "Les modifications faites depuis le CRM apparaissent ici, les plus récentes d’abord ; les opérations groupées, comme une fusion, ne laissent aucune entrée.",
     "emptyTitle": "Pas encore d’historique",
     "system": "Système"
   },
@@ -656,7 +659,7 @@
   },
   "nav": {
     "activities": "Activités",
-    "companies": "Entreprises",
+    "organizations": "Organisations",
     "deals": "Affaires",
     "home": "Accueil",
     "people": "Personnes",
@@ -669,14 +672,14 @@
     "title": "Notifications"
   },
   "palette": {
-    "description": "Recherchez des personnes, des entreprises et des affaires, ou accédez à une page.",
+    "description": "Recherchez des personnes, des organisations et des affaires, ou accédez à une page.",
     "goTo": "Aller à",
     "newActivity": "Nouvelle activité",
-    "newCompany": "Nouvelle entreprise",
+    "newOrganization": "Nouvelle organisation",
     "newDeal": "Nouvelle affaire",
     "newPerson": "Nouvelle personne",
     "noResults": "Aucun résultat.",
-    "placeholder": "Rechercher des personnes, entreprises, affaires…",
+    "placeholder": "Rechercher des personnes, organisations, affaires…",
     "toClose": "pour fermer",
     "toNavigate": "pour naviguer",
     "toOpen": "pour ouvrir"
@@ -710,7 +713,7 @@
       "commaSeparated": "Séparés par des virgules.",
       "delete": "Supprimer la personne",
       "deleteError": "Impossible de supprimer cette personne",
-      "deleteHint": "La personne, ses activités et ses étiquettes sont supprimées. Les affaires restent, mais perdent leur contact.",
+      "deleteHint": "Une personne qui a des affaires ne peut pas être supprimée ; déplacez ou supprimez d’abord ses affaires. Ses activités et ses étiquettes partent avec elle.",
       "deleteTitle": "Supprimer {name} ?",
       "externalId": "ID externe",
       "externalIdHint": "ID issu d’un autre système, unique par organisation.",
@@ -729,8 +732,8 @@
       "noDeals": "Aucune affaire ouverte avec {name} pour l’instant.",
       "notFound": "Cette personne n’existe plus",
       "notFoundHint": "La fiche a peut-être été supprimée ou fusionnée avec une autre personne.",
-      "openCompany": "Ouvrir l’entreprise",
-      "openCompanyNamed": "Ouvrir {name}",
+      "openOrganization": "Ouvrir l’organisation",
+      "openOrganizationNamed": "Ouvrir {name}",
       "otherEmails": "Autres e-mails",
       "ownerHint": "Le membre de l’équipe responsable de ce contact.",
       "phones": "Téléphones",
@@ -746,11 +749,11 @@
       "submit": "Créer la personne"
     },
     "fields": {
-      "company": "Entreprise",
+      "organization": "Organisation",
       "jobTitle": "Poste",
       "lifecycle": "Cycle de vie",
       "lifecycleStage": "Étape du cycle de vie",
-      "noCompany": "Aucune entreprise"
+      "noOrganization": "Aucune organisation"
     },
     "invite": {
       "alreadyLinked": "Cette personne est déjà liée à un utilisateur de la plateforme",
@@ -772,11 +775,12 @@
       "manualLabel": "…ou saisissez un ID utilisateur",
       "manualPlaceholder": "ex. 4821",
       "submit": "Lier l’utilisateur",
-      "title": "Lier à un utilisateur de la plateforme"
+      "title": "Lier à un utilisateur de la plateforme",
+      "alreadyLinked": "Cette personne est déjà liée à un autre utilisateur."
     },
     "list": {
       "addFirst": "Ajoutez votre première personne",
-      "description": "Les contacts de toutes les entreprises avec lesquelles vous travaillez",
+      "description": "Les contacts de toutes les organisations avec lesquelles vous travaillez",
       "emptyHint": "Les personnes sont les contacts derrière chaque affaire — commencez par celle avec qui vous échangez aujourd’hui.",
       "emptyTitle": "Aucune personne pour l’instant",
       "loading": "Chargement des personnes",
@@ -790,9 +794,9 @@
     },
     "merge": {
       "confirm": "Fusionner et supprimer les doublons",
-      "confirmBody": "{count, plural, one {# doublon sera fusionné dans {name}, puis supprimé.} other {# doublons seront fusionnés dans {name}, puis supprimés.}} Cette action est irréversible.",
+      "confirmBody": "{count, plural, one {# doublon sera fusionné dans {name}, puis marqué inactif.} other {# doublons seront fusionnés dans {name}, puis marqués inactifs.}} Cette action est irréversible.",
       "confirmTitle": "Fusionner ces fiches ?",
-      "description": "Choisissez les fiches en double. Leurs affaires, activités et étiquettes sont transférées vers {name}, puis les doublons sont supprimés.",
+      "description": "Choisissez les fiches en double. Leurs affaires, activités et étiquettes sont transférées vers {name}, puis les doublons sont marqués inactifs.",
       "error": "Impossible de fusionner ces personnes",
       "merged": "{count, plural, one {# fiche fusionnée} other {# fiches fusionnées}} dans {name}",
       "noMatch": "Aucune personne correspondante.",
@@ -804,12 +808,12 @@
       "title": "Fusionner des doublons dans {name}"
     },
     "table": {
-      "viewCompany": "Voir l’entreprise"
+      "viewOrganization": "Voir l’organisation"
     }
   },
   "picker": {
     "clear": "Effacer",
-    "company": "Choisir une entreprise",
+    "organization": "Choisir une organisation",
     "noMatches": "Aucun résultat",
     "person": "Choisir une personne",
     "searchPlaceholder": "Saisissez pour rechercher…",
@@ -828,12 +832,12 @@
       "mandates": {
         "inviter": "Consulte les personnes et envoie des invitations — rien d’autre.",
         "manager": "Tout ce que peut faire le rôle User, plus l’administration des pipelines, des étapes et des sources du lead, et les invitations.",
-        "user": "CRUD complet sur les personnes, entreprises, affaires, activités et étiquettes ; pipelines en lecture seule ; ne peut pas inviter.",
-        "viewer": "Consulte tout le CRM sans rien modifier."
+        "user": "CRUD complet sur les personnes, organisations, affaires, activités et étiquettes ; pipelines en lecture seule ; ne peut pas inviter.",
+        "viewer": "Consulte tout le CRM ; ne modifie que ses propres favoris et vues enregistrées."
       },
       "organizationKey": "Clé de l’organisation",
       "role": "Rôle",
-      "rolesFootnote": "Les rôles s’attribuent sur l’écran Utilisateurs et rôles de l’organisation. Seuls les titulaires du rôle CRM Manager (administrateurs de l’organisation) peuvent modifier les pipelines, les étapes et les sources du lead.",
+      "rolesFootnote": "Les rôles s’attribuent sur l’écran Utilisateurs et rôles de l’organisation. Les CRM Manager et les administrateurs de l’organisation peuvent modifier les pipelines, les étapes et les sources du lead.",
       "rolesTitle": "Rôles CRM",
       "support": "Assistance",
       "supportLabel": "Ouvrir l’assistance ibl.ai",
@@ -943,8 +947,8 @@
       "changeColor": "Changer la couleur de {name}",
       "created": "Créée le {date}",
       "deleteConfirm": "Supprimer l’étiquette",
-      "deleteDescription": "L’étiquette sera retirée de toutes les personnes, entreprises et affaires qui la portent. Les fiches elles-mêmes sont conservées.",
-      "deleteHint": "Retire l’étiquette de toutes les personnes, entreprises et affaires",
+      "deleteDescription": "L’étiquette sera retirée de toutes les personnes, organisations et affaires qui la portent. Les fiches elles-mêmes sont conservées.",
+      "deleteHint": "Retire l’étiquette de toutes les personnes, organisations et affaires",
       "deleteLabel": "Supprimer l’étiquette {name}",
       "deleteTitle": "Supprimer « {name} » ?",
       "deleted": "Étiquette supprimée",
@@ -956,11 +960,11 @@
       "invalidHex": "Utilisez un code hexadécimal à 6 chiffres, comme #0058cc.",
       "use": "Utiliser la couleur {color}"
     },
-    "description": "Un vocabulaire commun pour les personnes, les entreprises et les affaires",
+    "description": "Un vocabulaire commun pour les personnes, les organisations et les affaires",
     "dialog": {
       "colorLabel": "Couleur",
       "created": "Étiquette « {name} » créée",
-      "description": "Les étiquettes sont partagées entre personnes, entreprises et affaires.",
+      "description": "Les étiquettes sont partagées entre personnes, organisations et affaires.",
       "namePlaceholder": "Grand compte, Newsletter, VIP…",
       "nameRequired": "Le nom est obligatoire.",
       "preview": "Aperçu",
@@ -968,13 +972,13 @@
       "submit": "Créer l’étiquette"
     },
     "empty": {
-      "description": "Les étiquettes regroupent personnes, entreprises et affaires : « Grand compte », « Newsletter », « Risque d’attrition ».",
+      "description": "Les étiquettes regroupent personnes, organisations et affaires : « Grand compte », « Newsletter », « Risque d’attrition ».",
       "noMatchDescription": "Essayez un autre nom, ou créez l’étiquette que vous cherchiez.",
       "noMatchTitle": "Aucune étiquette ne correspond à cette recherche",
       "title": "Aucune étiquette pour l’instant"
     },
     "newTag": "Nouvelle étiquette",
-    "newTagHint": "Créez une étiquette à associer aux personnes, aux entreprises et aux affaires",
+    "newTagHint": "Créez une étiquette à associer aux personnes, aux organisations et aux affaires",
     "paginationLabel": "étiquettes",
     "searchLabel": "Rechercher des étiquettes",
     "searchPlaceholder": "Rechercher des étiquettes…"

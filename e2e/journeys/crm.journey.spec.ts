@@ -1,8 +1,8 @@
 import { test, expect, type Page } from "@playwright/test";
 
 /**
- * CRM journey — the core loop: a person, a company, a deal moved to won, an
- * activity marked done, a tag; then a company note, a favorite, a saved view,
+ * CRM journey — the core loop: a person, an organization, a deal moved to won, an
+ * activity marked done, a tag; then an organization note, a favorite, a saved view,
  * record history and ⌘K search on what C1–C2 created. Runs against the
  * signed-in user's organization. Requires auth.setup.ts.
  */
@@ -45,13 +45,13 @@ test.describe.serial("crm journey", () => {
     await expect(page.getByText(`${stamp} Person`).first()).toBeVisible();
   });
 
-  test("C2 · create a company and see it in the list", async ({ page }) => {
+  test("C2 · create an organization and see it in the list", async ({ page }) => {
     const key = await org(page);
-    await page.goto(`${appHost}/platform/${encodeURIComponent(key)}/companies?new=1`);
+    await page.goto(`${appHost}/platform/${encodeURIComponent(key)}/organizations?new=1`);
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible({ timeout: 20_000 });
     await dialog.getByLabel(/^name/i).fill(`${stamp} Org`);
-    await dialog.getByRole("button", { name: /create|save|add company/i }).click();
+    await dialog.getByRole("button", { name: /create|save|add organization/i }).click();
     await expect(page.getByText(`${stamp} Org`).first()).toBeVisible({ timeout: 20_000 });
   });
 
@@ -114,9 +114,9 @@ test.describe.serial("crm journey", () => {
     await expect(page.getByText(`${stamp}-tag`).first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test("C6 · log a note on a company's timeline", async ({ page }) => {
+  test("C6 · log a note on an organization's timeline", async ({ page }) => {
     const key = await org(page);
-    await page.goto(`${appHost}/platform/${encodeURIComponent(key)}/companies`);
+    await page.goto(`${appHost}/platform/${encodeURIComponent(key)}/organizations`);
     await page
       .getByPlaceholder(/search/i)
       .first()
@@ -126,13 +126,13 @@ test.describe.serial("crm journey", () => {
       .filter({ hasText: `${stamp} Org` })
       .first()
       .click();
-    await page.waitForURL((url) => /\/companies\/[0-9a-f-]{36}/.test(url.pathname), {
+    await page.waitForURL((url) => /\/organizations\/[0-9a-f-]{36}/.test(url.pathname), {
       timeout: 20_000,
     });
     await page.getByRole("tab", { name: /timeline/i }).click();
-    await page.getByLabel(/activity title/i).fill(`${stamp} company note`);
+    await page.getByLabel(/activity title/i).fill(`${stamp} organization note`);
     await page.getByRole("button", { name: /^add$/i }).click();
-    await expect(page.getByText(`${stamp} company note`).first()).toBeVisible({
+    await expect(page.getByText(`${stamp} organization note`).first()).toBeVisible({
       timeout: 20_000,
     });
   });
@@ -190,7 +190,7 @@ test.describe.serial("crm journey", () => {
   test("C10 · ⌘K finds the person through server search", async ({ page }) => {
     await org(page);
     await page.keyboard.press(process.platform === "darwin" ? "Meta+k" : "Control+k");
-    await page.getByPlaceholder(/search people, companies, deals/i).fill(stamp);
+    await page.getByPlaceholder(/search people, organizations, deals/i).fill(stamp);
     await page
       .getByRole("option", { name: new RegExp(`${stamp} Person`) })
       .first()

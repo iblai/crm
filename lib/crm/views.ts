@@ -34,6 +34,8 @@ export interface FieldDef {
   relation?: "owner" | "organization" | "person" | "deal" | "pipeline" | "stage" | "source" | "tag";
   /** The list's table can show and hide it. */
   column?: true;
+  /** The DM has no filter for it: sort and column only. */
+  filter?: false;
 }
 
 export const FILTER_OPERANDS: Record<FieldKind, readonly FilterOp[]> = {
@@ -57,14 +59,14 @@ export const VIEW_FIELDS: Record<SavedViewObject, FieldDef[]> = {
     { id: "tags", kind: "relation", relation: "tag", column: true },
     { id: "active", kind: "boolean" },
     { id: "created_at", kind: "date", sortable: true, column: true },
-    { id: "updated_at", kind: "date", sortable: true },
+    { id: "updated_at", kind: "date", sortable: true, filter: false },
   ],
   organizations: [
     { id: "name", kind: "text", sortable: true },
     { id: "owner", kind: "relation", relation: "owner" },
     { id: "tags", kind: "relation", relation: "tag" },
-    { id: "created_at", kind: "date", sortable: true },
-    { id: "updated_at", kind: "date", sortable: true },
+    { id: "created_at", kind: "date", sortable: true, filter: false },
+    { id: "updated_at", kind: "date", sortable: true, filter: false },
   ],
   deals: [
     { id: "title", kind: "text", sortable: true, column: true },
@@ -106,7 +108,7 @@ export function filtersToParams(objectType: SavedViewObject, filters: ViewFilter
   const params: Record<string, string | number | boolean> = {};
   for (const filter of filters) {
     const field = VIEW_FIELDS[objectType].find((f) => f.id === filter.field);
-    if (!field) continue;
+    if (!field || field.filter === false) continue;
     const name = field.param ?? field.id;
     switch (filter.op) {
       case "is":

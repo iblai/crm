@@ -119,7 +119,7 @@ export function DealDialog({
     if (!stages.some((s) => String(s.id) === stageId)) setStageId(String(stages[0].id));
   }, [stages, stageId]);
 
-  // A deep-linked person brings their company along.
+  // A deep-linked person brings their organization along.
   useEffect(() => {
     if (!seededPerson?.organization || seededPerson.id !== personId || organizationId) return;
     setOrganizationId(seededPerson.organization);
@@ -202,12 +202,12 @@ export function DealDialog({
           </div>
 
           <div className="grid gap-1.5 sm:col-span-2">
-            <Label>{t("fields.company")}</Label>
+            <Label>{t("fields.organization")}</Label>
             <SearchPicker
               kind="organization"
               value={organizationId || null}
               onChange={(id) => setOrganizationId(id ?? "")}
-              placeholder={t("fields.noCompany")}
+              placeholder={t("fields.noOrganization")}
               className="h-9"
             />
           </div>

@@ -33,7 +33,7 @@ export function OrganizationsTable({
   isLoading?: boolean;
   skeletonRows?: number;
 }) {
-  const t = useTranslations("companies");
+  const t = useTranslations("organizations");
   const tc = useTranslations("common");
   const locale = useLocale();
   const router = useRouter();
@@ -73,9 +73,9 @@ export function OrganizationsTable({
               return (
                 <tr
                   key={o.id}
-                  onClick={() => router.push(href(`/companies/${o.id}`))}
+                  onClick={() => router.push(href(`/organizations/${o.id}`))}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") router.push(href(`/companies/${o.id}`));
+                    if (e.key === "Enter") router.push(href(`/organizations/${o.id}`));
                   }}
                   tabIndex={0}
                   className="cursor-pointer transition-colors outline-none hover:bg-gray-50 focus-visible:bg-gray-50"

@@ -17,7 +17,7 @@ const MAX_ROWS = 8;
 
 function pathFor(favorite: Favorite) {
   if (favorite.target_type === "person") return `/people/${favorite.person}`;
-  if (favorite.target_type === "organization") return `/companies/${favorite.organization}`;
+  if (favorite.target_type === "organization") return `/organizations/${favorite.organization}`;
   return `/deals/${favorite.deal}`;
 }
 

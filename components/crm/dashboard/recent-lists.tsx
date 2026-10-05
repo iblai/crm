@@ -43,13 +43,7 @@ export function RecentPeopleList({ people }: { people: Person[] }) {
 }
 
 /** The five most recently created deals. */
-export function RecentDealsList({
-  deals,
-  personName,
-}: {
-  deals: Deal[];
-  personName: (id?: string | null) => string;
-}) {
+export function RecentDealsList({ deals }: { deals: Deal[] }) {
   const t = useTranslations("dashboard");
   const locale = useLocale();
   const { href } = useSession();
@@ -73,7 +67,7 @@ export function RecentDealsList({
               <span className="block truncate text-sm font-medium text-gray-900">{d.title}</span>
               <span className="text-muted-foreground block truncate text-xs">
                 {t("panels.recentDeals.meta", {
-                  person: personName(d.person),
+                  person: d.person_name,
                   when: formatRelative(d.created_at, locale),
                 })}
               </span>

@@ -8,7 +8,7 @@ import { AppSidebar } from "@/components/crm/app-sidebar";
 import { TopBar } from "@/components/crm/top-bar";
 import { BreadcrumbProvider } from "@/components/crm/breadcrumbs";
 import { CommandPaletteProvider } from "@/components/crm/command-palette";
-import { AdminModeProvider, useAdminMode } from "@/components/crm/admin-mode";
+import { AdminModeProvider, useAdminMode, useCanManageCrm } from "@/components/crm/admin-mode";
 import { LoadingScreen } from "@/components/loading-screen";
 import { useSession } from "@/hooks/use-session";
 
@@ -63,18 +63,23 @@ export default function TenantLayout({ children }: { children: ReactNode }) {
   );
 }
 
-/** `/settings` and `/admin/*` are admin-only, in Admin mode only. */
+/** `/admin/*` is for org admins in Admin mode; `/settings` also opens to CRM Managers. */
 function AdminGate({ children }: { children: ReactNode }) {
   const { adminMode } = useAdminMode();
+  const canManage = useCanManageCrm();
   const pathname = usePathname() ?? "";
   const router = useRouter();
   const { href } = useSession();
-  const gated = /\/platform\/[^/]+\/(admin|settings)(\/|$)/.test(pathname);
+  const allowed = /\/platform\/[^/]+\/admin(\/|$)/.test(pathname)
+    ? adminMode
+    : /\/platform\/[^/]+\/settings(\/|$)/.test(pathname)
+      ? canManage
+      : true;
 
   useEffect(() => {
-    if (gated && !adminMode) router.replace(href());
-  }, [gated, adminMode, router, href]);
+    if (!allowed) router.replace(href());
+  }, [allowed, router, href]);
 
-  if (gated && !adminMode) return null;
+  if (!allowed) return null;
   return <>{children}</>;
 }

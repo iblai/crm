@@ -23,7 +23,7 @@ import {
   type PlatformSidebarSectionConfig,
 } from "@iblai/iblai-js/web-containers/next";
 import { InviteUserDialog } from "@iblai/iblai-js/web-containers";
-import { useAdminMode } from "@/components/crm/admin-mode";
+import { useAdminMode, useCanManageCrm } from "@/components/crm/admin-mode";
 import { useCommandPalette } from "@/components/crm/command-palette";
 import { FavoritesSection } from "@/components/crm/favorites-section";
 import { NavRow } from "@/components/crm/nav-row";
@@ -33,7 +33,7 @@ import config from "@/lib/iblai/config";
 /**
  * The SDK's cross-SPA sidebar shell with this app's content: Search as the
  * primary action, the CRM objects as flat rows, Settings for admins in Admin
- * mode, and the SDK footer cluster (Notifications, Invites, Management, …).
+ * mode and for CRM Managers, and the SDK footer cluster (Notifications, Invites, Management, …).
  */
 export function AppSidebar() {
   const t = useTranslations("nav");
@@ -43,6 +43,7 @@ export function AppSidebar() {
   const { isMobile, setOpenMobile } = useSidebar();
   const { open: openPalette } = useCommandPalette();
   const isLiveAdmin = isAdmin && adminMode;
+  const canManage = useCanManageCrm();
   const [accountTab, setAccountTab] = useState<PlatformAccountTab | null>(null);
   const [inviteOpen, setInviteOpen] = useState(false);
 
@@ -54,7 +55,7 @@ export function AppSidebar() {
   const rows = [
     { id: "home", label: t("home"), path: "", icon: Home, exact: true },
     { id: "people", label: t("people"), path: "/people", icon: Users },
-    { id: "companies", label: t("companies"), path: "/companies", icon: Building2 },
+    { id: "organizations", label: t("organizations"), path: "/organizations", icon: Building2 },
     { id: "deals", label: t("deals"), path: "/deals", icon: Handshake },
     { id: "activities", label: t("activities"), path: "/activities", icon: CalendarCheck2 },
     { id: "tags", label: t("tags"), path: "/tags", icon: Tag },
@@ -92,7 +93,7 @@ export function AppSidebar() {
       ),
     },
   ];
-  if (isLiveAdmin) {
+  if (canManage) {
     sections.push({ type: "divider", id: "admin-divider" });
     sections.push({
       type: "custom",

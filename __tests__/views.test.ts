@@ -155,3 +155,16 @@ describe("labels", () => {
     }
   });
 });
+
+describe("sort-only fields", () => {
+  it("never reach the server params", () => {
+    expect(
+      filtersToParams("organizations", [
+        { field: "created_at", op: "isAfter", value: "2026-01-01" },
+        { field: "updated_at", op: "isBefore", value: "2026-02-01" },
+      ]),
+    ).toEqual({});
+    expect(VIEW_FIELDS.persons.find((f) => f.id === "updated_at")?.filter).toBe(false);
+    expect(VIEW_FIELDS.persons.find((f) => f.id === "created_at")?.filter).toBeUndefined();
+  });
+});

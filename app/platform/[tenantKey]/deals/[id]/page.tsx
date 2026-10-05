@@ -43,7 +43,6 @@ import {
   useDetachDealTagMutation,
   useGetDealQuery,
   useGetOrganizationQuery,
-  useGetPersonQuery,
   useMarkDealLostMutation,
   useMarkDealWonMutation,
   useMoveDealStageMutation,
@@ -107,7 +106,6 @@ export default function DealDetailPage() {
 
   const pipeline = deal ? lookups.pipelineById.get(deal.pipeline) : undefined;
   const stage = deal ? lookups.stageById.get(deal.stage) : undefined;
-  const { data: person } = useGetPersonQuery(deal?.person ?? "", { skip: !deal?.person });
   const { data: organization } = useGetOrganizationQuery(deal?.organization ?? "", {
     skip: !deal?.organization,
   });
@@ -216,15 +214,15 @@ export default function DealDetailPage() {
                     className="inline-flex items-center gap-1 text-[#0058cc] hover:underline"
                   >
                     <User className="size-3" />
-                    {person?.name ?? t("unknownPerson")}
+                    {deal.person_name}
                   </Link>
                   {deal.organization ? (
                     <Link
-                      href={href(`/companies/${deal.organization}`)}
+                      href={href(`/organizations/${deal.organization}`)}
                       className="inline-flex items-center gap-1 text-[#0058cc] hover:underline"
                     >
                       <Building2 className="size-3" />
-                      {organization?.name ?? t("fields.company")}
+                      {organization?.name ?? t("fields.organization")}
                     </Link>
                   ) : null}
                   <span>{pipeline?.name ?? t("fields.pipeline")}</span>
@@ -341,27 +339,27 @@ export default function DealDetailPage() {
                   href={href(`/people/${deal.person}`)}
                   className="inline-flex min-w-0 items-center gap-1.5 text-[#0058cc] hover:underline"
                 >
-                  <EntityAvatar name={person?.name ?? "?"} seed={deal.person} size="xs" />
-                  <span className="truncate">{person?.name ?? t("unknownPerson")}</span>
+                  <EntityAvatar name={deal.person_name} seed={deal.person} size="xs" />
+                  <span className="truncate">{deal.person_name}</span>
                 </Link>
               </FieldRow>
 
-              <FieldRow label={t("fields.company")}>
+              <FieldRow label={t("fields.organization")}>
                 <div className="space-y-1">
                   <SearchPicker
                     kind="organization"
                     value={deal.organization}
                     onChange={(id) => void patch({ organization: id })}
-                    placeholder={t("fields.noCompany")}
+                    placeholder={t("fields.noOrganization")}
                     size="sm"
                     className="h-8 border-transparent bg-transparent shadow-none hover:bg-gray-50"
                   />
                   {deal.organization ? (
                     <Link
-                      href={href(`/companies/${deal.organization}`)}
+                      href={href(`/organizations/${deal.organization}`)}
                       className="ml-1.5 text-xs text-[#0058cc] hover:underline"
                     >
-                      {t("detail.openCompany")}
+                      {t("detail.openOrganization")}
                     </Link>
                   ) : null}
                 </div>

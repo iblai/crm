@@ -86,8 +86,8 @@ function draftFrom(activity: Activity | undefined, userId: number | null): Draft
 
 /**
  * Create or edit an activity. The API requires an activity to hang off a
- * person or a deal, so at least one of the two must be picked — the form
- * says so rather than letting the request fail.
+ * person, a deal or an organization, so at least one must be picked — the
+ * form says so rather than letting the request fail.
  */
 export function ActivityDialog({
   open,
@@ -262,13 +262,13 @@ export function ActivityDialog({
 
           <div className="grid gap-1.5">
             <Label className="text-muted-foreground text-xs">
-              <Building2 className="size-3" /> {t("dialog.company")}
+              <Building2 className="size-3" /> {t("dialog.organization")}
             </Label>
             <SearchPicker
               kind="organization"
               value={draft.organization || null}
               onChange={(id) => set("organization", id ?? "")}
-              placeholder={t("dialog.noCompany")}
+              placeholder={t("dialog.noOrganization")}
               size="sm"
               className="h-8"
             />

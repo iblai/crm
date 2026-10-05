@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { useDealLookups } from "@/components/crm/deals/use-lookups";
 import {
   useListActivitiesQuery,
   useListDealsQuery,
@@ -22,7 +21,6 @@ function monthStart(month: string) {
 
 /** Everything the home dashboard shows: `/overview/` plus three five-row lists. */
 export function useDashboardData(period: DashboardPeriod, locale: string) {
-  const lookups = useDealLookups();
   const overview = useOverviewQuery(period === "month" ? {} : { date_filter: period });
   const people = useListPersonsQuery({ active: true, ordering: "-created_at", page_size: 5 });
   const deals = useListDealsQuery({ ordering: "-created_at", page_size: 5 });
@@ -75,7 +73,6 @@ export function useDashboardData(period: DashboardPeriod, locale: string) {
     won,
     stageBreakdown,
     wonLostByMonth,
-    personName: lookups.personName,
     recentPeople: people.data?.results ?? [],
     recentDeals: deals.data?.results ?? [],
     upNext: upNext.data?.results ?? [],

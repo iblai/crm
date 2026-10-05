@@ -29,7 +29,7 @@ import type { LifecycleStage, Person } from "@/lib/crm/types";
 /**
  * Create a person. Opened from the People list ("New person", `?new=1`) and
  * from an organization's People tab, where `defaultOrganization` pre-fills
- * the company so the record lands in the right place.
+ * the organization so the record lands in the right place.
  */
 export function PersonDialog({
   open,
@@ -148,12 +148,12 @@ export function PersonDialog({
           </div>
 
           <div className="grid gap-1.5">
-            <Label className="text-muted-foreground text-xs">{t("fields.company")}</Label>
+            <Label className="text-muted-foreground text-xs">{t("fields.organization")}</Label>
             <SearchPicker
               kind="organization"
               value={organization || null}
               onChange={(id) => setOrganization(id ?? "")}
-              placeholder={t("fields.noCompany")}
+              placeholder={t("fields.noOrganization")}
             />
           </div>
 

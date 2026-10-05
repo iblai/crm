@@ -19,7 +19,7 @@ export function UpNextList({ activities }: { activities: Activity[] }) {
   return (
     <ul className="space-y-2">
       {activities.map((a) => (
-        <ActivityRow key={a.id} activity={a} showDealLink showPersonLink />
+        <ActivityRow key={a.id} activity={a} showDealLink showPersonLink showOrganizationLink />
       ))}
     </ul>
   );

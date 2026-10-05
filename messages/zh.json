@@ -19,16 +19,16 @@
     },
     "dialog": {
       "alreadyDone": "已完成",
-      "company": "公司",
+      "organization": "组织",
       "create": "创建活动",
       "deal": "商机",
-      "description": "电话、会议、任务和备注始终属于某个联系人或商机。",
+      "description": "电话、会议、任务和备注属于某个联系人、商机或组织。",
       "detailsPlaceholder": "议程、结果、后续步骤…",
       "editTitle": "编辑活动",
       "ends": "结束",
-      "linkHint": "选择联系人、商机，或两者都选。",
-      "linkRequired": "请将活动关联到联系人、公司或商机。",
-      "noCompany": "无公司",
+      "linkHint": "选择联系人、商机或组织。",
+      "linkRequired": "请将活动关联到联系人、组织或商机。",
+      "noOrganization": "无组织",
       "noDeal": "无商机",
       "noPerson": "无联系人",
       "ownerAbout": "关于“负责人”字段",
@@ -105,7 +105,8 @@
       "moreHint": "此活动的更多操作",
       "openAbout": "关于进行中的活动",
       "openHint": "尚未完成：勾选圆圈即可完成",
-      "viewPerson": "查看联系人"
+      "viewPerson": "查看联系人",
+      "viewOrganization": "查看组织"
     },
     "toast": {
       "created": "活动已创建",
@@ -180,12 +181,14 @@
     "unscheduled": "未安排",
     "updated": "更新时间",
     "user": "用户",
-    "yes": "是"
+    "yes": "是",
+    "errorLoadTitle": "无法加载",
+    "errorProtectedByDeals": "{count, plural, other {仍有 # 个商机引用此记录。}}"
   },
-  "companies": {
+  "organizations": {
     "actions": {
-      "new": "新建公司",
-      "newHint": "添加公司，然后关联其联系人和商机"
+      "new": "新建组织",
+      "newHint": "添加组织，然后关联其联系人和商机"
     },
     "address": {
       "add": {
@@ -210,40 +213,40 @@
     },
     "detail": {
       "addPerson": "添加联系人",
-      "addPersonHint": "创建一个已关联到此公司的联系人",
-      "back": "返回公司",
-      "breadcrumb": "公司",
-      "delete": "删除公司",
-      "deleteError": "无法删除此公司",
-      "deleteHint": "将删除该公司。其联系人和商机仍保留在 CRM 中，只是不再关联该公司。",
+      "addPersonHint": "创建一个已关联到此组织的联系人",
+      "back": "返回组织",
+      "breadcrumb": "组织",
+      "delete": "删除组织",
+      "deleteError": "无法删除此组织",
+      "deleteHint": "将删除该组织。其联系人和商机会保留但不再关联该组织；仅关联到该组织的活动会被删除。",
       "deleteTitle": "删除 {name}？",
-      "moreHint": "删除此公司",
+      "moreHint": "删除此组织",
       "noDeals": "还没有与 {name} 进行中的商机。",
       "noPeople": "这里还没有联系人",
       "noPeopleHint": "添加您在 {name} 的联系人。",
-      "notFound": "该公司已不存在",
+      "notFound": "该组织已不存在",
       "notFoundHint": "它可能已被您团队中的其他人删除。",
-      "ownerHint": "负责此公司的团队成员。",
+      "ownerHint": "负责此组织的团队成员。",
       "peopleCount": "{count} 位联系人",
-      "unnamed": "未命名公司"
+      "unnamed": "未命名组织"
     },
     "dialog": {
       "added": "已添加 {name}",
-      "createError": "无法创建此公司",
-      "description": "公司将您沟通的联系人以及与他们进行的商机归为一组。",
+      "createError": "无法创建此组织",
+      "description": "组织将您沟通的联系人以及与他们进行的商机归为一组。",
       "namePlaceholder": "Acme 大学",
-      "submit": "创建公司"
+      "submit": "创建组织"
     },
     "list": {
-      "addFirst": "添加第一家公司",
-      "description": "您的联系人和商机所属的公司",
-      "emptyHint": "添加您的客户公司，然后为其关联联系人和商机。",
-      "emptyTitle": "还没有公司",
-      "noMatchFilters": "没有符合这些筛选条件的公司",
+      "addFirst": "添加第一个组织",
+      "description": "您的联系人和商机所属的组织",
+      "emptyHint": "添加您合作的组织，然后为其关联联系人和商机。",
+      "emptyTitle": "还没有组织",
+      "noMatchFilters": "没有符合这些筛选条件的组织",
       "noMatchFiltersHint": "试试其他名称、负责人或标签。",
-      "paginationLabel": "公司记录",
-      "searchLabel": "搜索公司",
-      "searchPlaceholder": "按名称搜索公司…"
+      "paginationLabel": "组织记录",
+      "searchLabel": "搜索组织",
+      "searchPlaceholder": "按名称搜索组织…"
     },
     "table": {
       "location": "所在地"
@@ -258,7 +261,7 @@
     },
     "onboarding": {
       "addPerson": "添加联系人",
-      "body": "先添加一位联系人，再为其创建商机。其他一切（公司、活动和标签）都围绕这两者展开。",
+      "body": "先添加一位联系人，再为其创建商机。其他一切（组织、活动和标签）都围绕这两者展开。",
       "createDeal": "创建商机",
       "steps": {
         "activity": {
@@ -377,7 +380,8 @@
       "probabilityHint": "用于加权销售流程的赢单概率",
       "probabilityLabel": "{probability}% 的含义",
       "stageLabel": "{stage} 阶段",
-      "totalHint": "此阶段商机的总金额"
+      "totalHint": "此阶段商机的总金额",
+      "noPipeline": "还没有销售流程。管理员可以在设置中创建。"
     },
     "card": {
       "moveHint": "无需拖动即可移至其他阶段",
@@ -422,7 +426,7 @@
       "noValue": "无金额",
       "notFoundDescription": "此商机可能已被删除，或属于其他组织。",
       "notFoundTitle": "未找到商机",
-      "openCompany": "打开公司",
+      "openOrganization": "打开组织",
       "reopenHint": "将商机放回 {stage} 并清除其关闭日期",
       "sourceHint": "此商机的来源；在设置中管理。",
       "stageHint": "使用上方的阶段按钮移动商机。",
@@ -446,11 +450,11 @@
     },
     "fields": {
       "closedAt": "关闭时间",
-      "company": "公司",
+      "organization": "组织",
       "currency": "币种",
       "expectedClose": "预计成交日期",
       "lostReason": "丢单原因",
-      "noCompany": "无公司",
+      "noOrganization": "无组织",
       "noSource": "无来源",
       "person": "联系人",
       "pipeline": "销售流程",
@@ -514,8 +518,7 @@
       "moved": "已移至 {stage}",
       "reopened": "商机已重新打开",
       "won": "商机已赢单 🎉"
-    },
-    "unknownPerson": "未知联系人"
+    }
   },
   "enums": {
     "activityType": {
@@ -571,7 +574,7 @@
       "created_at": "创建时间",
       "deal": "商机",
       "is_done": "已完成",
-      "organization": "公司",
+      "organization": "组织",
       "owner": "负责人",
       "person": "联系人",
       "schedule_from": "计划时间",
@@ -583,7 +586,7 @@
       "created_at": "创建时间",
       "expected_close_date": "预计成交",
       "lead_value": "金额",
-      "organization": "公司",
+      "organization": "组织",
       "owner": "负责人",
       "person": "联系人",
       "source": "来源",
@@ -616,7 +619,7 @@
       "job_title": "职位",
       "lifecycle_stage": "生命周期",
       "name": "姓名",
-      "organization": "公司",
+      "organization": "组织",
       "owner": "负责人",
       "primary_email": "邮箱",
       "tags": "标签",
@@ -646,7 +649,7 @@
       "update": "修改了"
     },
     "empty": "空",
-    "emptyDescription": "该记录的每次变更都会显示在这里。",
+    "emptyDescription": "通过 CRM 所做的更改会显示在这里，最新的在前；合并等批量操作不会留下记录。",
     "emptyTitle": "暂无历史",
     "system": "系统"
   },
@@ -656,7 +659,7 @@
   },
   "nav": {
     "activities": "活动",
-    "companies": "公司",
+    "organizations": "组织",
     "deals": "商机",
     "home": "首页",
     "people": "联系人",
@@ -669,14 +672,14 @@
     "title": "通知"
   },
   "palette": {
-    "description": "搜索联系人、公司和商机，或跳转到某个页面。",
+    "description": "搜索联系人、组织和商机，或跳转到某个页面。",
     "goTo": "前往",
     "newActivity": "新建活动",
-    "newCompany": "新建公司",
+    "newOrganization": "新建组织",
     "newDeal": "新建商机",
     "newPerson": "新建联系人",
     "noResults": "没有结果。",
-    "placeholder": "搜索联系人、公司、商机…",
+    "placeholder": "搜索联系人、组织、商机…",
     "toClose": "关闭",
     "toNavigate": "导航",
     "toOpen": "打开"
@@ -710,7 +713,7 @@
       "commaSeparated": "用逗号分隔。",
       "delete": "删除联系人",
       "deleteError": "无法删除此联系人",
-      "deleteHint": "将删除该联系人及其活动和标签关联。商机会保留，但不再关联该联系人。",
+      "deleteHint": "有商机的联系人无法删除；请先转移或删除其商机。其活动和标签关联会随之删除。",
       "deleteTitle": "删除 {name}？",
       "externalId": "外部 ID",
       "externalIdHint": "来自其他系统的 ID，在组织内唯一。",
@@ -729,8 +732,8 @@
       "noDeals": "还没有与 {name} 进行中的商机。",
       "notFound": "该联系人已不存在",
       "notFoundHint": "该记录可能已被删除或合并到其他联系人。",
-      "openCompany": "打开公司",
-      "openCompanyNamed": "打开 {name}",
+      "openOrganization": "打开组织",
+      "openOrganizationNamed": "打开 {name}",
       "otherEmails": "其他邮箱",
       "ownerHint": "负责此联系人的团队成员。",
       "phones": "电话",
@@ -746,11 +749,11 @@
       "submit": "创建联系人"
     },
     "fields": {
-      "company": "公司",
+      "organization": "组织",
       "jobTitle": "职位",
       "lifecycle": "生命周期",
       "lifecycleStage": "生命周期阶段",
-      "noCompany": "无公司"
+      "noOrganization": "无组织"
     },
     "invite": {
       "alreadyLinked": "此联系人已关联平台用户",
@@ -772,11 +775,12 @@
       "manualLabel": "…或输入用户 ID",
       "manualPlaceholder": "例如 4821",
       "submit": "关联用户",
-      "title": "关联平台用户"
+      "title": "关联平台用户",
+      "alreadyLinked": "该联系人已关联到其他用户。"
     },
     "list": {
       "addFirst": "添加第一位联系人",
-      "description": "与您合作的所有公司的联系人",
+      "description": "与您合作的所有组织的联系人",
       "emptyHint": "联系人是每个商机背后的人——从今天正在沟通的那位开始吧。",
       "emptyTitle": "还没有联系人",
       "loading": "正在加载联系人",
@@ -790,9 +794,9 @@
     },
     "merge": {
       "confirm": "合并并删除重复记录",
-      "confirmBody": "{count} 条重复记录将并入 {name}，随后被删除。此操作无法撤销。",
+      "confirmBody": "{count} 条重复记录将并入 {name}，随后标记为停用。此操作无法撤销。",
       "confirmTitle": "合并这些记录？",
-      "description": "选择重复的记录。它们的商机、活动和标签将转移到 {name}，随后删除这些重复记录。",
+      "description": "选择重复的记录。它们的商机、活动和标签将转移到 {name}，随后这些重复记录会被标记为停用。",
       "error": "无法合并这些联系人",
       "merged": "已将 {count} 条记录合并到 {name}",
       "noMatch": "没有匹配的联系人。",
@@ -804,12 +808,12 @@
       "title": "将重复记录合并到 {name}"
     },
     "table": {
-      "viewCompany": "查看公司"
+      "viewOrganization": "查看组织"
     }
   },
   "picker": {
     "clear": "清除",
-    "company": "选择公司",
+    "organization": "选择组织",
     "noMatches": "没有匹配项",
     "person": "选择联系人",
     "searchPlaceholder": "输入以搜索…",
@@ -828,12 +832,12 @@
       "mandates": {
         "inviter": "可查看联系人并发送邀请，仅此而已。",
         "manager": "拥有 User 角色的全部权限，并可管理销售流程、阶段和线索来源，以及发送邀请。",
-        "user": "可对联系人、公司、商机、活动和标签进行完整的增删改查；销售流程为只读；不能邀请用户。",
-        "viewer": "可查看 CRM 中的所有内容，但不能修改。"
+        "user": "可对联系人、组织、商机、活动和标签进行完整的增删改查；销售流程为只读；不能邀请用户。",
+        "viewer": "可查看 CRM 中的所有内容；只能修改自己的收藏和已保存视图。"
       },
       "organizationKey": "组织标识",
       "role": "角色",
-      "rolesFootnote": "角色在组织的“用户与角色”页面中分配。只有 CRM Manager（组织管理员）才能更改销售流程、阶段和线索来源。",
+      "rolesFootnote": "角色在组织的“用户与角色”页面中分配。CRM Manager 和组织管理员可以更改销售流程、阶段和线索来源。",
       "rolesTitle": "CRM 角色",
       "support": "支持",
       "supportLabel": "打开 ibl.ai 支持",
@@ -943,8 +947,8 @@
       "changeColor": "更改“{name}”的颜色",
       "created": "创建于 {date}",
       "deleteConfirm": "删除标签",
-      "deleteDescription": "这会从所有带有该标签的联系人、公司和商机上移除它。记录本身会保留。",
-      "deleteHint": "将从所有联系人、公司和商机上移除该标签",
+      "deleteDescription": "这会从所有带有该标签的联系人、组织和商机上移除它。记录本身会保留。",
+      "deleteHint": "将从所有联系人、组织和商机上移除该标签",
       "deleteLabel": "删除标签“{name}”",
       "deleteTitle": "删除“{name}”？",
       "deleted": "标签已删除",
@@ -956,11 +960,11 @@
       "invalidHex": "请输入 6 位十六进制颜色，例如 #0058cc。",
       "use": "使用颜色 {color}"
     },
-    "description": "联系人、公司和商机共用的一套标签",
+    "description": "联系人、组织和商机共用的一套标签",
     "dialog": {
       "colorLabel": "颜色",
       "created": "已创建标签“{name}”",
-      "description": "标签在联系人、公司和商机之间共用。",
+      "description": "标签在联系人、组织和商机之间共用。",
       "namePlaceholder": "企业客户、新闻通讯、VIP…",
       "nameRequired": "名称为必填项。",
       "preview": "预览",
@@ -968,13 +972,13 @@
       "submit": "创建标签"
     },
     "empty": {
-      "description": "标签用于归类联系人、公司和商机，例如“企业客户”“新闻通讯”“流失风险”。",
+      "description": "标签用于归类联系人、组织和商机，例如“企业客户”“新闻通讯”“流失风险”。",
       "noMatchDescription": "换个名称试试，或直接创建您要找的标签。",
       "noMatchTitle": "没有符合搜索条件的标签",
       "title": "还没有标签"
     },
     "newTag": "新建标签",
-    "newTagHint": "创建可添加到联系人、公司和商机上的标签",
+    "newTagHint": "创建可添加到联系人、组织和商机上的标签",
     "paginationLabel": "标签",
     "searchLabel": "搜索标签",
     "searchPlaceholder": "搜索标签…"

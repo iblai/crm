@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageHeader } from "@/components/crm/page-header";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { PaginationBar } from "@/components/crm/pagination-bar";
 import { SimpleSelect } from "@/components/crm/simple-select";
 import { ViewBar } from "@/components/crm/view-bar";
@@ -94,15 +95,28 @@ function DealsPageContent() {
   const ordering = sortsToOrdering("deals", draft.sorts);
   const isBoard = draft.type === "kanban";
 
-  const { data: board, isLoading: boardLoading } = useDealBoardQuery(
-    { ...serverFilters, pipeline: Number(pipelineId), search: q || undefined, limit: 100 },
+  const {
+    data: board,
+    isLoading: boardLoading,
+    error: boardError,
+  } = useDealBoardQuery(
+    {
+      ...serverFilters,
+      pipeline: Number(pipelineId),
+      search: q || serverFilters.search?.toString(),
+      limit: 100,
+    },
     { skip: !isBoard || !pipelineId },
   );
-  const { data: tableDeals, isLoading: tableLoading } = useListDealsQuery(
+  const {
+    data: tableDeals,
+    isLoading: tableLoading,
+    error: tableError,
+  } = useListDealsQuery(
     {
       ...serverFilters,
       pipeline: pipelineId ? Number(pipelineId) : undefined,
-      search: q || undefined,
+      search: q || serverFilters.search?.toString(),
       ordering,
       page,
       page_size: PAGE_SIZE,
@@ -135,7 +149,9 @@ function DealsPageContent() {
 
   // The board waits on both the pipelines and the deals before it can say
   // "no deals" — otherwise the empty state flashes on every load.
-  const boardBusy = boardLoading || lookups.isLoading || !pipelineId;
+  const noPipeline = !lookups.isLoading && !lookups.error && lookups.pipelines.length === 0;
+  const boardBusy = boardLoading || lookups.isLoading || (!pipelineId && !noPipeline);
+  const loadError = lookups.error ?? (isBoard ? boardError : tableError);
   const isEmpty = isBoard
     ? !boardBusy && boardCount === 0 && !filtersActive
     : !tableLoading && (tableDeals?.count ?? 0) === 0 && !filtersActive;
@@ -205,6 +221,7 @@ function DealsPageContent() {
                 value: String(p.id),
                 label: p.name,
               }))}
+              sourceOptions={lookups.sources.map((s) => ({ value: String(s.id), label: s.name }))}
               canKanban
               className="basis-full"
             />
@@ -212,7 +229,15 @@ function DealsPageContent() {
         }
       />
 
-      {isEmpty ? (
+      {loadError ? (
+        <div className="flex-1 overflow-auto p-4 md:p-6">
+          <LoadError error={loadError} />
+        </div>
+      ) : noPipeline ? (
+        <div className="flex-1 overflow-auto p-4 md:p-6">
+          <EmptyState icon={<Handshake />} title={t("board.noPipeline")} />
+        </div>
+      ) : isEmpty ? (
         <div className="flex-1 overflow-auto p-4 md:p-6">
           <EmptyState
             icon={<Handshake />}
@@ -233,12 +258,7 @@ function DealsPageContent() {
         </div>
       ) : isBoard ? (
         <div className="min-h-0 flex-1 overflow-hidden">
-          <DealBoard
-            board={board}
-            isLoading={boardBusy}
-            personName={lookups.personName}
-            organizationName={lookups.organizationName}
-          />
+          <DealBoard board={board} isLoading={boardBusy} />
         </div>
       ) : (
         <div className="flex min-h-0 flex-1 flex-col">
@@ -247,8 +267,6 @@ function DealsPageContent() {
               deals={tableRows}
               isLoading={tableLoading}
               stageById={lookups.stageById}
-              personName={lookups.personName}
-              organizationName={lookups.organizationName}
               sourceName={lookups.sourceName}
               columns={visibleColumns}
             />

@@ -31,7 +31,7 @@ const COLUMN_FOR_FIELD: Record<string, Column> = {
   status: "status",
   lead_value: "value",
   person: "person",
-  organization: "company",
+  organization: "organization",
   owner: "owner",
   source: "source",
   expected_close_date: "expectedClose",
@@ -45,16 +45,12 @@ export function DealsTable({
   deals,
   isLoading,
   stageById,
-  personName,
-  organizationName,
   sourceName,
   columns = DEFAULT_COLUMNS,
 }: {
   deals: Deal[];
   isLoading?: boolean;
   stageById: Map<number, PipelineStage>;
-  personName: (id?: string | null) => string;
-  organizationName: (id?: string | null) => string;
   sourceName: (id?: number | null) => string;
   /** Visible view field ids, in order (see `lib/crm/views.ts`). */
   columns?: readonly string[];
@@ -98,7 +94,7 @@ export function DealsTable({
             : deals.map((deal) => {
                 const stage = stageById.get(deal.stage);
                 const overdue = isOverdue(deal.expected_close_date, deal.status);
-                const org = organizationName(deal.organization);
+                const org = deal.organization_name ?? "";
                 const source = sourceName(deal.source);
                 return (
                   <TableRow
@@ -112,7 +108,8 @@ export function DealsTable({
                         className={cn(
                           h === "title" && "max-w-[16rem] font-medium text-gray-900",
                           h === "value" && "text-right font-medium tabular-nums",
-                          (h === "person" || h === "company" || h === "tags") && "max-w-[12rem]",
+                          (h === "person" || h === "organization" || h === "tags") &&
+                            "max-w-[12rem]",
                           (h === "owner" || h === "source") && "text-gray-700",
                           h === "expectedClose" &&
                             (overdue ? "font-medium text-rose-600" : "text-gray-700"),
@@ -140,14 +137,10 @@ export function DealsTable({
                           formatCurrency(deal.lead_value, deal.currency, locale)
                         ) : h === "person" ? (
                           <span className="flex min-w-0 items-center gap-1.5">
-                            <EntityAvatar
-                              name={personName(deal.person)}
-                              seed={deal.person}
-                              size="xs"
-                            />
-                            <span className="truncate">{personName(deal.person)}</span>
+                            <EntityAvatar name={deal.person_name} seed={deal.person} size="xs" />
+                            <span className="truncate">{deal.person_name}</span>
                           </span>
-                        ) : h === "company" ? (
+                        ) : h === "organization" ? (
                           org ? (
                             <span className="block truncate text-gray-700">{org}</span>
                           ) : (

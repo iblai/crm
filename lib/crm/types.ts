@@ -51,6 +51,8 @@ export interface Person {
   contact_numbers?: string[];
   job_title?: string;
   organization?: string | null;
+  /** Read-only: the organization's name. */
+  organization_name?: string | null;
   owner?: number | null;
   platform_user: number | null;
   lifecycle_stage?: LifecycleStage;
@@ -168,7 +170,11 @@ export interface Deal {
   expected_close_date?: string | null;
   closed_at: string | null;
   person: string;
+  /** Read-only: the person's name. */
+  person_name: string;
   organization?: string | null;
+  /** Read-only: the organization's name. */
+  organization_name: string | null;
   pipeline: number;
   stage: number;
   source?: number | null;

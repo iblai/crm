@@ -88,12 +88,12 @@ The native apps are [Tauri 2](https://tauri.app) WebView shells around the hoste
 <tr>
 <td width="50%" valign="top">
 
-**👥 People & companies**
+**👥 People & organizations**
 
 - **People** — leads, contacts and customers with lifecycle stage, owner, job title, emails, phones, tags and free-form metadata; merged duplicates stay out of the way
-- **Companies** — accounts with address, owner and tags; the people, deals and the timeline that belong to them
+- **Organizations** — accounts with address, owner and tags; the people, deals and the timeline that belong to them
 - **Invite · link · merge** — turn a lead into a platform user by email invitation, link a person to an existing user, or merge duplicates in one click
-- **Tags** — colored labels shared across people, companies and deals
+- **Tags** — colored labels shared across people, organizations and deals
 - **Search, sort, views** — server-side search and sorting on every list; save a view with its filters, sort and columns (table or board); star anything into the sidebar's Favorites
 
 **💼 Deals & pipelines**
@@ -108,7 +108,7 @@ The native apps are [Tauri 2](https://tauri.app) WebView shells around the hoste
 
 **🗓️ Activities**
 
-- **Timeline** on every person, company and deal — calls, meetings, emails, notes, tasks, lunches, deadlines
+- **Timeline** on every person, organization and deal — calls, meetings, emails, notes, tasks, lunches, deadlines
 - **Schedule & remind** — scheduled work with owner reminders; overdue / today / upcoming views; mark done
 - **Auto-recorded history** — stage changes are logged for you
 
@@ -121,7 +121,7 @@ The native apps are [Tauri 2](https://tauri.app) WebView shells around the hoste
 - **Multi-organization** — the organization is in the URL (`/platform/<org>/…`); switch between every organization you belong to from the sidebar or the profile menu
 - **SSO & roles** — ibl.ai sign-in; CRM Viewer / User / Manager / Inviter roles assigned on the Users & roles page (the SDK's Management surface)
 - **Notifications** — person created, deal stage changed, person linked to user — in the bell and the notifications center
-- **⌘K** — one server-side search across people, companies and deals; jump anywhere; create anything
+- **⌘K** — one server-side search across people, organizations and deals; jump anywhere; create anything
 - **Native shells** — macOS, Windows, Linux, iOS, Android via Tauri 2
 
 </td>
@@ -256,7 +256,7 @@ crm/
 │   ├── platform/[tenantKey]/             # everything inside one organization
 │   │   ├── layout.tsx                    # sidebar + top bar shell (admin gate)
 │   │   ├── page.tsx                      # Home dashboard
-│   │   ├── people/ · companies/          # lists + record pages (timeline · history)
+│   │   ├── people/ · organizations/          # lists + record pages (timeline · history)
 │   │   ├── deals/                        # kanban · table · deal page
 │   │   ├── activities/ · tags/           # timeline work · labels
 │   │   ├── settings/                     # pipelines · stages · lead sources
@@ -293,7 +293,7 @@ Sign-in is the platform's hosted round trip (`login.<domain>/login?app=mentor&re
 
 ### The CRM API
 
-Ten Platform-scoped resources under `/dm/api/crm/`: persons, organizations (the UI calls them companies), pipelines (with nested stages and `stages/reorder/`), lead-sources, deals (`move-stage/`, `won/`, `lost/`, the `board/`), activities (`done/`), tags (attach / detach on persons, organizations, deals), favorites and saved views — plus `search/`, `overview/` and `…/{id}/history/`, and `?search=` / `?ordering=` / `?date_filter=` on every list. Every organization is seeded with a default pipeline, six stages and four lead sources. The full contract lives in the [`iblai-api-crm`](https://github.com/iblai/vibe/tree/main/skills/organizations/iblai-api-crm) and [`iblai-vibe-crm-overview`](https://github.com/iblai/vibe/tree/main/skills/organizations/iblai-vibe-crm-overview) skills of [iblai/vibe](https://github.com/iblai/vibe). This release needs ibl-dm-pro 4.414.0 (`ibl-dm-crm-app` 1.3.0).
+Ten Platform-scoped resources under `/dm/api/crm/`: persons, organizations, pipelines (with nested stages and `stages/reorder/`), lead-sources, deals (`move-stage/`, `won/`, `lost/`, the `board/`), activities (`done/`), tags (attach / detach on persons, organizations, deals), favorites and saved views — plus `search/`, `overview/` and `…/{id}/history/`, and `?search=` / `?ordering=` / `?date_filter=` on every list. Every organization is seeded with a default pipeline, six stages and four lead sources. The full contract lives in the [`iblai-api-crm`](https://github.com/iblai/vibe/tree/main/skills/organizations/iblai-api-crm) and [`iblai-vibe-crm-overview`](https://github.com/iblai/vibe/tree/main/skills/organizations/iblai-vibe-crm-overview) skills of [iblai/vibe](https://github.com/iblai/vibe). This release needs ibl-dm-pro 4.415.0 (`ibl-dm-crm-app` 1.3.0).
 
 ---
 

@@ -30,7 +30,7 @@ export function FavoriteButton({
 }) {
   const t = useTranslations("favorites");
   const tc = useTranslations("common");
-  const { data } = useListFavoritesQuery();
+  const { data } = useListFavoritesQuery(target);
   const [add, { isLoading: adding }] = useAddFavoriteMutation();
   const [remove, { isLoading: removing }] = useRemoveFavoriteMutation();
   const existing = data?.results.find((f) => matches(f, target));

@@ -38,7 +38,7 @@ export function useCommandPalette() {
   return useContext(PaletteContext);
 }
 
-/** ⌘K: server search across people, companies and deals, plus navigation and "New …" actions. */
+/** ⌘K: server search across people, organizations and deals, plus navigation and "New …" actions. */
 export function CommandPaletteProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const open = useCallback(() => setIsOpen(true), []);
@@ -132,12 +132,12 @@ function CommandPalette({
             </CommandGroup>
           ) : null}
           {matchedOrgs.length ? (
-            <CommandGroup heading={tn("companies")}>
+            <CommandGroup heading={tn("organizations")}>
               {matchedOrgs.map((o) => (
                 <CommandItem
                   key={o.id}
                   value={`org-${o.id}-${o.name}`}
-                  onSelect={() => go(`/companies/${o.id}`)}
+                  onSelect={() => go(`/organizations/${o.id}`)}
                 >
                   <EntityAvatar name={o.name} seed={o.id} kind="organization" size="sm" />
                   <span className="truncate">{o.name}</span>
@@ -167,8 +167,8 @@ function CommandPalette({
             <CommandItem value="new person" onSelect={() => go("/people?new=1")}>
               <Plus className="size-4" /> {t("newPerson")}
             </CommandItem>
-            <CommandItem value="new organization" onSelect={() => go("/companies?new=1")}>
-              <Plus className="size-4" /> {t("newCompany")}
+            <CommandItem value="new organization" onSelect={() => go("/organizations?new=1")}>
+              <Plus className="size-4" /> {t("newOrganization")}
             </CommandItem>
             <CommandItem value="new deal" onSelect={() => go("/deals?new=1")}>
               <Plus className="size-4" /> {t("newDeal")}
@@ -184,8 +184,8 @@ function CommandPalette({
             <CommandItem value="go people" onSelect={() => go("/people")}>
               <Users className="size-4" /> {tn("people")}
             </CommandItem>
-            <CommandItem value="go organizations" onSelect={() => go("/companies")}>
-              <Building2 className="size-4" /> {tn("companies")}
+            <CommandItem value="go organizations" onSelect={() => go("/organizations")}>
+              <Building2 className="size-4" /> {tn("organizations")}
             </CommandItem>
             <CommandItem value="go deals" onSelect={() => go("/deals")}>
               <Handshake className="size-4" /> {tn("deals")}

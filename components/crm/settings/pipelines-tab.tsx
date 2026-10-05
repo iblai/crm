@@ -126,7 +126,12 @@ export function PipelinesTab() {
             </Button>
           }
         />
-        <PipelineDialog open={creating} onOpenChange={setCreating} onCreated={setSelectedId} />
+        <PipelineDialog
+          open={creating}
+          onOpenChange={setCreating}
+          onCreated={setSelectedId}
+          currentDefault={pipelines.find((p) => p.is_default)}
+        />
       </>
     );
   }
@@ -181,15 +186,33 @@ export function PipelinesTab() {
       </aside>
 
       {selected ? (
-        <PipelineEditor pipeline={selected} onDeleted={() => setSelectedId(null)} />
+        <PipelineEditor
+          pipeline={selected}
+          currentDefault={pipelines.find((p) => p.is_default)}
+          onDeleted={() => setSelectedId(null)}
+        />
       ) : null}
 
-      <PipelineDialog open={creating} onOpenChange={setCreating} onCreated={setSelectedId} />
+      <PipelineDialog
+        open={creating}
+        onOpenChange={setCreating}
+        onCreated={setSelectedId}
+        currentDefault={pipelines.find((p) => p.is_default)}
+      />
     </div>
   );
 }
 
-function PipelineEditor({ pipeline, onDeleted }: { pipeline: Pipeline; onDeleted: () => void }) {
+function PipelineEditor({
+  pipeline,
+  currentDefault,
+  onDeleted,
+}: {
+  pipeline: Pipeline;
+  /** The pipeline flagged default today; the DM allows one at a time. */
+  currentDefault?: Pipeline;
+  onDeleted: () => void;
+}) {
   const t = useTranslations("settings");
   const tc = useTranslations("common");
   const toastSettingsError = useToastSettingsError();
@@ -241,6 +264,13 @@ function PipelineEditor({ pipeline, onDeleted }: { pipeline: Pipeline; onDeleted
                       onClick={async () => {
                         setMakingDefault(true);
                         try {
+                          // One default at a time: un-flag the current one first.
+                          if (currentDefault) {
+                            await update({
+                              id: currentDefault.id,
+                              body: { is_default: false },
+                            }).unwrap();
+                          }
                           await update({ id: pipeline.id, body: { is_default: true } }).unwrap();
                           toast.success(t("pipelines.madeDefault", { name: pipeline.name }));
                         } catch (err) {
@@ -564,15 +594,18 @@ function PipelineDialog({
   open,
   onOpenChange,
   onCreated,
+  currentDefault,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated?: (id: number) => void;
+  currentDefault?: Pipeline;
 }) {
   const t = useTranslations("settings");
   const tc = useTranslations("common");
   const toastSettingsError = useToastSettingsError();
   const [create, { isLoading }] = useCreatePipelineMutation();
+  const [update] = useUpdatePipelineMutation();
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [codeTouched, setCodeTouched] = useState(false);
@@ -600,8 +633,13 @@ function PipelineDialog({
         name: name.trim(),
         code: code.trim(),
         rotten_days: Math.max(0, Math.round(Number(rottenDays) || 30)),
-        is_default: isDefault,
+        // The DM keeps one default: created plain, then swapped in below.
+        is_default: isDefault && !currentDefault,
       }).unwrap();
+      if (isDefault && currentDefault) {
+        await update({ id: currentDefault.id, body: { is_default: false } }).unwrap();
+        await update({ id: pipeline.id, body: { is_default: true } }).unwrap();
+      }
       toast.success(t("pipelines.created", { name: pipeline.name }));
       onCreated?.(pipeline.id);
       onOpenChange(false);

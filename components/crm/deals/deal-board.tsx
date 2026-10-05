@@ -32,14 +32,10 @@ import { cn } from "@/lib/utils";
 export function DealBoard({
   board,
   isLoading,
-  personName,
-  organizationName,
   className,
 }: {
   board?: DealBoardData;
   isLoading?: boolean;
-  personName: (id?: string | null) => string;
-  organizationName: (id?: string | null) => string;
   className?: string;
 }) {
   const t = useTranslations("deals");
@@ -160,8 +156,6 @@ export function DealBoard({
             deals={rows}
             stages={stages}
             rottenDays={board.pipeline.rotten_days}
-            personName={personName}
-            organizationName={organizationName}
             onMove={move}
           />
         ))}
@@ -170,8 +164,8 @@ export function DealBoard({
         {activeDeal ? (
           <DealCard
             deal={activeDeal}
-            personName={personName(activeDeal.person)}
-            organizationName={organizationName(activeDeal.organization)}
+            personName={activeDeal.person_name}
+            organizationName={activeDeal.organization_name ?? undefined}
             stale={activeDeal.is_stale}
             rottenDays={board.pipeline.rotten_days}
             overlay
@@ -187,16 +181,12 @@ function BoardColumn({
   deals,
   stages,
   rottenDays,
-  personName,
-  organizationName,
   onMove,
 }: {
   column: DealBoardStage;
   deals: Deal[];
   stages: DealBoardStage["stage"][];
   rottenDays?: number;
-  personName: (id?: string | null) => string;
-  organizationName: (id?: string | null) => string;
   onMove: (deal: Deal, stageId: number) => void;
 }) {
   const t = useTranslations("deals");
@@ -208,7 +198,7 @@ function BoardColumn({
   });
   const currency = deals[0]?.currency || "USD";
   const tone = stage.is_won ? "won" : stage.is_lost ? "lost" : "open";
-  const hidden = Math.max(0, column.count - deals.length);
+  const hidden = column.has_more ? Math.max(0, column.count - deals.length) : 0;
 
   return (
     <section
@@ -286,8 +276,8 @@ function BoardColumn({
           <DraggableDealCard
             key={deal.id}
             deal={deal}
-            personName={personName(deal.person)}
-            organizationName={organizationName(deal.organization)}
+            personName={deal.person_name}
+            organizationName={deal.organization_name ?? undefined}
             stale={deal.is_stale}
             rottenDays={rottenDays}
             stages={stages}

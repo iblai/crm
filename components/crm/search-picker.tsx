@@ -15,13 +15,18 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
 import { useDebounced } from "@/hooks/use-debounced";
-import { useGetOrganizationQuery, useGetPersonQuery, useSearchQuery } from "@/lib/crm/api";
+import {
+  errorMessage,
+  useGetOrganizationQuery,
+  useGetPersonQuery,
+  useSearchQuery,
+} from "@/lib/crm/api";
 import { cn } from "@/lib/utils";
 
 type Kind = "person" | "organization";
 
 /**
- * A combobox over `/api/crm/search/` for one person or company — the server
+ * A combobox over `/api/crm/search/` for one person or organization — the server
  * matches, so the list is never "the first 100 rows".
  */
 export function SearchPicker({
@@ -36,7 +41,7 @@ export function SearchPicker({
 }: {
   kind: Kind;
   value: string | null | undefined;
-  /** `hit.organization` is the picked person's company. */
+  /** `hit.organization` is the picked person's organization. */
   onChange: (id: string | null, hit?: { organization?: string | null }) => void;
   placeholder?: string;
   disabled?: boolean;
@@ -45,10 +50,11 @@ export function SearchPicker({
   className?: string;
 }) {
   const t = useTranslations("picker");
+  const tc = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const q = useDebounced(query.trim(), 250);
-  const { data, isFetching } = useSearchQuery({ q, limit: 10 }, { skip: q.length === 0 });
+  const { data, isFetching, error } = useSearchQuery({ q, limit: 10 }, { skip: q.length === 0 });
   const person = useGetPersonQuery(value ?? "", { skip: kind !== "person" || !value });
   const organization = useGetOrganizationQuery(value ?? "", {
     skip: kind !== "organization" || !value,
@@ -88,7 +94,7 @@ export function SearchPicker({
         >
           {value
             ? (selectedLabel ?? "…")
-            : (placeholder ?? t(kind === "person" ? "person" : "company"))}
+            : (placeholder ?? t(kind === "person" ? "person" : "organization"))}
         </span>
         <ChevronsUpDown className="text-muted-foreground size-3.5" />
       </PopoverTrigger>
@@ -102,7 +108,13 @@ export function SearchPicker({
           />
           <CommandList>
             <CommandEmpty>
-              {q.length === 0 ? t("typeToSearch") : isFetching ? t("searching") : t("noMatches")}
+              {q.length === 0
+                ? t("typeToSearch")
+                : isFetching
+                  ? t("searching")
+                  : error
+                    ? errorMessage(error, tc("errorGeneric"))
+                    : t("noMatches")}
             </CommandEmpty>
             {value ? (
               <CommandGroup>

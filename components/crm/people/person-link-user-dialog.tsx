@@ -20,7 +20,7 @@ import { SimpleSelect } from "@/components/crm/simple-select";
 import { useToastApiError } from "@/components/crm/people/crm-error";
 import { useMemberLabel, useMembers } from "@/hooks/use-members";
 import { useSession } from "@/hooks/use-session";
-import { useLinkPersonUserMutation } from "@/lib/crm/api";
+import { errorMessage, errorStatus, useLinkPersonUserMutation } from "@/lib/crm/api";
 import type { Person } from "@/lib/crm/types";
 
 /**
@@ -59,11 +59,18 @@ export function PersonLinkUserDialog({
   const submit = async () => {
     if (!valid) return;
     try {
-      await linkUser({ id: person.id, user_id: userId }).unwrap();
+      const updated = await linkUser({ id: person.id, user_id: userId }).unwrap();
+      // A 200 with the old user: the DM refuses to rebind a linked person.
+      if (updated.platform_user !== userId) {
+        toast.error(t("linkUser.alreadyLinked"));
+        return;
+      }
       onOpenChange(false);
       toast.success(t("linkUser.linked", { name: person.name, id: String(userId) }));
     } catch (err) {
-      toastApiError(err, t("linkUser.error"));
+      // The DM's 403 here means "not a member", not "no permission".
+      if (errorStatus(err) === 403) toast.error(errorMessage(err, t("linkUser.error")));
+      else toastApiError(err, t("linkUser.error"));
     }
   };
 

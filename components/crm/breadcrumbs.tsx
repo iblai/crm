@@ -38,7 +38,7 @@ export function useBreadcrumbs(crumbs: Crumb[]) {
 
 const SECTION_KEYS = {
   people: "nav.people",
-  companies: "nav.companies",
+  organizations: "nav.organizations",
   deals: "nav.deals",
   activities: "nav.activities",
   tags: "nav.tags",

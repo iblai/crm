@@ -9,12 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageHeader } from "@/components/crm/page-header";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { PaginationBar } from "@/components/crm/pagination-bar";
 import { ViewBar } from "@/components/crm/view-bar";
 import { PeopleTable, type PersonColumn } from "@/components/crm/people/people-table";
 import { PersonDialog } from "@/components/crm/people/person-dialog";
 import { useDebounced } from "@/hooks/use-debounced";
-import { useListOrganizationsQuery, useListPersonsQuery } from "@/lib/crm/api";
+import { useListPersonsQuery } from "@/lib/crm/api";
 import type { SavedView } from "@/lib/crm/types";
 import {
   applyClientFilters,
@@ -69,20 +70,14 @@ export default function PeoplePage() {
     setPage(1);
   }, [q, serverFilters, ordering]);
 
-  const { data, isLoading, isFetching } = useListPersonsQuery({
+  const { data, isLoading, isFetching, error } = useListPersonsQuery({
     active: true,
     ...serverFilters,
-    search: q || undefined,
+    search: q || serverFilters.search?.toString(),
     ordering,
     page,
     page_size: PAGE_SIZE,
   });
-
-  const { data: orgs } = useListOrganizationsQuery({ page_size: 100 });
-  const orgNames = useMemo(
-    () => new Map((orgs?.results ?? []).map((o) => [o.id, o.name] as const)),
-    [orgs],
-  );
 
   const rows = useMemo(
     () => applyClientFilters(data?.results ?? [], "persons", draft.filters),
@@ -151,7 +146,9 @@ export default function PeoplePage() {
       />
 
       <div className="flex min-h-0 flex-1 flex-col p-4 md:p-6">
-        {empty && q ? (
+        {error ? (
+          <LoadError error={error} />
+        ) : empty && q ? (
           <EmptyState
             icon={<Search strokeWidth={1.75} />}
             title={t("list.noMatchSearch", { query: q })}
@@ -191,7 +188,6 @@ export default function PeoplePage() {
                 persons={rows}
                 isLoading={isLoading}
                 columns={columns}
-                orgNames={orgNames}
                 skeletonRows={10}
               />
             </div>

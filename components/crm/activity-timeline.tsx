@@ -59,7 +59,7 @@ export function ActivityTimeline({
 }: {
   person?: string;
   deal?: number;
-  /** A company's timeline — activities attached to the organization itself. */
+  /** An organization's own timeline — activities attached to it directly. */
   organization?: string;
   showDealLinks?: boolean;
   className?: string;
@@ -116,7 +116,12 @@ export function ActivityTimeline({
           </h3>
           <ul className="space-y-2">
             {open.map((a) => (
-              <ActivityRow key={a.id} activity={a} showDealLink={showDealLinks && !deal} />
+              <ActivityRow
+                key={a.id}
+                activity={a}
+                showDealLink={showDealLinks && !deal}
+                showOrganizationLink={!organization}
+              />
             ))}
           </ul>
         </section>
@@ -130,7 +135,12 @@ export function ActivityTimeline({
           </h3>
           <ul className="relative space-y-2 before:absolute before:top-3 before:bottom-3 before:left-[15px] before:w-px before:bg-gray-200">
             {done.map((a) => (
-              <ActivityRow key={a.id} activity={a} showDealLink={showDealLinks && !deal} />
+              <ActivityRow
+                key={a.id}
+                activity={a}
+                showDealLink={showDealLinks && !deal}
+                showOrganizationLink={!organization}
+              />
             ))}
           </ul>
         </section>
@@ -144,10 +154,12 @@ export function ActivityRow({
   activity,
   showDealLink,
   showPersonLink,
+  showOrganizationLink,
 }: {
   activity: Activity;
   showDealLink?: boolean;
   showPersonLink?: boolean;
+  showOrganizationLink?: boolean;
 }) {
   const t = useTranslations("activities");
   const tc = useTranslations("common");
@@ -158,6 +170,8 @@ export function ActivityRow({
   const [remove, { isLoading: removing }] = useDeleteActivityMutation();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const at = activity.schedule_from;
+  // The stage-change note the DM writes itself: read-only.
+  const isAutoNote = activity.type === "note" && activity.title === "Stage changed";
   const { kind } = scheduleState(at, !!activity.is_done);
   const scheduleText =
     kind === "unscheduled"
@@ -248,52 +262,64 @@ export function ActivityRow({
               {t("timeline.viewPerson")}
             </Link>
           ) : null}
+          {showOrganizationLink && activity.organization ? (
+            <Link
+              href={href(`/organizations/${activity.organization}`)}
+              className="text-[#0058cc] hover:underline"
+            >
+              {t("timeline.viewOrganization")}
+            </Link>
+          ) : null}
         </div>
       </div>
-      <div className="flex shrink-0 items-start gap-1">
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => void toggleDone()}
-                disabled={marking}
-                aria-label={
-                  activity.is_done ? t("timeline.markNotDoneLabel") : t("timeline.markDoneLabel")
-                }
-                className={
-                  activity.is_done ? "text-emerald-600" : "text-gray-400 hover:text-emerald-600"
-                }
-              />
-            }
-          >
-            {activity.is_done ? <Check /> : <Circle />}
-          </TooltipTrigger>
-          <TooltipContent>
-            {activity.is_done ? t("timeline.markNotDone") : t("timeline.markDone")}
-          </TooltipContent>
-        </Tooltip>
-        <DropdownMenu>
+      {isAutoNote ? null : (
+        <div className="flex shrink-0 items-start gap-1">
           <Tooltip>
             <TooltipTrigger
               render={
-                <DropdownMenuTrigger
-                  render={<Button variant="ghost" size="icon-sm" aria-label={tc("moreActions")} />}
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => void toggleDone()}
+                  disabled={marking}
+                  aria-label={
+                    activity.is_done ? t("timeline.markNotDoneLabel") : t("timeline.markDoneLabel")
+                  }
+                  className={
+                    activity.is_done ? "text-emerald-600" : "text-gray-400 hover:text-emerald-600"
+                  }
                 />
               }
             >
-              <MoreHorizontal />
+              {activity.is_done ? <Check /> : <Circle />}
             </TooltipTrigger>
-            <TooltipContent>{t("timeline.moreHint")}</TooltipContent>
+            <TooltipContent>
+              {activity.is_done ? t("timeline.markNotDone") : t("timeline.markDone")}
+            </TooltipContent>
           </Tooltip>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem variant="destructive" onClick={() => setConfirmDelete(true)}>
-              <Trash2 /> {tc("delete")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <DropdownMenuTrigger
+                    render={
+                      <Button variant="ghost" size="icon-sm" aria-label={tc("moreActions")} />
+                    }
+                  />
+                }
+              >
+                <MoreHorizontal />
+              </TooltipTrigger>
+              <TooltipContent>{t("timeline.moreHint")}</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem variant="destructive" onClick={() => setConfirmDelete(true)}>
+                <Trash2 /> {tc("delete")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
       <ConfirmDialog
         open={confirmDelete}
         onOpenChange={setConfirmDelete}

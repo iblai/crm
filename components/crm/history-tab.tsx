@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { History } from "lucide-react";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   useDealHistoryQuery,
@@ -34,15 +35,17 @@ function useHistory(props: Props) {
 
 function Diff({ changes }: { changes: NonNullable<HistoryEntry["changes"]> }) {
   const t = useTranslations("history");
+  // The DM renders a null as the string "None".
+  const show = (value: string) => (value && value !== "None" ? value : t("empty"));
   return (
     <dl className="mt-1 grid grid-cols-[minmax(0,10rem)_minmax(0,1fr)] gap-x-3 gap-y-0.5 text-xs">
       {Object.entries(changes).map(([field, [before, after]]) => (
         <div key={field} className="contents">
           <dt className="truncate font-mono text-[11px] text-gray-500">{field}</dt>
           <dd className="min-w-0 text-gray-700">
-            <span className="text-gray-400 line-through">{before || t("empty")}</span>{" "}
+            <span className="text-gray-400 line-through">{show(before)}</span>{" "}
             <span aria-hidden>→</span>{" "}
-            <span className="font-medium text-gray-900">{after || t("empty")}</span>
+            <span className="font-medium text-gray-900">{show(after)}</span>
           </dd>
         </div>
       ))}
@@ -54,7 +57,7 @@ function Diff({ changes }: { changes: NonNullable<HistoryEntry["changes"]> }) {
 export function HistoryTab(props: Props) {
   const t = useTranslations("history");
   const locale = useLocale();
-  const { data, isLoading } = useHistory(props);
+  const { data, isLoading, error } = useHistory(props);
 
   if (isLoading) {
     return (
@@ -65,6 +68,7 @@ export function HistoryTab(props: Props) {
       </div>
     );
   }
+  if (error) return <LoadError error={error} />;
   if (!data || data.length === 0) {
     return (
       <EmptyState

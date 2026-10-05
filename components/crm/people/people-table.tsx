@@ -30,15 +30,12 @@ export function PeopleTable({
   persons,
   isLoading,
   columns = ALL_COLUMNS,
-  orgNames,
   skeletonRows = 8,
   className,
 }: {
   persons: Person[];
   isLoading?: boolean;
   columns?: PersonColumn[];
-  /** id → name, so the organization cell can render a link without a lookup. */
-  orgNames?: Map<string, string>;
   skeletonRows?: number;
   className?: string;
 }) {
@@ -48,7 +45,7 @@ export function PeopleTable({
   const router = useRouter();
   const { href } = useSession();
   const headings: Record<PersonColumn, string> = {
-    organization: t("fields.company"),
+    organization: t("fields.organization"),
     job_title: t("fields.jobTitle"),
     owner: tc("owner"),
     tags: tc("tags"),
@@ -101,7 +98,7 @@ export function PeopleTable({
               </tr>
             ))
           : persons.map((p) => {
-              const orgName = p.organization ? orgNames?.get(p.organization) : undefined;
+              const orgName = p.organization_name ?? undefined;
               return (
                 <tr
                   key={p.id}
@@ -133,11 +130,11 @@ export function PeopleTable({
                       {c === "organization" ? (
                         p.organization ? (
                           <Link
-                            href={href(`/companies/${p.organization}`)}
+                            href={href(`/organizations/${p.organization}`)}
                             onClick={(e) => e.stopPropagation()}
                             className="truncate text-[#0058cc] hover:underline"
                           >
-                            {orgName ?? t("table.viewCompany")}
+                            {orgName ?? t("table.viewOrganization")}
                           </Link>
                         ) : (
                           <span className="text-muted-foreground">—</span>

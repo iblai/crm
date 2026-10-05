@@ -68,6 +68,7 @@ export function ViewBar({
   onSelectView,
   stageOptions,
   pipelineOptions,
+  sourceOptions,
   canKanban = false,
   className,
 }: {
@@ -78,6 +79,7 @@ export function ViewBar({
   onSelectView: (view: SavedView | null) => void;
   stageOptions?: SelectOption[];
   pipelineOptions?: SelectOption[];
+  sourceOptions?: SelectOption[];
   canKanban?: boolean;
   className?: string;
 }) {
@@ -239,22 +241,28 @@ export function ViewBar({
                 <DropdownMenuLabel className="text-muted-foreground text-xs">
                   {t("addFilter")}
                 </DropdownMenuLabel>
-                {fields.map((field) => (
-                  <DropdownMenuItem
-                    key={field.id}
-                    onClick={() =>
-                      onChange({
-                        ...draft,
-                        filters: [
-                          ...draft.filters,
-                          { field: field.id, op: FILTER_OPERANDS[field.kind][0], value: undefined },
-                        ],
-                      })
-                    }
-                  >
-                    {fieldLabel(field.id)}
-                  </DropdownMenuItem>
-                ))}
+                {fields
+                  .filter((field) => field.filter !== false)
+                  .map((field) => (
+                    <DropdownMenuItem
+                      key={field.id}
+                      onClick={() =>
+                        onChange({
+                          ...draft,
+                          filters: [
+                            ...draft.filters,
+                            {
+                              field: field.id,
+                              op: FILTER_OPERANDS[field.kind][0],
+                              value: undefined,
+                            },
+                          ],
+                        })
+                      }
+                    >
+                      {fieldLabel(field.id)}
+                    </DropdownMenuItem>
+                  ))}
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -366,6 +374,7 @@ export function ViewBar({
                 label={fieldLabel(field.id)}
                 stageOptions={stageOptions}
                 pipelineOptions={pipelineOptions}
+                sourceOptions={sourceOptions}
                 onChange={(next) => setFilter(index, next)}
                 onRemove={() => removeFilter(index)}
               />
@@ -417,6 +426,7 @@ function FilterChip({
   label,
   stageOptions,
   pipelineOptions,
+  sourceOptions,
   onChange,
   onRemove,
 }: {
@@ -425,6 +435,7 @@ function FilterChip({
   label: string;
   stageOptions?: SelectOption[];
   pipelineOptions?: SelectOption[];
+  sourceOptions?: SelectOption[];
   onChange: (filter: ViewFilter) => void;
   onRemove: () => void;
 }) {
@@ -527,12 +538,22 @@ function FilterChip({
           className="w-48"
         />
       );
-    } else if (field.relation === "stage" || field.relation === "pipeline") {
+    } else if (
+      field.relation === "stage" ||
+      field.relation === "pipeline" ||
+      field.relation === "source"
+    ) {
       input = (
         <SimpleSelect
           value={value === undefined || value === null ? "" : String(value)}
           onChange={(v) => onChange({ ...filter, value: v ? Number(v) : undefined })}
-          options={(field.relation === "stage" ? stageOptions : pipelineOptions) ?? []}
+          options={
+            (field.relation === "stage"
+              ? stageOptions
+              : field.relation === "pipeline"
+                ? pipelineOptions
+                : sourceOptions) ?? []
+          }
           size="sm"
           className="w-44"
           aria-label={label}

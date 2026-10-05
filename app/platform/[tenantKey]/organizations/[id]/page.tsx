@@ -46,7 +46,7 @@ import type { Address, OrganizationInput } from "@/lib/crm/types";
 const CARD =
   "rounded-xl border border-[var(--border-color,#e5e7eb)] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]";
 
-/** API address key → its `companies.address.*` message key. */
+/** API address key → its `organizations.address.*` message key. */
 const ADDRESS_FIELDS = [
   { key: "street", msg: "street" },
   { key: "city", msg: "city" },
@@ -55,9 +55,9 @@ const ADDRESS_FIELDS = [
   { key: "country", msg: "country" },
 ] as const satisfies readonly { key: keyof Address & string; msg: string }[];
 
-/** Organization "show page": the company, its address, its people and deals. */
+/** Organization "show page": the record, its address, its people and deals. */
 export default function OrganizationDetailPage() {
-  const t = useTranslations("companies");
+  const t = useTranslations("organizations");
   const tc = useTranslations("common");
   const tf = useTranslations("fields");
   const tn = useTranslations("nav");
@@ -75,7 +75,7 @@ export default function OrganizationDetailPage() {
   const [detachTag] = useDetachOrganizationTagMutation();
 
   const { data: people, isLoading: loadingPeople } = useListPersonsQuery(
-    { organization: id, page_size: 50 },
+    { organization: id, active: true, page_size: 50 },
     { skip: !id },
   );
 
@@ -83,7 +83,7 @@ export default function OrganizationDetailPage() {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useBreadcrumbs([
-    { label: tn("companies"), href: href("/companies") },
+    { label: tn("organizations"), href: href("/organizations") },
     { label: organization?.name ?? t("detail.breadcrumb") },
   ]);
 
@@ -111,7 +111,7 @@ export default function OrganizationDetailPage() {
           title={t("detail.notFound")}
           description={t("detail.notFoundHint")}
           action={
-            <Button variant="outline" onClick={() => router.push(href("/companies"))}>
+            <Button variant="outline" onClick={() => router.push(href("/organizations"))}>
               <ArrowLeft data-icon="inline-start" strokeWidth={1.75} /> {t("detail.back")}
             </Button>
           }
@@ -334,7 +334,7 @@ export default function OrganizationDetailPage() {
             await deleteOrganization(organization.id).unwrap();
             setConfirmDelete(false);
             toast.success(tc("deletedToast", { name: organization.name }));
-            router.push(href("/companies"));
+            router.push(href("/organizations"));
           } catch (err) {
             toastApiError(err, t("detail.deleteError"));
           }

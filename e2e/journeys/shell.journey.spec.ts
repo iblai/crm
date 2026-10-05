@@ -17,7 +17,7 @@ test.describe("shell journey", () => {
     const org = await gotoHome(page);
     for (const [label, path, heading] of [
       ["People", "people", "People"],
-      ["Companies", "companies", "Companies"],
+      ["Organizations", "organizations", "Organizations"],
       ["Deals", "deals", "Deals"],
       ["Activities", "activities", "Activities"],
       ["Tags", "tags", "Tags"],
@@ -39,7 +39,7 @@ test.describe("shell journey", () => {
   test("S2 · ⌘K opens the command palette with quick actions", async ({ page }) => {
     await gotoHome(page);
     await page.keyboard.press(process.platform === "darwin" ? "Meta+k" : "Control+k");
-    await expect(page.getByPlaceholder(/search people, companies, deals/i)).toBeVisible({
+    await expect(page.getByPlaceholder(/search people, organizations, deals/i)).toBeVisible({
       timeout: 10_000,
     });
     await expect(page.getByText("New person")).toBeVisible();

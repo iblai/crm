@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageHeader } from "@/components/crm/page-header";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { PaginationBar } from "@/components/crm/pagination-bar";
 import { ViewBar } from "@/components/crm/view-bar";
 import { OrganizationDialog } from "@/components/crm/organizations/organization-dialog";
@@ -27,9 +28,9 @@ import {
 
 const PAGE_SIZE = 50;
 
-/** Companies — the CRM organizations behind the people and the deals; server search and views. */
+/** Organizations — the accounts behind the people and the deals; server search and views. */
 export default function OrganizationsPage() {
-  const t = useTranslations("companies");
+  const t = useTranslations("organizations");
   const tc = useTranslations("common");
   const tn = useTranslations("nav");
   const router = useRouter();
@@ -59,9 +60,9 @@ export default function OrganizationsPage() {
     setPage(1);
   }, [q, serverFilters, ordering]);
 
-  const { data, isLoading } = useListOrganizationsQuery({
+  const { data, isLoading, error } = useListOrganizationsQuery({
     ...serverFilters,
-    search: q || undefined,
+    search: q || serverFilters.search?.toString(),
     ordering,
     page,
     page_size: PAGE_SIZE,
@@ -84,7 +85,7 @@ export default function OrganizationsPage() {
     <>
       <PageHeader
         icon={<Building2 strokeWidth={1.75} />}
-        title={tn("companies")}
+        title={tn("organizations")}
         count={data?.count ?? null}
         description={t("list.description")}
         actions={
@@ -129,7 +130,9 @@ export default function OrganizationsPage() {
       />
 
       <div className="flex min-h-0 flex-1 flex-col p-4 md:p-6">
-        {!isLoading && rows.length === 0 ? (
+        {error ? (
+          <LoadError error={error} />
+        ) : !isLoading && rows.length === 0 ? (
           hasFilter ? (
             <EmptyState
               icon={<Building2 strokeWidth={1.75} />}

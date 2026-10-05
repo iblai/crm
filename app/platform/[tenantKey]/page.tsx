@@ -229,7 +229,7 @@ export default function HomePage() {
                     <RecentPeopleList people={data.recentPeople} />
                   </Panel>
                   <Panel title={t("panels.recentDeals.title")} href={href("/deals")}>
-                    <RecentDealsList deals={data.recentDeals} personName={data.personName} />
+                    <RecentDealsList deals={data.recentDeals} />
                   </Panel>
                 </div>
               </div>

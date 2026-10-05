@@ -44,9 +44,10 @@ PlatformSidebar + SidebarInset` (`components/crm/app-sidebar.tsx`), loading
    (`FieldLabelKey` in `view-bar.tsx`). Dates and amounts go through the
    locale-aware helpers in `lib/crm/format.ts` with `useLocale()`. Typographic
    `’` and `…`.
-5. **Vocabulary.** The CRM account object is a **company** in the UI (route
-   `/companies`; the API still says `organization`). The ibl.ai org the user
-   belongs to is an **organization**. Never "tenant" in anything a user sees.
+5. **Vocabulary.** The CRM account object is an **organization**, in the UI as
+   in the API (route `/organizations`); the ibl.ai org the user belongs to is
+   also an organization, and context keeps them apart. Never "tenant" in
+   anything a user sees.
 6. **Never touch tokens in prose or logs.** `dm_token` / `axd_token` stay in
    localStorage.
 7. **Brand.** Primary `#0058cc`, tint `#eef6fc`, gradient CTA

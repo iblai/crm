@@ -284,24 +284,24 @@ export default function PersonDetailPage() {
                   placeholder={t("detail.addJobTitle")}
                 />
               </FieldRow>
-              <FieldRow label={t("fields.company")}>
+              <FieldRow label={t("fields.organization")}>
                 <div className="min-w-0">
                   <SearchPicker
                     kind="organization"
                     value={person.organization}
                     onChange={(id) => void save({ organization: id })}
-                    placeholder={t("fields.noCompany")}
+                    placeholder={t("fields.noOrganization")}
                     size="sm"
                     className="h-8 border-transparent bg-transparent shadow-none hover:bg-gray-50"
                   />
                   {person.organization ? (
                     <Link
-                      href={href(`/companies/${person.organization}`)}
+                      href={href(`/organizations/${person.organization}`)}
                       className="mt-0.5 ml-1.5 inline-block text-xs text-[#0058cc] hover:underline"
                     >
                       {orgName
-                        ? t("detail.openCompanyNamed", { name: orgName })
-                        : t("detail.openCompany")}
+                        ? t("detail.openOrganizationNamed", { name: orgName })
+                        : t("detail.openOrganization")}
                     </Link>
                   ) : null}
                 </div>

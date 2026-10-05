@@ -26,7 +26,7 @@ import type { Person } from "@/lib/crm/types";
 
 /**
  * Fold duplicate records into this person: their deals, activities and tags
- * move over and the duplicates are removed. Irreversible, so the final step
+ * move over and the duplicates are marked inactive. Irreversible, so the final step
  * is a confirmation.
  */
 export function PersonMergeDialog({

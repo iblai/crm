@@ -19,16 +19,16 @@
     },
     "dialog": {
       "alreadyDone": "Already done",
-      "company": "Company",
+      "organization": "Organization",
       "create": "Create activity",
       "deal": "Deal",
-      "description": "Calls, meetings, tasks and notes always belong to a person or a deal.",
+      "description": "Calls, meetings, tasks and notes belong to a person, a deal or an organization.",
       "detailsPlaceholder": "Agenda, outcome, next steps…",
       "editTitle": "Edit activity",
       "ends": "Ends",
-      "linkHint": "Pick a person, a deal, or both.",
-      "linkRequired": "Attach the activity to a person, a company or a deal.",
-      "noCompany": "No company",
+      "linkHint": "Pick a person, a deal or an organization.",
+      "linkRequired": "Attach the activity to a person, an organization or a deal.",
+      "noOrganization": "No organization",
       "noDeal": "No deal",
       "noPerson": "No person",
       "ownerAbout": "About the owner field",
@@ -105,7 +105,8 @@
       "moreHint": "More actions for this activity",
       "openAbout": "About open activities",
       "openHint": "Not done yet — tick the circle to complete one",
-      "viewPerson": "View person"
+      "viewPerson": "View person",
+      "viewOrganization": "View organization"
     },
     "toast": {
       "created": "Activity created",
@@ -180,12 +181,14 @@
     "unscheduled": "Unscheduled",
     "updated": "Updated",
     "user": "User",
-    "yes": "Yes"
+    "yes": "Yes",
+    "errorLoadTitle": "Couldn’t load this",
+    "errorProtectedByDeals": "{count, plural, one {# deal still references} other {# deals still reference}} this record."
   },
-  "companies": {
+  "organizations": {
     "actions": {
-      "new": "New company",
-      "newHint": "Add a company, then attach its people and deals"
+      "new": "New organization",
+      "newHint": "Add an organization, then attach its people and deals"
     },
     "address": {
       "add": {
@@ -210,40 +213,40 @@
     },
     "detail": {
       "addPerson": "Add person",
-      "addPersonHint": "Create a contact already attached to this company",
-      "back": "Back to Companies",
-      "breadcrumb": "Company",
-      "delete": "Delete company",
-      "deleteError": "Could not delete this company",
-      "deleteHint": "The company is removed. Its people and deals stay in the CRM — they simply lose their company.",
+      "addPersonHint": "Create a contact already attached to this organization",
+      "back": "Back to Organizations",
+      "breadcrumb": "Organization",
+      "delete": "Delete organization",
+      "deleteError": "Could not delete this organization",
+      "deleteHint": "The organization is removed. Its people and deals stay and lose their organization; activities attached only to it are deleted.",
       "deleteTitle": "Delete {name}?",
-      "moreHint": "Delete this company",
+      "moreHint": "Delete this organization",
       "noDeals": "No deal is open with {name} yet.",
       "noPeople": "No people here yet",
       "noPeopleHint": "Add the contacts you work with at {name}.",
-      "notFound": "This company no longer exists",
+      "notFound": "This organization no longer exists",
       "notFoundHint": "It may have been deleted by someone else on your team.",
-      "ownerHint": "The teammate responsible for this company.",
+      "ownerHint": "The teammate responsible for this organization.",
       "peopleCount": "{count, plural, one {# person} other {# people}}",
-      "unnamed": "Unnamed company"
+      "unnamed": "Unnamed organization"
     },
     "dialog": {
       "added": "{name} added",
-      "createError": "Could not create this company",
-      "description": "Companies group the people you talk to and the deals you run with them.",
+      "createError": "Could not create this organization",
+      "description": "Organizations group the people you talk to and the deals you run with them.",
       "namePlaceholder": "Acme University",
-      "submit": "Create company"
+      "submit": "Create organization"
     },
     "list": {
-      "addFirst": "Add your first company",
-      "description": "The companies your people and deals belong to",
-      "emptyHint": "Add the companies you sell to, then attach people and deals to them.",
-      "emptyTitle": "No companies yet",
-      "noMatchFilters": "No companies match these filters",
+      "addFirst": "Add your first organization",
+      "description": "The organizations your people and deals belong to",
+      "emptyHint": "Add the organizations you sell to, then attach people and deals to them.",
+      "emptyTitle": "No organizations yet",
+      "noMatchFilters": "No organizations match these filters",
       "noMatchFiltersHint": "Try a different name, owner or tag.",
-      "paginationLabel": "companies",
-      "searchLabel": "Search companies",
-      "searchPlaceholder": "Search companies by name…"
+      "paginationLabel": "organizations",
+      "searchLabel": "Search organizations",
+      "searchPlaceholder": "Search organizations by name…"
     },
     "table": {
       "location": "Location"
@@ -258,7 +261,7 @@
     },
     "onboarding": {
       "addPerson": "Add a person",
-      "body": "Start by adding a person, then open a deal for them. Everything else — companies, activities and tags — hangs off those two.",
+      "body": "Start by adding a person, then open a deal for them. Everything else — organizations, activities and tags — hangs off those two.",
       "createDeal": "Create a deal",
       "steps": {
         "activity": {
@@ -377,7 +380,8 @@
       "probabilityHint": "Win probability used for the weighted pipeline",
       "probabilityLabel": "What {probability}% means",
       "stageLabel": "{stage} stage",
-      "totalHint": "Total value of the deals in this stage"
+      "totalHint": "Total value of the deals in this stage",
+      "noPipeline": "No pipeline yet. An admin can create one in Settings."
     },
     "card": {
       "moveHint": "Move to another stage without dragging",
@@ -422,7 +426,7 @@
       "noValue": "No value",
       "notFoundDescription": "This deal may have been deleted, or it belongs to another organization.",
       "notFoundTitle": "Deal not found",
-      "openCompany": "Open company",
+      "openOrganization": "Open organization",
       "reopenHint": "Put the deal back in {stage} and clear its close date",
       "sourceHint": "Where this deal came from; managed in Settings.",
       "stageHint": "Move the deal with the stage pills above.",
@@ -446,11 +450,11 @@
     },
     "fields": {
       "closedAt": "Closed at",
-      "company": "Company",
+      "organization": "Organization",
       "currency": "Currency",
       "expectedClose": "Expected close",
       "lostReason": "Lost reason",
-      "noCompany": "No company",
+      "noOrganization": "No organization",
       "noSource": "No source",
       "person": "Person",
       "pipeline": "Pipeline",
@@ -514,8 +518,7 @@
       "moved": "Moved to {stage}",
       "reopened": "Deal reopened",
       "won": "Deal won 🎉"
-    },
-    "unknownPerson": "Unknown person"
+    }
   },
   "enums": {
     "activityType": {
@@ -571,7 +574,7 @@
       "created_at": "Created",
       "deal": "Deal",
       "is_done": "Done",
-      "organization": "Company",
+      "organization": "Organization",
       "owner": "Owner",
       "person": "Person",
       "schedule_from": "Scheduled",
@@ -583,7 +586,7 @@
       "created_at": "Created",
       "expected_close_date": "Expected close",
       "lead_value": "Value",
-      "organization": "Company",
+      "organization": "Organization",
       "owner": "Owner",
       "person": "Person",
       "source": "Source",
@@ -616,7 +619,7 @@
       "job_title": "Job title",
       "lifecycle_stage": "Lifecycle",
       "name": "Name",
-      "organization": "Company",
+      "organization": "Organization",
       "owner": "Owner",
       "primary_email": "Email",
       "tags": "Tags",
@@ -646,7 +649,7 @@
       "update": "changed"
     },
     "empty": "empty",
-    "emptyDescription": "Every change to this record will be listed here.",
+    "emptyDescription": "Changes made through the CRM appear here, newest first; bulk operations such as a merge leave no entry.",
     "emptyTitle": "No history yet",
     "system": "System"
   },
@@ -656,7 +659,7 @@
   },
   "nav": {
     "activities": "Activities",
-    "companies": "Companies",
+    "organizations": "Organizations",
     "deals": "Deals",
     "home": "Home",
     "people": "People",
@@ -669,14 +672,14 @@
     "title": "Notifications"
   },
   "palette": {
-    "description": "Search people, companies and deals, or jump to a page.",
+    "description": "Search people, organizations and deals, or jump to a page.",
     "goTo": "Go to",
     "newActivity": "New activity",
-    "newCompany": "New company",
+    "newOrganization": "New organization",
     "newDeal": "New deal",
     "newPerson": "New person",
     "noResults": "No results.",
-    "placeholder": "Search people, companies, deals…",
+    "placeholder": "Search people, organizations, deals…",
     "toClose": "to close",
     "toNavigate": "to navigate",
     "toOpen": "to open"
@@ -710,7 +713,7 @@
       "commaSeparated": "Comma-separated.",
       "delete": "Delete person",
       "deleteError": "Could not delete this person",
-      "deleteHint": "The person, their activities and their tag assignments are removed. Deals stay, but lose their contact.",
+      "deleteHint": "A person with deals cannot be deleted; move or delete their deals first. Their activities and tag assignments go with them.",
       "deleteTitle": "Delete {name}?",
       "externalId": "External id",
       "externalIdHint": "Id from another system, unique per organization.",
@@ -729,8 +732,8 @@
       "noDeals": "No deal is open with {name} yet.",
       "notFound": "This person no longer exists",
       "notFoundHint": "The record may have been deleted or merged into another person.",
-      "openCompany": "Open company",
-      "openCompanyNamed": "Open {name}",
+      "openOrganization": "Open organization",
+      "openOrganizationNamed": "Open {name}",
       "otherEmails": "Other emails",
       "ownerHint": "The teammate responsible for this contact.",
       "phones": "Phones",
@@ -746,11 +749,11 @@
       "submit": "Create person"
     },
     "fields": {
-      "company": "Company",
+      "organization": "Organization",
       "jobTitle": "Job title",
       "lifecycle": "Lifecycle",
       "lifecycleStage": "Lifecycle stage",
-      "noCompany": "No company"
+      "noOrganization": "No organization"
     },
     "invite": {
       "alreadyLinked": "This person is already linked to a platform user",
@@ -772,11 +775,12 @@
       "manualLabel": "…or enter a user id",
       "manualPlaceholder": "e.g. 4821",
       "submit": "Link user",
-      "title": "Link to a platform user"
+      "title": "Link to a platform user",
+      "alreadyLinked": "This person is already linked to another user."
     },
     "list": {
       "addFirst": "Add your first person",
-      "description": "Contacts across every company you work with",
+      "description": "Contacts across every organization you work with",
       "emptyHint": "People are the contacts behind every deal — start with the one you are talking to today.",
       "emptyTitle": "No people yet",
       "loading": "Loading people",
@@ -790,9 +794,9 @@
     },
     "merge": {
       "confirm": "Merge and delete duplicates",
-      "confirmBody": "{count, plural, one {# duplicate} other {# duplicates}} will be folded into {name} and then deleted. This cannot be undone.",
+      "confirmBody": "{count, plural, one {# duplicate} other {# duplicates}} will be folded into {name} and marked inactive. This cannot be undone.",
       "confirmTitle": "Merge these records?",
-      "description": "Pick the duplicate records. Their deals, activities and tags move onto {name}, and the duplicates are deleted.",
+      "description": "Pick the duplicate records. Their deals, activities and tags move onto {name}, and the duplicates are marked inactive.",
       "error": "Could not merge these people",
       "merged": "Merged {count, plural, one {# record} other {# records}} into {name}",
       "noMatch": "No matching people.",
@@ -804,12 +808,12 @@
       "title": "Merge duplicates into {name}"
     },
     "table": {
-      "viewCompany": "View company"
+      "viewOrganization": "View organization"
     }
   },
   "picker": {
     "clear": "Clear",
-    "company": "Pick a company",
+    "organization": "Pick an organization",
     "noMatches": "No matches",
     "person": "Pick a person",
     "searchPlaceholder": "Type to search…",
@@ -828,12 +832,12 @@
       "mandates": {
         "inviter": "Reads people and sends invitations — nothing else.",
         "manager": "Everything a User can do, plus pipeline, stage and lead-source administration, and invitations.",
-        "user": "Full CRUD on people, companies, deals, activities and tags; pipelines are read-only; cannot invite.",
-        "viewer": "Reads everything in the CRM and writes nothing."
+        "user": "Full CRUD on people, organizations, deals, activities and tags; pipelines are read-only; cannot invite.",
+        "viewer": "Reads everything in the CRM; writes only their own stars and saved views."
       },
       "organizationKey": "Organization key",
       "role": "Role",
-      "rolesFootnote": "Roles are granted on the organization’s Users & roles screen. Only CRM Managers (org admins) can change pipelines, stages and lead sources.",
+      "rolesFootnote": "Roles are granted on the organization’s Users & roles screen. CRM Managers and organization admins can change pipelines, stages and lead sources.",
       "rolesTitle": "CRM roles",
       "support": "Support",
       "supportLabel": "Open ibl.ai support",
@@ -943,8 +947,8 @@
       "changeColor": "Change the color of {name}",
       "created": "Created {date}",
       "deleteConfirm": "Delete tag",
-      "deleteDescription": "This removes the tag from every person, company and deal it is attached to. The records themselves are kept.",
-      "deleteHint": "Removes the tag from every person, company and deal",
+      "deleteDescription": "This removes the tag from every person, organization and deal it is attached to. The records themselves are kept.",
+      "deleteHint": "Removes the tag from every person, organization and deal",
       "deleteLabel": "Delete tag {name}",
       "deleteTitle": "Delete “{name}”?",
       "deleted": "Tag deleted",
@@ -956,11 +960,11 @@
       "invalidHex": "Use a 6-digit hex like #0058cc.",
       "use": "Use color {color}"
     },
-    "description": "One shared vocabulary for people, companies and deals",
+    "description": "One shared vocabulary for people, organizations and deals",
     "dialog": {
       "colorLabel": "Color",
       "created": "Tag “{name}” created",
-      "description": "Tags are shared across people, companies and deals.",
+      "description": "Tags are shared across people, organizations and deals.",
       "namePlaceholder": "Enterprise, Newsletter, VIP…",
       "nameRequired": "A name is required.",
       "preview": "Preview",
@@ -968,13 +972,13 @@
       "submit": "Create tag"
     },
     "empty": {
-      "description": "Tags group people, companies and deals — “Enterprise”, “Newsletter”, “Churn risk”.",
+      "description": "Tags group people, organizations and deals — “Enterprise”, “Newsletter”, “Churn risk”.",
       "noMatchDescription": "Try a different name, or create the tag you were looking for.",
       "noMatchTitle": "No tags match that search",
       "title": "No tags yet"
     },
     "newTag": "New tag",
-    "newTagHint": "Create a label you can attach to people, companies and deals",
+    "newTagHint": "Create a label you can attach to people, organizations and deals",
     "paginationLabel": "tags",
     "searchLabel": "Search tags",
     "searchPlaceholder": "Search tags…"

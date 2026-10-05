@@ -25,7 +25,7 @@ import type { Address, Organization } from "@/lib/crm/types";
 
 const EMPTY = { street: "", city: "", state: "", postal_code: "", country: "" };
 
-/** Create an organization — the company a person or a deal belongs to. */
+/** Create an organization — the account a person or a deal belongs to. */
 export function OrganizationDialog({
   open,
   onOpenChange,
@@ -37,7 +37,7 @@ export function OrganizationDialog({
   navigateOnCreate?: boolean;
   onCreated?: (organization: Organization) => void;
 }) {
-  const t = useTranslations("companies");
+  const t = useTranslations("organizations");
   const tc = useTranslations("common");
   const toastApiError = useToastApiError();
   const router = useRouter();
@@ -75,7 +75,7 @@ export function OrganizationDialog({
       toast.success(t("dialog.added", { name: organization.name }));
       onOpenChange(false);
       onCreated?.(organization);
-      if (navigateOnCreate) router.push(href(`/companies/${organization.id}`));
+      if (navigateOnCreate) router.push(href(`/organizations/${organization.id}`));
     } catch (err) {
       toastApiError(err, t("dialog.createError"));
     }

@@ -112,6 +112,7 @@ const baseQuery: typeof rawBaseQuery = async (args, api, extra) => {
     else if (data && typeof data === "object") {
       const d = data as Record<string, unknown>;
       if (typeof d.detail === "string") detail = d.detail;
+      else if (Array.isArray(d.detail)) detail = d.detail.join(" ");
       else if (typeof d.message === "string") detail = d.message;
       else if (typeof d.error === "string") detail = d.error;
       else {
@@ -171,7 +172,9 @@ export const crmApi = createApi({
       invalidatesTags: [
         { type: "Person", id: LIST },
         { type: "Deal", id: LIST },
+        { type: "Activity", id: LIST },
         { type: "Favorite", id: LIST },
+        "Board",
         "Overview",
       ],
     }),
@@ -195,14 +198,17 @@ export const crmApi = createApi({
       invalidatesTags: (_r, _e, { id }) => [
         { type: "Person", id },
         { type: "Person", id: LIST },
+        { type: "History", id: `person-${id}` },
       ],
     }),
     mergePersons: builder.mutation<PersonMergeResponse, PersonMergeRequest>({
       query: (body) => ({ url: "/persons/merge/", method: "POST", body }),
-      invalidatesTags: [
+      invalidatesTags: (_r, _e, { primary_id }) => [
+        { type: "Person", id: primary_id },
         { type: "Person", id: LIST },
         { type: "Deal", id: LIST },
         { type: "Activity", id: LIST },
+        { type: "Favorite", id: LIST },
       ],
     }),
     attachPersonTag: builder.mutation<TagAttachResponse, { id: string; tag_id: number }>({
@@ -267,7 +273,9 @@ export const crmApi = createApi({
         { type: "Organization", id: LIST },
         { type: "Person", id: LIST },
         { type: "Deal", id: LIST },
+        { type: "Activity", id: LIST },
         { type: "Favorite", id: LIST },
+        "Board",
         "Overview",
       ],
     }),
@@ -315,6 +323,8 @@ export const crmApi = createApi({
       invalidatesTags: (_r, _e, { id }) => [
         { type: "Pipeline", id },
         { type: "Pipeline", id: LIST },
+        "Board",
+        "Overview",
       ],
     }),
     deletePipeline: builder.mutation<void, number>({
@@ -337,6 +347,8 @@ export const crmApi = createApi({
       invalidatesTags: (_r, _e, { pipeline }) => [
         { type: "Pipeline", id: pipeline },
         { type: "Pipeline", id: LIST },
+        "Board",
+        "Overview",
       ],
     }),
     updateStage: builder.mutation<
@@ -351,6 +363,8 @@ export const crmApi = createApi({
       invalidatesTags: (_r, _e, { pipeline }) => [
         { type: "Pipeline", id: pipeline },
         { type: "Pipeline", id: LIST },
+        "Board",
+        "Overview",
       ],
     }),
     deleteStage: builder.mutation<void, { pipeline: number; id: number }>({
@@ -361,6 +375,8 @@ export const crmApi = createApi({
       invalidatesTags: (_r, _e, { pipeline }) => [
         { type: "Pipeline", id: pipeline },
         { type: "Pipeline", id: LIST },
+        "Board",
+        "Overview",
       ],
     }),
     reorderStages: builder.mutation<Pipeline, { pipeline: number; order: number[] }>({
@@ -486,6 +502,7 @@ export const crmApi = createApi({
       invalidatesTags: (_r, _e, { id }) => [
         { type: "Deal", id },
         { type: "Deal", id: LIST },
+        "Board",
       ],
     }),
     detachDealTag: builder.mutation<void, { id: number; tag_id: number }>({
@@ -493,6 +510,7 @@ export const crmApi = createApi({
       invalidatesTags: (_r, _e, { id }) => [
         { type: "Deal", id },
         { type: "Deal", id: LIST },
+        "Board",
       ],
     }),
 
@@ -550,6 +568,7 @@ export const crmApi = createApi({
         { type: "Person", id: LIST },
         { type: "Organization", id: LIST },
         { type: "Deal", id: LIST },
+        "Board",
       ],
     }),
     deleteTag: builder.mutation<void, number>({
@@ -559,12 +578,16 @@ export const crmApi = createApi({
         { type: "Person", id: LIST },
         { type: "Organization", id: LIST },
         { type: "Deal", id: LIST },
+        "Board",
       ],
     }),
 
     // ----------------------------------------------------------- Favorites
-    listFavorites: builder.query<Paginated<Favorite>, void>({
-      query: () => ({ url: "/favorites/", params: { page_size: 100 } }),
+    listFavorites: builder.query<Paginated<Favorite>, FavoriteInput | void>({
+      query: (params) => ({
+        url: "/favorites/",
+        params: cleanParams({ page_size: 100, ...(params ?? {}) }),
+      }),
       providesTags: (res) => listTags("Favorite", res?.results),
     }),
     addFavorite: builder.mutation<Favorite, FavoriteInput>({
