@@ -1,12 +1,29 @@
 import { test, expect, type Page } from "@playwright/test";
 
 /**
- * CRM journey — the core loop: a person, an organization, a deal moved to
- * won, an activity marked done, a tag. Runs against the signed-in user's
- * organization and cleans up what it creates. Requires auth.setup.ts.
+ * CRM journey — the core loop: a person, a company, a deal moved to won, an
+ * activity marked done, a tag; then a company note, a favorite, a saved view,
+ * record history and ⌘K search on what C1–C2 created. Runs against the
+ * signed-in user's organization. Requires auth.setup.ts.
  */
 const appHost = process.env.APP_HOST || "http://localhost:3000";
 const stamp = `e2e-${Date.now().toString(36)}`;
+
+async function openPerson(page: Page, key: string) {
+  await page.goto(`${appHost}/platform/${encodeURIComponent(key)}/people`);
+  await page
+    .getByPlaceholder(/search/i)
+    .first()
+    .fill(stamp);
+  await page
+    .getByRole("row")
+    .filter({ hasText: `${stamp} Person` })
+    .first()
+    .click();
+  await page.waitForURL((url) => /\/people\/[0-9a-f-]{36}/.test(url.pathname), {
+    timeout: 20_000,
+  });
+}
 
 async function org(page: Page) {
   await page.goto(appHost);
@@ -28,13 +45,13 @@ test.describe.serial("crm journey", () => {
     await expect(page.getByText(`${stamp} Person`).first()).toBeVisible();
   });
 
-  test("C2 · create an organization and see it in the list", async ({ page }) => {
+  test("C2 · create a company and see it in the list", async ({ page }) => {
     const key = await org(page);
-    await page.goto(`${appHost}/platform/${encodeURIComponent(key)}/organizations?new=1`);
+    await page.goto(`${appHost}/platform/${encodeURIComponent(key)}/companies?new=1`);
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible({ timeout: 20_000 });
     await dialog.getByLabel(/^name/i).fill(`${stamp} Org`);
-    await dialog.getByRole("button", { name: /create|save|add organization/i }).click();
+    await dialog.getByRole("button", { name: /create|save|add company/i }).click();
     await expect(page.getByText(`${stamp} Org`).first()).toBeVisible({ timeout: 20_000 });
   });
 
@@ -95,5 +112,91 @@ test.describe.serial("crm journey", () => {
     await dialog.getByLabel(/^name/i).fill(`${stamp}-tag`);
     await dialog.getByRole("button", { name: /create|save/i }).click();
     await expect(page.getByText(`${stamp}-tag`).first()).toBeVisible({ timeout: 20_000 });
+  });
+
+  test("C6 · log a note on a company's timeline", async ({ page }) => {
+    const key = await org(page);
+    await page.goto(`${appHost}/platform/${encodeURIComponent(key)}/companies`);
+    await page
+      .getByPlaceholder(/search/i)
+      .first()
+      .fill(`${stamp} Org`);
+    await page
+      .getByRole("row")
+      .filter({ hasText: `${stamp} Org` })
+      .first()
+      .click();
+    await page.waitForURL((url) => /\/companies\/[0-9a-f-]{36}/.test(url.pathname), {
+      timeout: 20_000,
+    });
+    await page.getByRole("tab", { name: /timeline/i }).click();
+    await page.getByLabel(/activity title/i).fill(`${stamp} company note`);
+    await page.getByRole("button", { name: /^add$/i }).click();
+    await expect(page.getByText(`${stamp} company note`).first()).toBeVisible({
+      timeout: 20_000,
+    });
+  });
+
+  test("C7 · star a person and find it under Favorites", async ({ page }) => {
+    const key = await org(page);
+    await openPerson(page, key);
+    await page.getByRole("button", { name: /add to favorites/i }).click();
+    const unstar = page.getByRole("button", { name: /remove from favorites/i });
+    await expect(unstar).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole("button", { name: new RegExp(`${stamp} Person`) })).toBeVisible();
+    await unstar.click();
+    await expect(page.getByRole("button", { name: /add to favorites/i })).toBeVisible({
+      timeout: 20_000,
+    });
+  });
+
+  test("C8 · save a People view and reopen it", async ({ page }) => {
+    const key = await org(page);
+    await page.goto(`${appHost}/platform/${encodeURIComponent(key)}/people`);
+    await page.getByRole("button", { name: /^sort/i }).click();
+    await page.getByRole("menuitem", { name: /^name/i }).first().click();
+    await page.getByRole("button", { name: /save as new view/i }).click();
+    await page.getByLabel(/view name/i).fill(`${stamp} view`);
+    await page.getByLabel(/view name/i).press("Enter");
+    const picker = page.getByRole("button", { name: new RegExp(`${stamp} view`) });
+    await expect(picker).toBeVisible({ timeout: 20_000 });
+    // Back to All, then reopen the saved view: its sort comes back with it.
+    await picker.click();
+    await page.getByRole("menuitem", { name: /^all$/i }).click();
+    await page.getByRole("button", { name: /^all/i }).first().click();
+    await page.getByRole("menuitem", { name: new RegExp(`${stamp} view`) }).click();
+    await expect(page.getByRole("button", { name: /^sort.*name/i })).toBeVisible();
+    await page.getByRole("button", { name: new RegExp(`${stamp} view`) }).click();
+    await page.getByRole("menuitem", { name: /delete view/i }).click();
+    await expect(page.getByRole("button", { name: new RegExp(`${stamp} view`) })).toHaveCount(0, {
+      timeout: 20_000,
+    });
+  });
+
+  test("C9 · a person's History tab lists a field change", async ({ page }) => {
+    const key = await org(page);
+    await openPerson(page, key);
+    await page
+      .getByText(/add a job title/i)
+      .first()
+      .click();
+    await page.keyboard.type(`${stamp} title`);
+    await page.keyboard.press("Enter");
+    await expect(page.getByText(`${stamp} title`).first()).toBeVisible({ timeout: 20_000 });
+    await page.getByRole("tab", { name: /history/i }).click();
+    await expect(page.getByText("job_title").first()).toBeVisible({ timeout: 20_000 });
+  });
+
+  test("C10 · ⌘K finds the person through server search", async ({ page }) => {
+    await org(page);
+    await page.keyboard.press(process.platform === "darwin" ? "Meta+k" : "Control+k");
+    await page.getByPlaceholder(/search people, companies, deals/i).fill(stamp);
+    await page
+      .getByRole("option", { name: new RegExp(`${stamp} Person`) })
+      .first()
+      .click();
+    await page.waitForURL((url) => /\/people\/[0-9a-f-]{36}/.test(url.pathname), {
+      timeout: 20_000,
+    });
   });
 });

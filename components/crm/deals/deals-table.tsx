@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations, type Messages } from "next-intl";
 import {
   Table,
   TableBody,
@@ -20,19 +21,24 @@ import { formatCurrency, formatDate } from "@/lib/crm/format";
 import type { Deal, PipelineStage } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
 
-const HEAD = [
-  "Title",
-  "Stage",
-  "Status",
-  "Value",
-  "Person",
-  "Organization",
-  "Owner",
-  "Source",
-  "Expected close",
-  "Tags",
-  "Created",
-];
+/** View field id → table column key (`fields.*` message). */
+type Shared = "owner" | "tags" | "created";
+type Column = keyof Messages["deals"]["fields"] | Shared;
+
+const COLUMN_FOR_FIELD: Record<string, Column> = {
+  title: "title",
+  stage: "stage",
+  status: "status",
+  lead_value: "value",
+  person: "person",
+  organization: "company",
+  owner: "owner",
+  source: "source",
+  expected_close_date: "expectedClose",
+  tags: "tags",
+  created_at: "created",
+};
+const DEFAULT_COLUMNS = Object.keys(COLUMN_FOR_FIELD);
 
 /** The spreadsheet view of the pipeline — one page of deals at a time. */
 export function DealsTable({
@@ -42,6 +48,7 @@ export function DealsTable({
   personName,
   organizationName,
   sourceName,
+  columns = DEFAULT_COLUMNS,
 }: {
   deals: Deal[];
   isLoading?: boolean;
@@ -49,9 +56,15 @@ export function DealsTable({
   personName: (id?: string | null) => string;
   organizationName: (id?: string | null) => string;
   sourceName: (id?: number | null) => string;
+  /** Visible view field ids, in order (see `lib/crm/views.ts`). */
+  columns?: readonly string[];
 }) {
+  const t = useTranslations("deals");
+  const tc = useTranslations("common");
+  const locale = useLocale();
   const router = useRouter();
   const { href } = useSession();
+  const HEAD = columns.map((id) => COLUMN_FOR_FIELD[id]).filter(Boolean);
 
   return (
     <div className="overflow-hidden rounded-xl border border-[var(--border-color,#e5e7eb)] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
@@ -63,10 +76,10 @@ export function DealsTable({
                 key={h}
                 className={cn(
                   "text-[11px] font-semibold tracking-wide text-muted-foreground uppercase",
-                  h === "Value" && "text-right",
+                  h === "value" && "text-right",
                 )}
               >
-                {h}
+                {h === "owner" || h === "tags" || h === "created" ? tc(h) : t(`fields.${h}`)}
               </TableHead>
             ))}
           </TableRow>
@@ -93,61 +106,74 @@ export function DealsTable({
                     onClick={() => router.push(href(`/deals/${deal.id}`))}
                     className="cursor-pointer"
                   >
-                    <TableCell className="max-w-[16rem] font-medium text-gray-900">
-                      <span className="block truncate">{deal.title}</span>
-                    </TableCell>
-                    <TableCell>
-                      <span
+                    {HEAD.map((h) => (
+                      <TableCell
+                        key={h}
                         className={cn(
-                          "inline-flex items-center gap-1.5 rounded-md px-1.5 py-0.5 text-[11px] font-medium",
-                          stage?.is_won
-                            ? "bg-emerald-50 text-emerald-700"
-                            : stage?.is_lost
-                              ? "bg-rose-50 text-rose-700"
-                              : "bg-gray-100 text-gray-700",
+                          h === "title" && "max-w-[16rem] font-medium text-gray-900",
+                          h === "value" && "text-right font-medium tabular-nums",
+                          (h === "person" || h === "company" || h === "tags") && "max-w-[12rem]",
+                          (h === "owner" || h === "source") && "text-gray-700",
+                          h === "expectedClose" &&
+                            (overdue ? "font-medium text-rose-600" : "text-gray-700"),
+                          h === "created" && "text-muted-foreground",
                         )}
                       >
-                        {stage?.name ?? `Stage #${deal.stage}`}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <DealStatusBadge status={deal.status} />
-                    </TableCell>
-                    <TableCell className="text-right font-medium tabular-nums">
-                      {formatCurrency(deal.lead_value, deal.currency)}
-                    </TableCell>
-                    <TableCell className="max-w-[12rem]">
-                      <span className="flex min-w-0 items-center gap-1.5">
-                        <EntityAvatar name={personName(deal.person)} seed={deal.person} size="xs" />
-                        <span className="truncate">{personName(deal.person)}</span>
-                      </span>
-                    </TableCell>
-                    <TableCell className="max-w-[12rem]">
-                      {org ? (
-                        <span className="block truncate text-gray-700">{org}</span>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-gray-700">
-                      <OwnerName ownerId={deal.owner} />
-                    </TableCell>
-                    <TableCell className="text-gray-700">
-                      {source || <span className="text-muted-foreground">—</span>}
-                    </TableCell>
-                    <TableCell className={cn(overdue ? "font-medium text-rose-600" : "text-gray-700")}>
-                      {deal.expected_close_date ? formatDate(deal.expected_close_date) : "—"}
-                    </TableCell>
-                    <TableCell className="max-w-[12rem]">
-                      {deal.tags?.length ? (
-                        <TagList tags={deal.tags} size="xs" max={2} />
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatDate(deal.created_at)}
-                    </TableCell>
+                        {h === "title" ? (
+                          <span className="block truncate">{deal.title}</span>
+                        ) : h === "stage" ? (
+                          <span
+                            className={cn(
+                              "inline-flex items-center gap-1.5 rounded-md px-1.5 py-0.5 text-[11px] font-medium",
+                              stage?.is_won
+                                ? "bg-emerald-50 text-emerald-700"
+                                : stage?.is_lost
+                                  ? "bg-rose-50 text-rose-700"
+                                  : "bg-gray-100 text-gray-700",
+                            )}
+                          >
+                            {stage?.name ?? t("fields.stageFallback", { id: deal.stage })}
+                          </span>
+                        ) : h === "status" ? (
+                          <DealStatusBadge status={deal.status} />
+                        ) : h === "value" ? (
+                          formatCurrency(deal.lead_value, deal.currency, locale)
+                        ) : h === "person" ? (
+                          <span className="flex min-w-0 items-center gap-1.5">
+                            <EntityAvatar
+                              name={personName(deal.person)}
+                              seed={deal.person}
+                              size="xs"
+                            />
+                            <span className="truncate">{personName(deal.person)}</span>
+                          </span>
+                        ) : h === "company" ? (
+                          org ? (
+                            <span className="block truncate text-gray-700">{org}</span>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )
+                        ) : h === "owner" ? (
+                          <OwnerName ownerId={deal.owner} />
+                        ) : h === "source" ? (
+                          source || <span className="text-muted-foreground">—</span>
+                        ) : h === "expectedClose" ? (
+                          deal.expected_close_date ? (
+                            formatDate(deal.expected_close_date, locale)
+                          ) : (
+                            "—"
+                          )
+                        ) : h === "tags" ? (
+                          deal.tags?.length ? (
+                            <TagList tags={deal.tags} size="xs" max={2} />
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )
+                        ) : (
+                          formatDate(deal.created_at, locale)
+                        )}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 );
               })}

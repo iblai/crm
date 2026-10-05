@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { sortStages } from "@/lib/crm/format";
 import type { DealStatus, Pipeline, PipelineStage } from "@/lib/crm/types";
@@ -24,6 +25,7 @@ export function StageStepper({
   onSelect: (stage: PipelineStage) => void;
   disabled?: boolean;
 }) {
+  const t = useTranslations("deals");
   const stages = sortStages(pipeline?.stages ?? []);
   if (stages.length === 0) return null;
   const current = stages.find((s) => s.id === currentStageId);
@@ -32,7 +34,7 @@ export function StageStepper({
   return (
     <nav
       className="flex w-full flex-wrap items-center gap-1 overflow-x-auto"
-      aria-label="Pipeline stage"
+      aria-label={t("stepper.label")}
     >
       {stages.map((stage, i) => {
         const isCurrent = stage.id === currentStageId;
@@ -40,14 +42,17 @@ export function StageStepper({
         const terminalWon = stage.is_won;
         const terminalLost = stage.is_lost;
         const hint = isCurrent
-          ? `This deal is in ${stage.name}`
+          ? t("stepper.current", { stage: stage.name })
           : terminalWon
-            ? "Close this deal as won"
+            ? t("stepper.closeWon")
             : terminalLost
-              ? "Close this deal as lost"
+              ? t("stepper.closeLost")
               : typeof stage.probability === "number"
-                ? `Move this deal to ${stage.name} (${stage.probability}%)`
-                : `Move this deal to ${stage.name}`;
+                ? t("stepper.moveWithProbability", {
+                    stage: stage.name,
+                    probability: stage.probability,
+                  })
+                : t("stepper.move", { stage: stage.name });
         return (
           <Tooltip key={stage.id}>
             <TooltipTrigger
@@ -111,7 +116,7 @@ export function StageStepper({
             status === "won" ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700",
           )}
         >
-          {status === "won" ? "Closed won" : "Closed lost"}
+          {status === "won" ? t("stepper.closedWon") : t("stepper.closedLost")}
         </span>
       ) : null}
     </nav>

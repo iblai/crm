@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { usePlatformUsersQuery } from "@iblai/iblai-js/data-layer";
 import type { PlatformMember } from "@/lib/crm/types";
 
@@ -38,8 +39,19 @@ export function useMembers(tenantKey: string, options?: { skip?: boolean; query?
   return { members, byId, isLoading, isError };
 }
 
-export function memberLabel(member?: PlatformMember | null, fallbackId?: number | null) {
-  if (member) return member.name || member.username || member.email || `User ${member.id}`;
-  if (fallbackId) return `User #${fallbackId}`;
-  return "Unassigned";
+/** A member's display name, or a translated placeholder. */
+export function useMemberLabel() {
+  const t = useTranslations("shell.members");
+  return useCallback(
+    (member?: PlatformMember | null, fallbackId?: number | null) => {
+      if (member) {
+        return (
+          member.name || member.username || member.email || t("user", { id: String(member.id) })
+        );
+      }
+      if (fallbackId) return t("userId", { id: String(fallbackId) });
+      return t("unassigned");
+    },
+    [t],
+  );
 }

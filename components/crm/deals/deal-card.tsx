@@ -5,6 +5,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { CalendarDays, Clock, GripVertical, MoveRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -63,9 +64,13 @@ export function DealCard({
   handleProps?: Record<string, unknown>;
   nodeRef?: Ref<HTMLDivElement>;
 }) {
+  const t = useTranslations("deals");
+  const locale = useLocale();
   const router = useRouter();
   const { href } = useSession();
   const due = toDate(deal.expected_close_date);
+  const shortDue = formatDate(deal.expected_close_date, locale, { month: "short", day: "numeric" });
+  const fullDue = formatDate(deal.expected_close_date, locale);
   const overdue = isOverdue(deal.expected_close_date, deal.status);
   const others = (stages ?? []).filter((s) => s.id !== deal.stage);
   const showMenu = others.length > 0 && !!onMove && !overlay;
@@ -113,7 +118,7 @@ export function DealCard({
 
         <span className="mt-2.5 flex items-center justify-between gap-2">
           <span className="text-sm font-semibold tracking-tight text-gray-900 tabular-nums">
-            {formatCurrency(deal.lead_value, deal.currency)}
+            {formatCurrency(deal.lead_value, deal.currency, locale)}
           </span>
           <OwnerAvatar ownerId={deal.owner} />
         </span>
@@ -133,13 +138,12 @@ export function DealCard({
                   }
                 >
                   <CalendarDays className="size-3" />
-                  {overdue ? "Overdue · " : ""}
-                  {formatDate(deal.expected_close_date, "MMM d")}
+                  {overdue ? t("closeDate.overdue", { date: shortDue }) : shortDue}
                 </TooltipTrigger>
                 <TooltipContent>
                   {overdue
-                    ? `Expected to close ${formatDate(deal.expected_close_date)} — that date has passed`
-                    : `Expected to close ${formatDate(deal.expected_close_date)}`}
+                    ? t("closeDate.expectedPassed", { date: fullDue })
+                    : t("closeDate.expected", { date: fullDue })}
                 </TooltipContent>
               </Tooltip>
             ) : null}
@@ -150,12 +154,12 @@ export function DealCard({
                     <span className="inline-flex cursor-default items-center gap-1 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700" />
                   }
                 >
-                  <Clock className="size-3" /> Stale
+                  <Clock className="size-3" /> {t("card.stale")}
                 </TooltipTrigger>
                 <TooltipContent>
                   {rottenDays
-                    ? `No movement for ${rottenDays} days — the pipeline's rotten threshold`
-                    : "No movement since the pipeline's rotten threshold"}
+                    ? t("card.staleHint", { days: rottenDays })
+                    : t("card.staleHintNoDays")}
                 </TooltipContent>
               </Tooltip>
             ) : null}
@@ -180,7 +184,7 @@ export function DealCard({
                       <Button
                         variant="ghost"
                         size="icon-xs"
-                        aria-label="Move deal to another stage"
+                        aria-label={t("card.moveLabel")}
                         className="text-gray-400 opacity-0 group-hover/card:opacity-100 aria-expanded:opacity-100"
                       />
                     }
@@ -190,11 +194,11 @@ export function DealCard({
               >
                 <MoveRight />
               </TooltipTrigger>
-              <TooltipContent>Move to another stage without dragging</TooltipContent>
+              <TooltipContent>{t("card.moveHint")}</TooltipContent>
             </Tooltip>
             <DropdownMenuContent align="end">
               <DropdownMenuGroup>
-                <DropdownMenuLabel>Move to…</DropdownMenuLabel>
+                <DropdownMenuLabel>{t("card.moveTo")}</DropdownMenuLabel>
                 {others.map((s) => (
                   <DropdownMenuItem key={s.id} onClick={() => onMove?.(s.id)}>
                     <span

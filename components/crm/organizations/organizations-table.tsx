@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
 import { OwnerName } from "@/components/crm/owner-select";
@@ -32,14 +33,18 @@ export function OrganizationsTable({
   isLoading?: boolean;
   skeletonRows?: number;
 }) {
+  const t = useTranslations("companies");
+  const tc = useTranslations("common");
+  const locale = useLocale();
   const router = useRouter();
   const { href } = useSession();
+  const headings = [tc("name"), t("table.location"), tc("owner"), tc("tags"), tc("created")];
 
   return (
     <table className="w-full min-w-[48rem] border-separate border-spacing-0 text-sm">
       <thead className="sticky top-0 z-10 bg-white">
         <tr>
-          {["Name", "Location", "Owner", "Tags", "Created"].map((h) => (
+          {headings.map((h) => (
             <th key={h} scope="col" className={th}>
               {h}
             </th>
@@ -68,9 +73,9 @@ export function OrganizationsTable({
               return (
                 <tr
                   key={o.id}
-                  onClick={() => router.push(href(`/organizations/${o.id}`))}
+                  onClick={() => router.push(href(`/companies/${o.id}`))}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") router.push(href(`/organizations/${o.id}`));
+                    if (e.key === "Enter") router.push(href(`/companies/${o.id}`));
                   }}
                   tabIndex={0}
                   className="cursor-pointer transition-colors outline-none hover:bg-gray-50 focus-visible:bg-gray-50"
@@ -94,7 +99,9 @@ export function OrganizationsTable({
                       <span className="text-muted-foreground">—</span>
                     )}
                   </td>
-                  <td className={`${td} text-muted-foreground`}>{formatDate(o.created_at)}</td>
+                  <td className={`${td} text-muted-foreground`}>
+                    {formatDate(o.created_at, locale)}
+                  </td>
                 </tr>
               );
             })}

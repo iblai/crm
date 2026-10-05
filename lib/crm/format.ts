@@ -1,11 +1,16 @@
-import { format, formatDistanceToNowStrict, isPast, isToday, isTomorrow, parseISO } from "date-fns";
-import type { Deal, PipelineStage, TagChip } from "./types";
+import { isPast, isToday, isTomorrow, parseISO } from "date-fns";
+import type { PipelineStage, TagChip } from "./types";
 
-export function formatCurrency(value: string | number | null | undefined, currency = "USD") {
+/** `locale` is the active UI locale; `undefined` falls back to the browser's. */
+export function formatCurrency(
+  value: string | number | null | undefined,
+  currency = "USD",
+  locale?: string,
+) {
   const n = typeof value === "string" ? parseFloat(value) : (value ?? 0);
   if (!Number.isFinite(n)) return "—";
   try {
-    return new Intl.NumberFormat(undefined, {
+    return new Intl.NumberFormat(locale, {
       style: "currency",
       currency: currency || "USD",
       maximumFractionDigits: n % 1 === 0 ? 0 : 2,
@@ -15,12 +20,13 @@ export function formatCurrency(value: string | number | null | undefined, curren
   }
 }
 
-export function formatCompactCurrency(value: number, currency = "USD") {
+export function formatCompactCurrency(value: number, currency = "USD", locale?: string) {
   try {
-    return new Intl.NumberFormat(undefined, {
+    return new Intl.NumberFormat(locale, {
       style: "currency",
       currency: currency || "USD",
       notation: "compact",
+      minimumFractionDigits: 0,
       maximumFractionDigits: 1,
     }).format(value);
   } catch {
@@ -38,32 +44,57 @@ export function toDate(value?: string | null): Date | null {
   }
 }
 
-export function formatDate(value?: string | null, pattern = "MMM d, yyyy") {
+export function formatDate(
+  value?: string | null,
+  locale?: string,
+  options: Intl.DateTimeFormatOptions = { dateStyle: "medium" },
+) {
   const d = toDate(value);
-  return d ? format(d, pattern) : "—";
+  return d ? new Intl.DateTimeFormat(locale, options).format(d) : "—";
 }
 
-export function formatDateTime(value?: string | null) {
-  const d = toDate(value);
-  return d ? format(d, "MMM d, yyyy · h:mm a") : "—";
+export function formatDateTime(value?: string | null, locale?: string) {
+  return formatDate(value, locale, { dateStyle: "medium", timeStyle: "short" });
 }
 
-export function formatRelative(value?: string | null) {
+export function formatTime(value?: string | null, locale?: string) {
+  return formatDate(value, locale, { timeStyle: "short" });
+}
+
+const RELATIVE_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
+  ["year", 365 * 24 * 60 * 60],
+  ["month", 30 * 24 * 60 * 60],
+  ["week", 7 * 24 * 60 * 60],
+  ["day", 24 * 60 * 60],
+  ["hour", 60 * 60],
+  ["minute", 60],
+];
+
+/** "3 days ago", "in 2 hours", "now" — in the active locale. */
+export function formatRelative(value?: string | null, locale?: string, now: Date = new Date()) {
   const d = toDate(value);
   if (!d) return "—";
-  const rel = formatDistanceToNowStrict(d, { addSuffix: true });
-  return rel;
+  const seconds = Math.round((d.getTime() - now.getTime()) / 1000);
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  for (const [unit, size] of RELATIVE_UNITS) {
+    if (Math.abs(seconds) >= size) return rtf.format(Math.round(seconds / size), unit);
+  }
+  return rtf.format(0, "second");
 }
 
-/** "Today", "Tomorrow", "Overdue · Sep 3" style label for scheduled work. */
-export function scheduleLabel(value?: string | null, done = false) {
+export type ScheduleKind = "unscheduled" | "today" | "tomorrow" | "overdue" | "date";
+
+/** Where a scheduled activity stands; the caller words it (`activities.schedule.*`). */
+export function scheduleState(
+  value?: string | null,
+  done = false,
+): { kind: ScheduleKind; date: Date | null } {
   const d = toDate(value);
-  if (!d) return { label: "Unscheduled", tone: "muted" as const };
-  if (isToday(d)) return { label: `Today · ${format(d, "h:mm a")}`, tone: "today" as const };
-  if (isTomorrow(d)) return { label: `Tomorrow · ${format(d, "h:mm a")}`, tone: "soon" as const };
-  if (!done && isPast(d))
-    return { label: `Overdue · ${format(d, "MMM d")}`, tone: "overdue" as const };
-  return { label: format(d, "MMM d, yyyy"), tone: "muted" as const };
+  if (!d) return { kind: "unscheduled", date: null };
+  if (isToday(d)) return { kind: "today", date: d };
+  if (isTomorrow(d)) return { kind: "tomorrow", date: d };
+  if (!done && isPast(d)) return { kind: "overdue", date: d };
+  return { kind: "date", date: d };
 }
 
 export function initials(name?: string | null) {
@@ -109,25 +140,8 @@ export function tagStyle(tag: Pick<TagChip, "color">) {
   return { backgroundColor: `${color}1f`, color, borderColor: `${color}55` };
 }
 
-export function dealValue(deal: Pick<Deal, "lead_value">) {
-  const n = parseFloat(deal.lead_value ?? "0");
-  return Number.isFinite(n) ? n : 0;
-}
-
-export function weightedValue(
-  deal: Pick<Deal, "lead_value">,
-  stage?: Pick<PipelineStage, "probability">,
-) {
-  const p = (stage?.probability ?? 0) / 100;
-  return dealValue(deal) * p;
-}
-
 export function sortStages<T extends Pick<PipelineStage, "sort_order" | "id">>(stages: T[]) {
   return [...stages].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.id - b.id);
-}
-
-export function pluralize(n: number, one: string, many = `${one}s`) {
-  return `${n} ${n === 1 ? one : many}`;
 }
 
 export function truncate(s: string | undefined | null, max = 60) {
@@ -136,7 +150,11 @@ export function truncate(s: string | undefined | null, max = 60) {
 }
 
 /** An open deal whose expected close date has passed. */
-export function isOverdue(expectedCloseDate?: string | null, status?: string, now: Date = new Date()) {
+export function isOverdue(
+  expectedCloseDate?: string | null,
+  status?: string,
+  now: Date = new Date(),
+) {
   if (status && status !== "open") return false;
   const d = toDate(expectedCloseDate);
   return !!d && d.getTime() < now.getTime();

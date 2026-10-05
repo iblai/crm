@@ -1,0 +1,1018 @@
+{
+  "activities": {
+    "composer": {
+      "add": "Add",
+      "detailsPlaceholder": "Details, outcome, next steps…",
+      "needsTime": "— needs a time",
+      "placeholder": "{type, select, note {Write a note…} call {Log a call…} meeting {Log a meeting…} email {Log an email…} task {Log a task…} lunch {Log a lunch…} deadline {Log a deadline…} other {Log an activity…}}",
+      "remind": "Remind the owner at the scheduled time",
+      "reminderHint": "A reminder is sent to the owner at the scheduled time",
+      "reminderNeedsWhen": "Set a time under “When” first",
+      "titleLabel": "Activity title",
+      "when": "When",
+      "whenAbout": "About the when field",
+      "whenHint": "Leave empty to log it now; set a time to schedule it"
+    },
+    "confirm": {
+      "deleteDescription": "“{title}” will be removed from the timeline.",
+      "deleteTitle": "Delete this activity?"
+    },
+    "dialog": {
+      "alreadyDone": "Already done",
+      "company": "Company",
+      "create": "Create activity",
+      "deal": "Deal",
+      "description": "Calls, meetings, tasks and notes always belong to a person or a deal.",
+      "detailsPlaceholder": "Agenda, outcome, next steps…",
+      "editTitle": "Edit activity",
+      "ends": "Ends",
+      "linkHint": "Pick a person, a deal, or both.",
+      "linkRequired": "Attach the activity to a person, a company or a deal.",
+      "noCompany": "No company",
+      "noDeal": "No deal",
+      "noPerson": "No person",
+      "ownerAbout": "About the owner field",
+      "ownerHint": "Whose list this shows up on under “Mine”",
+      "person": "Person",
+      "remind": "Remind the owner",
+      "remindOff": "Set a start time to enable reminders.",
+      "remindOn": "A reminder is sent at the start time.",
+      "saveChanges": "Save changes",
+      "starts": "Starts",
+      "startsAbout": "About the start time",
+      "startsHint": "Leave empty for unscheduled work; a time is needed for reminders",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Intro call with the team…",
+      "titleRequired": "A title is required.",
+      "type": "Type",
+      "typeAbout": "About the type field"
+    },
+    "list": {
+      "allHint": "All — open and done together",
+      "allTypes": "All types",
+      "description": "Calls, meetings, tasks and notes across every deal and contact",
+      "doneHint": "Done — already completed",
+      "emptyEveryone": "Nothing matches these filters. Widen the date range, or log a call or task from a person or deal page.",
+      "emptyMine": "Nothing of yours matches these filters. Try “Everyone”, widen the date range, or log a call or task from a person or deal page.",
+      "emptyTitle": "Nothing scheduled here",
+      "everyone": "Everyone",
+      "everyoneHint": "Everyone — activities owned by anyone on the team",
+      "mine": "Mine",
+      "mineHint": "Mine — activities you own",
+      "newHint": "Log a call or note, or schedule a task or meeting",
+      "openHint": "Open — still to do",
+      "paginationLabel": "activities",
+      "rangeLabel": "Date range",
+      "refreshing": "Refreshing…",
+      "scopeLabel": "Owner scope",
+      "statusLabel": "Status"
+    },
+    "location": "Location / link",
+    "locationPlaceholder": "Zoom, office, phone…",
+    "newActivity": "New activity",
+    "range": {
+      "all": "All dates",
+      "next7": "Next 7 days",
+      "week": "This week"
+    },
+    "schedule": {
+      "overdue": "Overdue · {date}",
+      "today": "Today · {time}",
+      "tomorrow": "Tomorrow · {time}"
+    },
+    "sections": {
+      "overdueAbout": "About overdue",
+      "overdueInfo": "Scheduled before today and still not done.",
+      "todayAbout": "About today",
+      "todayInfo": "Scheduled for today and still open.",
+      "unscheduledAbout": "About unscheduled",
+      "unscheduledInfo": "Open work with no date yet — newest first.",
+      "upcoming": "Upcoming",
+      "upcomingAbout": "About upcoming",
+      "upcomingInfo": "Scheduled after today."
+    },
+    "timeline": {
+      "dealLink": "Deal #{id}",
+      "doneAgo": "done {when}",
+      "empty": "No activity yet. Log a call, schedule a meeting, or leave a note above.",
+      "historyAbout": "About the history",
+      "historyHint": "Everything already done, newest first — notes land here too",
+      "loggedAgo": "logged {when}",
+      "markDone": "Mark done",
+      "markDoneLabel": "Mark as done",
+      "markNotDone": "Mark not done",
+      "markNotDoneLabel": "Mark as not done",
+      "moreHint": "More actions for this activity",
+      "openAbout": "About open activities",
+      "openHint": "Not done yet — tick the circle to complete one",
+      "viewPerson": "View person"
+    },
+    "toast": {
+      "created": "Activity created",
+      "deleted": "Activity deleted",
+      "logged": "Activity logged",
+      "noteAdded": "Note added",
+      "updated": "Activity updated"
+    },
+    "typeHint": "Notes are logged as done; calls, meetings and tasks can be scheduled",
+    "typeLabel": "Activity type"
+  },
+  "admin": {
+    "users": {
+      "description": "Members, groups, roles and policies of this organization — including the CRM Viewer, User, Manager and Inviter roles",
+      "invite": "Invite user",
+      "pendingInvites": "Pending invites",
+      "title": "Users & roles"
+    }
+  },
+  "auth": {
+    "completingSignIn": "Completing sign-in…"
+  },
+  "breadcrumbs": {
+    "admin": "Admin",
+    "label": "Breadcrumb",
+    "notifications": "Notifications",
+    "users": "Users & roles"
+  },
+  "common": {
+    "admin": "Admin",
+    "all": "All",
+    "cancel": "Cancel",
+    "clear": "Clear",
+    "clearFilters": "Clear filters",
+    "clearSearch": "Clear search",
+    "clickToEdit": "Click to edit",
+    "confirm": "Confirm",
+    "create": "Create",
+    "created": "Created",
+    "delete": "Delete",
+    "deletedToast": "{name} deleted",
+    "description": "Description",
+    "details": "Details",
+    "done": "Done",
+    "edit": "Edit",
+    "email": "Email",
+    "empty": "Empty",
+    "errorForbidden": "You don’t have permission to do that",
+    "errorGeneric": "Something went wrong",
+    "history": "History",
+    "loading": "Loading…",
+    "me": "me",
+    "member": "Member",
+    "moreActions": "More actions",
+    "name": "Name",
+    "next": "Next",
+    "no": "No",
+    "none": "None",
+    "open": "Open",
+    "overdue": "Overdue",
+    "owner": "Owner",
+    "page": "Page {page} of {total}",
+    "previous": "Previous",
+    "remove": "Remove",
+    "save": "Save",
+    "search": "Search",
+    "showing": "{from}–{to} of {count, plural, one {# {label}} other {# {label}}}",
+    "tags": "Tags",
+    "timeline": "Timeline",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "unscheduled": "Unscheduled",
+    "updated": "Updated",
+    "user": "User",
+    "yes": "Yes"
+  },
+  "companies": {
+    "actions": {
+      "new": "New company",
+      "newHint": "Add a company, then attach its people and deals"
+    },
+    "address": {
+      "add": {
+        "city": "Add a city",
+        "country": "Add a country",
+        "postalCode": "Add a postal code",
+        "state": "Add a state",
+        "street": "Add a street"
+      },
+      "city": "City",
+      "country": "Country",
+      "example": {
+        "city": "Boston",
+        "country": "United States",
+        "postalCode": "02110",
+        "state": "MA",
+        "street": "1 Innovation Way"
+      },
+      "postalCode": "Postal code",
+      "state": "State / region",
+      "street": "Street"
+    },
+    "detail": {
+      "addPerson": "Add person",
+      "addPersonHint": "Create a contact already attached to this company",
+      "back": "Back to Companies",
+      "breadcrumb": "Company",
+      "delete": "Delete company",
+      "deleteError": "Could not delete this company",
+      "deleteHint": "The company is removed. Its people and deals stay in the CRM — they simply lose their company.",
+      "deleteTitle": "Delete {name}?",
+      "moreHint": "Delete this company",
+      "noDeals": "No deal is open with {name} yet.",
+      "noPeople": "No people here yet",
+      "noPeopleHint": "Add the contacts you work with at {name}.",
+      "notFound": "This company no longer exists",
+      "notFoundHint": "It may have been deleted by someone else on your team.",
+      "ownerHint": "The teammate responsible for this company.",
+      "peopleCount": "{count, plural, one {# person} other {# people}}",
+      "unnamed": "Unnamed company"
+    },
+    "dialog": {
+      "added": "{name} added",
+      "createError": "Could not create this company",
+      "description": "Companies group the people you talk to and the deals you run with them.",
+      "namePlaceholder": "Acme University",
+      "submit": "Create company"
+    },
+    "list": {
+      "addFirst": "Add your first company",
+      "description": "The companies your people and deals belong to",
+      "emptyHint": "Add the companies you sell to, then attach people and deals to them.",
+      "emptyTitle": "No companies yet",
+      "noMatchFilters": "No companies match these filters",
+      "noMatchFiltersHint": "Try a different name, owner or tag.",
+      "paginationLabel": "companies",
+      "searchLabel": "Search companies",
+      "searchPlaceholder": "Search companies by name…"
+    },
+    "table": {
+      "location": "Location"
+    }
+  },
+  "dashboard": {
+    "actions": {
+      "logActivity": "Log activity",
+      "logActivityHint": "Record a call or note, or schedule a task or meeting",
+      "newDeal": "New deal",
+      "newDealHint": "Open a deal for a person; it starts in the first stage"
+    },
+    "onboarding": {
+      "addPerson": "Add a person",
+      "body": "Start by adding a person, then open a deal for them. Everything else — companies, activities and tags — hangs off those two.",
+      "createDeal": "Create a deal",
+      "steps": {
+        "activity": {
+          "body": "Calls, meetings and notes keep the history honest.",
+          "title": "Log activity"
+        },
+        "deals": {
+          "body": "Track opportunities through your pipeline stages.",
+          "title": "Open deals"
+        },
+        "people": {
+          "body": "Contacts are the anchor of every deal and activity.",
+          "title": "Add people"
+        }
+      },
+      "title": "Your CRM is ready"
+    },
+    "panel": {
+      "aboutThisPanel": "About this panel",
+      "viewAll": "View all"
+    },
+    "panels": {
+      "byStage": {
+        "defaultPipeline": "Default pipeline",
+        "empty": "No open deals in this pipeline yet.",
+        "info": "Open deals in the default pipeline, by stage.",
+        "link": "Open board",
+        "title": "Deals by stage",
+        "titleText": "deals by stage",
+        "tooltip": "{count, plural, one {# deal} other {# deals}} · {value}"
+      },
+      "recentDeals": {
+        "empty": "No deals yet.",
+        "meta": "{person} · added {when}",
+        "title": "Recent deals"
+      },
+      "recentPeople": {
+        "empty": "No people yet.",
+        "title": "Recently added people"
+      },
+      "upNext": {
+        "description": "Open, scheduled work",
+        "empty": "Nothing scheduled. You are all caught up.",
+        "info": "The soonest open activities scheduled across the organization.",
+        "title": "Up next",
+        "titleText": "up next"
+      },
+      "wonLost": {
+        "description": "Last 6 months",
+        "empty": "Nothing closed in the last six months.",
+        "info": "Deals closed in the last 6 months, by close date.",
+        "lostDetail": "Lost {count} · {value}",
+        "title": "Won vs lost",
+        "titleText": "won versus lost deals",
+        "wonDetail": "Won {count} · {value}"
+      }
+    },
+    "period": {
+      "30d": "Last 30 days",
+      "7d": "Last 7 days",
+      "90d": "Last 90 days",
+      "label": "Period",
+      "month": "This month",
+      "today": "Today"
+    },
+    "stats": {
+      "dueToday": {
+        "hint": "{count, plural, =0 {nothing overdue} one {# overdue item} other {# overdue items}}",
+        "info": "Open activities scheduled for today; overdue counts what is past due.",
+        "label": "Due today",
+        "labelText": "activities due today"
+      },
+      "openDeals": {
+        "hint": "in every pipeline",
+        "info": "Deals that are neither won nor lost yet.",
+        "label": "Open deals",
+        "labelText": "open deals"
+      },
+      "people": {
+        "hint": "contacts on record",
+        "info": "Every contact in this organization.",
+        "label": "People",
+        "labelText": "people"
+      },
+      "pipelineValue": {
+        "info": "Sum of open deals’ values.",
+        "label": "Pipeline value",
+        "labelText": "pipeline value"
+      },
+      "weighted": {
+        "hint": "by stage probability",
+        "info": "Each open deal multiplied by its stage probability.",
+        "label": "Weighted",
+        "labelText": "weighted pipeline"
+      },
+      "won": {
+        "info": "Deals closed as won in the chosen period, by close date.",
+        "label": "Won · {period}",
+        "labelText": "deals won · {period}"
+      }
+    },
+    "welcome": "Welcome back",
+    "welcomeNamed": "Welcome back, {name}"
+  },
+  "deals": {
+    "actions": {
+      "markLost": "Mark lost",
+      "markWon": "Mark won",
+      "reopen": "Reopen"
+    },
+    "board": {
+      "countInStage": "{count, plural, one {# deal in this stage} other {# deals in this stage}}",
+      "dropHint": "Drag a deal here to move it to {stage}",
+      "moreCards": "{count, plural, one {# more deal} other {# more deals}}",
+      "noStages": "This pipeline has no stages yet. An admin can add them in Settings.",
+      "probabilityHint": "Win probability used for the weighted pipeline",
+      "probabilityLabel": "What {probability}% means",
+      "stageLabel": "{stage} stage",
+      "totalHint": "Total value of the deals in this stage"
+    },
+    "card": {
+      "moveHint": "Move to another stage without dragging",
+      "moveLabel": "Move deal to another stage",
+      "moveTo": "Move to…",
+      "stale": "Stale",
+      "staleHint": "{days, plural, one {No movement for # day — the pipeline’s rotten threshold} other {No movement for # days — the pipeline’s rotten threshold}}",
+      "staleHintNoDays": "No movement since the pipeline’s rotten threshold"
+    },
+    "closeDate": {
+      "closes": "Closes {date}",
+      "expected": "Expected to close {date}",
+      "expectedPassed": "Expected to close {date} — that date has passed",
+      "overdue": "Overdue · {date}"
+    },
+    "confirm": {
+      "deleteDescription": "“{title}” and its activity will be permanently removed.",
+      "deleteTitle": "Delete this deal?",
+      "move": "Move",
+      "moveDescription": "“{title}” moves to {stage}.",
+      "moveTitle": "Move to {stage}?",
+      "moveWonDescription": "“{title}” moves to {stage} and closes as won.",
+      "reopenDescription": "The deal reopens in “{stage}” and its close date is cleared.",
+      "reopenTitle": "Reopen this deal?",
+      "stage": "stage",
+      "thisStage": "this stage",
+      "wonDescription": "“{title}” closes as won at {value}.",
+      "wonTitle": "Mark this deal won?"
+    },
+    "deal": "Deal",
+    "detail": {
+      "activity": "Activity",
+      "backToDeals": "Back to deals",
+      "deleteHint": "Delete this deal and its activity — this cannot be undone",
+      "deleteLabel": "Delete deal",
+      "descriptionPlaceholder": "Add a description",
+      "expectedCloseHint": "Turns red once the date passes while the deal is open.",
+      "firstStage": "the first stage",
+      "markLostHint": "Close the deal as lost — you are asked for a reason",
+      "markWonHint": "Close the deal as won at its current value",
+      "noDate": "No date",
+      "noValue": "No value",
+      "notFoundDescription": "This deal may have been deleted, or it belongs to another organization.",
+      "notFoundTitle": "Deal not found",
+      "openCompany": "Open company",
+      "reopenHint": "Put the deal back in {stage} and clear its close date",
+      "sourceHint": "Where this deal came from; managed in Settings.",
+      "stageHint": "Move the deal with the stage pills above.",
+      "tagsHint": "Shared labels; manage them under Tags.",
+      "untitled": "Untitled deal"
+    },
+    "dialog": {
+      "currencyHint": "Set per deal — totals are added up as-is, not converted",
+      "description": "Deals belong to a person and live in one stage of a pipeline.",
+      "descriptionPlaceholder": "What is this deal about?",
+      "expectedCloseHint": "When you expect to close; the card flags it once it passes",
+      "fieldAbout": "About the {field} field",
+      "personHint": "Every deal belongs to one person; add them first under People",
+      "personPlaceholder": "Search for a person…",
+      "pipelineHint": "The set of stages this deal moves through",
+      "sourceHint": "Where the deal came from; admins manage the list in Settings",
+      "stageHint": "Deals start here; move them from the board",
+      "submit": "Create deal",
+      "titlePlaceholder": "Enterprise licence — 25 seats",
+      "valueHint": "What the deal is worth; it feeds the pipeline totals"
+    },
+    "fields": {
+      "closedAt": "Closed at",
+      "company": "Company",
+      "currency": "Currency",
+      "expectedClose": "Expected close",
+      "lostReason": "Lost reason",
+      "noCompany": "No company",
+      "noSource": "No source",
+      "person": "Person",
+      "pipeline": "Pipeline",
+      "source": "Source",
+      "sourceFallback": "Source #{id}",
+      "stage": "Stage",
+      "stageFallback": "Stage #{id}",
+      "status": "Status",
+      "title": "Title",
+      "value": "Value"
+    },
+    "list": {
+      "description": "Opportunities moving through your pipeline stages",
+      "emptyDescription": "Open a deal for a person — it starts in the first stage, and you move it along the board as things progress.",
+      "emptyTitle": "No deals yet",
+      "kanbanView": "Kanban view",
+      "newHint": "Open a deal for a person; it starts in the first stage",
+      "noMatches": "No deals match these filters.",
+      "paginationLabel": "deals",
+      "searchLabel": "Search deals by title",
+      "searchPlaceholder": "Search deals…",
+      "tableView": "Table view",
+      "tag": "Tag"
+    },
+    "lost": {
+      "description": "The deal closes and moves to the lost stage. The reason is kept on the record.",
+      "reason": "Reason",
+      "reasonPlaceholder": "Why was this deal lost?",
+      "suggestions": {
+        "badTiming": "Bad timing",
+        "competitor": "Lost to a competitor",
+        "noBudget": "No budget",
+        "noDecision": "No decision",
+        "price": "Price"
+      },
+      "title": "Mark this deal lost?"
+    },
+    "newDeal": "New deal",
+    "owner": {
+      "anyone": "Anyone",
+      "me": "Me",
+      "self": "{name} (me)",
+      "unassigned": "Unassigned"
+    },
+    "stepper": {
+      "closeLost": "Close this deal as lost",
+      "closeWon": "Close this deal as won",
+      "closedLost": "Closed lost",
+      "closedWon": "Closed won",
+      "current": "This deal is in {stage}",
+      "label": "Pipeline stage",
+      "move": "Move this deal to {stage}",
+      "moveWithProbability": "Move this deal to {stage} ({probability}%)"
+    },
+    "toast": {
+      "createFailed": "Could not create the deal",
+      "created": "Deal “{title}” created",
+      "deleted": "Deal deleted",
+      "lost": "Deal marked lost",
+      "moveFailed": "Could not move the deal",
+      "moved": "Moved to {stage}",
+      "reopened": "Deal reopened",
+      "won": "Deal won 🎉"
+    },
+    "unknownPerson": "Unknown person"
+  },
+  "enums": {
+    "activityType": {
+      "call": "Call",
+      "deadline": "Deadline",
+      "email": "Email",
+      "lunch": "Lunch",
+      "meeting": "Meeting",
+      "note": "Note",
+      "task": "Task"
+    },
+    "dealStatus": {
+      "lost": "Lost",
+      "open": "Open",
+      "won": "Won"
+    },
+    "lifecycle": {
+      "churned": "Churned",
+      "customer": "Customer",
+      "lead": "Lead",
+      "opportunity": "Opportunity",
+      "qualified": "Qualified"
+    }
+  },
+  "errors": {
+    "badRequest": {
+      "body": "Something in that link was not right.",
+      "title": "Bad request"
+    },
+    "code": "Error {code}",
+    "fallbackBody": "Please try again.",
+    "forbidden": {
+      "body": "Your account is not a member of the organization you asked for, or the organization refused the sign-in. Switch to another organization or sign in with a different account.",
+      "title": "No access to this organization"
+    },
+    "goHome": "Go home",
+    "notFound": {
+      "body": "We could not find what you were looking for.",
+      "title": "Not found"
+    },
+    "signInAgain": "Sign in again"
+  },
+  "favorites": {
+    "add": "Add to favorites",
+    "remove": "Remove from favorites",
+    "title": "Favorites"
+  },
+  "fields": {
+    "about": "About {label}",
+    "aboutThisField": "About this field",
+    "aboutThisMetric": "About this metric",
+    "activities": {
+      "created_at": "Created",
+      "deal": "Deal",
+      "is_done": "Done",
+      "organization": "Company",
+      "owner": "Owner",
+      "person": "Person",
+      "schedule_from": "Scheduled",
+      "title": "Title",
+      "type": "Type"
+    },
+    "allTags": "All tags",
+    "deals": {
+      "created_at": "Created",
+      "expected_close_date": "Expected close",
+      "lead_value": "Value",
+      "organization": "Company",
+      "owner": "Owner",
+      "person": "Person",
+      "source": "Source",
+      "stage": "Stage",
+      "status": "Status",
+      "tags": "Tags",
+      "title": "Title"
+    },
+    "filterByTag": "Filter by tag",
+    "organizations": {
+      "created_at": "Created",
+      "name": "Name",
+      "owner": "Owner",
+      "tags": "Tags",
+      "updated_at": "Updated"
+    },
+    "owner": {
+      "me": "Me",
+      "meOption": "{name} (me)",
+      "unassigned": "Unassigned",
+      "user": "User #{id}"
+    },
+    "pagination": {
+      "items": "items",
+      "none": "No {label}"
+    },
+    "persons": {
+      "active": "Active",
+      "created_at": "Created",
+      "job_title": "Job title",
+      "lifecycle_stage": "Lifecycle",
+      "name": "Name",
+      "organization": "Company",
+      "owner": "Owner",
+      "primary_email": "Email",
+      "tags": "Tags",
+      "updated_at": "Updated"
+    },
+    "saveError": "Could not save this change",
+    "select": "Select…",
+    "tags": {
+      "add": "Add",
+      "addTag": "Add tag",
+      "create": "Create “{name}”",
+      "created": "Tag “{name}” created",
+      "noMatch": "No matching tag.",
+      "none": "No tags yet.",
+      "pickerHint": "Attach an existing tag or create one",
+      "remove": "Remove tag {name}",
+      "search": "Find or create a tag…"
+    },
+    "tagsHint": "Shared labels; manage them under Tags.",
+    "whatIsThis": "What is this?"
+  },
+  "history": {
+    "action": {
+      "access": "viewed this record",
+      "create": "created this record",
+      "delete": "deleted this record",
+      "update": "changed"
+    },
+    "empty": "empty",
+    "emptyDescription": "Every change to this record will be listed here.",
+    "emptyTitle": "No history yet",
+    "system": "System"
+  },
+  "language": {
+    "hint": "Language for this and the other ibl.ai apps",
+    "label": "Language"
+  },
+  "nav": {
+    "activities": "Activities",
+    "companies": "Companies",
+    "deals": "Deals",
+    "home": "Home",
+    "people": "People",
+    "search": "Search",
+    "settings": "Settings",
+    "tags": "Tags"
+  },
+  "notifications": {
+    "description": "CRM events and platform alerts for you",
+    "title": "Notifications"
+  },
+  "palette": {
+    "description": "Search people, companies and deals, or jump to a page.",
+    "goTo": "Go to",
+    "newActivity": "New activity",
+    "newCompany": "New company",
+    "newDeal": "New deal",
+    "newPerson": "New person",
+    "noResults": "No results.",
+    "placeholder": "Search people, companies, deals…",
+    "toClose": "to close",
+    "toNavigate": "to navigate",
+    "toOpen": "to open"
+  },
+  "people": {
+    "actions": {
+      "new": "New person",
+      "newHint": "Add a contact — deals and activities hang off people"
+    },
+    "dealsTable": {
+      "count": "{count, plural, one {# deal} other {# deals}}",
+      "deal": "Deal",
+      "empty": "No deals yet",
+      "emptyHint": "Open a deal to start tracking this relationship’s pipeline.",
+      "expectedClose": "Expected close",
+      "newDeal": "New deal",
+      "stage": "Stage",
+      "stageFallback": "Stage #{id}",
+      "status": "Status",
+      "value": "Value"
+    },
+    "detail": {
+      "addEmail": "Add an email",
+      "addEmails": "Add emails, comma separated",
+      "addExternalId": "Add an external id",
+      "addJobTitle": "Add a job title",
+      "addPhones": "Add phone numbers",
+      "alreadyLinked": "Already linked to a platform user",
+      "back": "Back to People",
+      "breadcrumb": "Person",
+      "commaSeparated": "Comma-separated.",
+      "delete": "Delete person",
+      "deleteError": "Could not delete this person",
+      "deleteHint": "The person, their activities and their tag assignments are removed. Deals stay, but lose their contact.",
+      "deleteTitle": "Delete {name}?",
+      "externalId": "External id",
+      "externalIdHint": "Id from another system, unique per organization.",
+      "inactive": "Inactive",
+      "inactiveHint": "Archived — kept for history, not worked any more",
+      "invite": "Invite to platform",
+      "inviteDisabled": "Invite to platform — {reason}",
+      "inviteHint": "Emails an ibl.ai invitation; the person becomes a platform user",
+      "lifecycleHint": "How far along this contact is: {lead} → {qualified} → {opportunity} → {customer} · {churned}.",
+      "linkUser": "Link to user",
+      "linkedUser": "Linked to platform user #{id}",
+      "linkedUserHint": "This person can sign in to the platform",
+      "merge": "Merge duplicates",
+      "moreHint": "Link to a user, merge duplicates, delete",
+      "needsEmail": "Add a primary email first",
+      "noDeals": "No deal is open with {name} yet.",
+      "notFound": "This person no longer exists",
+      "notFoundHint": "The record may have been deleted or merged into another person.",
+      "openCompany": "Open company",
+      "openCompanyNamed": "Open {name}",
+      "otherEmails": "Other emails",
+      "ownerHint": "The teammate responsible for this contact.",
+      "phones": "Phones",
+      "unnamed": "Unnamed person"
+    },
+    "dialog": {
+      "added": "{name} added",
+      "createError": "Could not create this person",
+      "description": "Add a contact to the CRM. You can fill in the rest on their record.",
+      "emailPlaceholder": "ada@example.com",
+      "jobTitlePlaceholder": "Head of Learning",
+      "namePlaceholder": "Ada Lovelace",
+      "submit": "Create person"
+    },
+    "fields": {
+      "company": "Company",
+      "jobTitle": "Job title",
+      "lifecycle": "Lifecycle",
+      "lifecycleStage": "Lifecycle stage",
+      "noCompany": "No company"
+    },
+    "invite": {
+      "alreadyLinked": "This person is already linked to a platform user",
+      "asAdmin": "Invite as admin",
+      "body": "We’ll email an invitation to <b>{email}</b>. When they accept, their account is linked to this record.",
+      "error": "Could not send the invitation",
+      "exists": "An invitation already exists for this person",
+      "sent": "Invitation sent to {email}",
+      "submit": "Send invitation",
+      "title": "Invite {name} to the platform?"
+    },
+    "linkUser": {
+      "chooseMember": "Choose a member…",
+      "description": "Connect {name} to an account that already exists on this organization.",
+      "error": "Could not link this person",
+      "linked": "{name} is now linked to user #{id}",
+      "loadingMembers": "Loading members…",
+      "manualHint": "Use this when the member directory is not available to you.",
+      "manualLabel": "…or enter a user id",
+      "manualPlaceholder": "e.g. 4821",
+      "submit": "Link user",
+      "title": "Link to a platform user"
+    },
+    "list": {
+      "addFirst": "Add your first person",
+      "description": "Contacts across every company you work with",
+      "emptyHint": "People are the contacts behind every deal — start with the one you are talking to today.",
+      "emptyTitle": "No people yet",
+      "loading": "Loading people",
+      "noMatchFilters": "No people match these filters",
+      "noMatchFiltersHint": "Try a different lifecycle stage, owner or tag.",
+      "noMatchSearch": "Nothing on this page matches “{query}”",
+      "noMatchSearchHint": "Search only looks at the people loaded on this page. Try another page or clear the search.",
+      "paginationLabel": "people",
+      "searchLabel": "Search people",
+      "searchPlaceholder": "Search this page by name, email, title…"
+    },
+    "merge": {
+      "confirm": "Merge and delete duplicates",
+      "confirmBody": "{count, plural, one {# duplicate} other {# duplicates}} will be folded into {name} and then deleted. This cannot be undone.",
+      "confirmTitle": "Merge these records?",
+      "description": "Pick the duplicate records. Their deals, activities and tags move onto {name}, and the duplicates are deleted.",
+      "error": "Could not merge these people",
+      "merged": "Merged {count, plural, one {# record} other {# records}} into {name}",
+      "noMatch": "No matching people.",
+      "noOne": "There is no one else to merge yet.",
+      "searchLabel": "Search people to merge",
+      "searchPlaceholder": "Search people…",
+      "select": "Merge {name}",
+      "submit": "{count, plural, =0 {Merge records} one {Merge # record} other {Merge # records}}",
+      "title": "Merge duplicates into {name}"
+    },
+    "table": {
+      "viewCompany": "View company"
+    }
+  },
+  "picker": {
+    "clear": "Clear",
+    "company": "Pick a company",
+    "noMatches": "No matches",
+    "person": "Pick a person",
+    "searchPlaceholder": "Type to search…",
+    "searching": "Searching…",
+    "typeToSearch": "Type to search"
+  },
+  "settings": {
+    "about": {
+      "apiBase": "API base",
+      "app": "App",
+      "communityOrg": "community org",
+      "docs": "ibl.ai docs",
+      "docsLabel": "Open the ibl.ai documentation",
+      "manageRoles": "Manage roles",
+      "mandate": "Mandate",
+      "mandates": {
+        "inviter": "Reads people and sends invitations — nothing else.",
+        "manager": "Everything a User can do, plus pipeline, stage and lead-source administration, and invitations.",
+        "user": "Full CRUD on people, companies, deals, activities and tags; pipelines are read-only; cannot invite.",
+        "viewer": "Reads everything in the CRM and writes nothing."
+      },
+      "organizationKey": "Organization key",
+      "role": "Role",
+      "rolesFootnote": "Roles are granted on the organization’s Users & roles screen. Only CRM Managers (org admins) can change pipelines, stages and lead sources.",
+      "rolesTitle": "CRM roles",
+      "support": "Support",
+      "supportLabel": "Open ibl.ai support",
+      "thisOrganization": "This organization"
+    },
+    "code": "Code",
+    "codeHint": "The stable identifier used by the API — it cannot be changed later.",
+    "deleteTitle": "Delete “{name}”?",
+    "description": "Pipelines, stages and lead sources of this organization",
+    "pipelines": {
+      "codeExample": "new-business",
+      "create": "Create pipeline",
+      "created": "Pipeline “{name}” created",
+      "default": "Default",
+      "defaultPipeline": "Default pipeline",
+      "deleteBlocked": "Deals still reference this pipeline — move them to another pipeline first.",
+      "deleteConfirm": "Delete pipeline",
+      "deleteDescription": "Every stage of this pipeline goes with it. Deals that still sit in this pipeline must be moved first.",
+      "deleteHint": "Only possible when no deals reference this pipeline",
+      "deleted": "Pipeline deleted",
+      "dialogDescription": "A pipeline holds the stages a deal moves through. Add its stages next.",
+      "emptyDescription": "A pipeline is the set of stages a deal moves through. Most organizations start with one.",
+      "emptyTitle": "No pipelines yet",
+      "inFlight": "In flight",
+      "madeDefault": "“{name}” is now the default pipeline",
+      "makeDefault": "Make default",
+      "makeDefaultHint": "New deals use the default pipeline",
+      "makeItDefault": "Make it the default",
+      "makeItDefaultHint": "New deals land in the default pipeline.",
+      "makeItDefaultLabel": "Make it the default pipeline",
+      "nameExample": "New business",
+      "namePlaceholder": "Pipeline name",
+      "new": "New pipeline",
+      "rottenAfter": "Rotten after",
+      "rottenAfterDays": "Rotten after (days)",
+      "rottenLabel": "About the rotten threshold",
+      "rottenTip": "Deals idle longer than this are flagged stale on the board",
+      "rottenUnit": "days without movement",
+      "stageCount": "{count, plural, one {# stage} other {# stages}}"
+    },
+    "sources": {
+      "aboutLabel": "About lead sources",
+      "aboutTip": "Where deals come from — set on each deal, then filtered on the board",
+      "codeExample": "partner-referral",
+      "created": "Lead source “{name}” created",
+      "deleteDescription": "Deals that point at this source lose it. The deals themselves are kept.",
+      "deleteHint": "Deals keep their data but lose this source",
+      "deleteLabel": "Delete lead source {name}",
+      "deleted": "Lead source deleted",
+      "dialogDescription": "Where this kind of deal comes from.",
+      "emptyDescription": "Add the channels your deals arrive through so the dashboard can break revenue down by source.",
+      "emptyTitle": "No lead sources yet",
+      "intro": "Where deals come from — referrals, inbound, events, partners.",
+      "nameExample": "Partner referral",
+      "namePlaceholder": "Lead source",
+      "new": "New lead source",
+      "newHint": "Add a channel you can then pick on any deal"
+    },
+    "stages": {
+      "add": "Add stage",
+      "added": "Stage added",
+      "codeExample": "proposal-sent",
+      "deleteBlocked": "Deals still sit in this stage — move them first.",
+      "deleteConfirm": "Delete stage",
+      "deleteDescription": "Deals sitting in this stage have to be moved before it can go.",
+      "deleteHint": "Only possible once no deal sits in this stage",
+      "deleteLabel": "Delete stage {name}",
+      "deleteTitle": "Delete stage “{name}”?",
+      "deleted": "Stage deleted",
+      "dialogDescription": "It is appended to the end of the pipeline — drag it where it belongs afterwards.",
+      "dragHint": "Drag to reorder — the board follows this order",
+      "empty": "No stages yet. Add the first one — deals need somewhere to sit.",
+      "nameExample": "Proposal sent",
+      "namePlaceholder": "Stage name",
+      "orderSaved": "Stage order saved",
+      "outcome": "Outcome",
+      "outcomeHint": "Won and Lost stages close the deal; In flight keeps it open",
+      "outcomeLabel": "Stage outcome",
+      "outcomeOf": "Outcome of {name}",
+      "probability": "Probability (%)",
+      "probabilityLabel": "About the stage probability",
+      "probabilityTip": "Chance of winning from this stage — it drives the weighted pipeline",
+      "reorderHint": "Drag to reorder — the order is the board’s column order.",
+      "reorderLabel": "Reorder {name}",
+      "title": "Stages"
+    },
+    "tabs": {
+      "about": "About",
+      "pipelines": "Pipelines",
+      "sources": "Lead sources"
+    }
+  },
+  "shell": {
+    "adminMode": "Admin mode",
+    "adminModeHint": "Admin mode shows Settings and Users & roles; User mode is what members see",
+    "members": {
+      "unassigned": "Unassigned",
+      "user": "User {id}",
+      "userId": "User #{id}"
+    },
+    "organization": "Organization",
+    "toggleSidebar": "Toggle sidebar",
+    "toggleSidebarHint": "Collapse or expand the sidebar (⌘B)"
+  },
+  "tags": {
+    "card": {
+      "changeColor": "Change the color of {name}",
+      "created": "Created {date}",
+      "deleteConfirm": "Delete tag",
+      "deleteDescription": "This removes the tag from every person, company and deal it is attached to. The records themselves are kept.",
+      "deleteHint": "Removes the tag from every person, company and deal",
+      "deleteLabel": "Delete tag {name}",
+      "deleteTitle": "Delete “{name}”?",
+      "deleted": "Tag deleted",
+      "untitled": "Untitled tag"
+    },
+    "colorPicker": {
+      "change": "Change color",
+      "customHex": "Custom hex",
+      "invalidHex": "Use a 6-digit hex like #0058cc.",
+      "use": "Use color {color}"
+    },
+    "description": "One shared vocabulary for people, companies and deals",
+    "dialog": {
+      "colorLabel": "Color",
+      "created": "Tag “{name}” created",
+      "description": "Tags are shared across people, companies and deals.",
+      "namePlaceholder": "Enterprise, Newsletter, VIP…",
+      "nameRequired": "A name is required.",
+      "preview": "Preview",
+      "previewPlaceholder": "Tag name",
+      "submit": "Create tag"
+    },
+    "empty": {
+      "description": "Tags group people, companies and deals — “Enterprise”, “Newsletter”, “Churn risk”.",
+      "noMatchDescription": "Try a different name, or create the tag you were looking for.",
+      "noMatchTitle": "No tags match that search",
+      "title": "No tags yet"
+    },
+    "newTag": "New tag",
+    "newTagHint": "Create a label you can attach to people, companies and deals",
+    "paginationLabel": "tags",
+    "searchLabel": "Search tags",
+    "searchPlaceholder": "Search tags…"
+  },
+  "views": {
+    "addFilter": "Add a filter",
+    "allRecords": "All",
+    "clearSort": "Clear sort",
+    "columns": "Columns",
+    "columnsHint": "Choose the columns to show",
+    "deleteView": "Delete view",
+    "deleted": "View “{name}” deleted",
+    "filter": "Filter",
+    "kanbanView": "Board",
+    "namePlaceholder": "View name",
+    "no": "No",
+    "op": {
+      "contains": "contains",
+      "gte": "is at least",
+      "is": "is",
+      "isAfter": "is after",
+      "isBefore": "is before",
+      "isEmpty": "is empty",
+      "isNot": "is not",
+      "isNotEmpty": "is not empty",
+      "lte": "is at most"
+    },
+    "operand": "Condition",
+    "pickerTitle": "Views",
+    "removeFilter": "Remove filter",
+    "saveAsNew": "Save as new view",
+    "saved": "View “{name}” saved",
+    "sort": "Sort",
+    "sortBy": "Sort by",
+    "tableView": "Table",
+    "unsaved": "Unsaved changes",
+    "updateView": "Update view",
+    "updated": "View “{name}” updated",
+    "yes": "Yes"
+  }
+}

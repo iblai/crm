@@ -1,7 +1,9 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import { Bar, BarChart, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { formatCurrency } from "@/lib/crm/format";
+import { useCrmEnums } from "@/lib/crm/i18n";
 
 export interface MonthDatum {
   key: string;
@@ -14,11 +16,14 @@ export interface MonthDatum {
 
 /** Closed deals of the last six months, won beside lost. */
 export function WonLostChart({ data, currency }: { data: MonthDatum[]; currency: string }) {
+  const t = useTranslations("dashboard");
+  const locale = useLocale();
+  const { dealStatus } = useCrmEnums();
   const empty = data.every((d) => d.won === 0 && d.lost === 0);
   if (empty) {
     return (
       <p className="text-muted-foreground flex h-56 items-center justify-center text-sm">
-        Nothing closed in the last six months.
+        {t("panels.wonLost.empty")}
       </p>
     );
   }
@@ -48,10 +53,16 @@ export function WonLostChart({ data, currency }: { data: MonthDatum[]; currency:
                 <div className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs shadow-md">
                   <p className="font-medium text-gray-900">{d.label}</p>
                   <p className="text-emerald-600">
-                    Won {d.won} · {formatCurrency(d.wonValue, currency)}
+                    {t("panels.wonLost.wonDetail", {
+                      count: d.won,
+                      value: formatCurrency(d.wonValue, currency, locale),
+                    })}
                   </p>
                   <p className="text-rose-600">
-                    Lost {d.lost} · {formatCurrency(d.lostValue, currency)}
+                    {t("panels.wonLost.lostDetail", {
+                      count: d.lost,
+                      value: formatCurrency(d.lostValue, currency, locale),
+                    })}
                   </p>
                 </div>
               );
@@ -68,7 +79,7 @@ export function WonLostChart({ data, currency }: { data: MonthDatum[]; currency:
           <Bar
             isAnimationActive={false}
             dataKey="won"
-            name="Won"
+            name={dealStatus("won")}
             fill="#10b981"
             radius={[4, 4, 0, 0]}
             maxBarSize={22}
@@ -76,7 +87,7 @@ export function WonLostChart({ data, currency }: { data: MonthDatum[]; currency:
           <Bar
             isAnimationActive={false}
             dataKey="lost"
-            name="Lost"
+            name={dealStatus("lost")}
             fill="#fb7185"
             radius={[4, 4, 0, 0]}
             maxBarSize={22}

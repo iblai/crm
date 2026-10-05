@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Plus, Search, Tag as TagIcon, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -29,15 +30,11 @@ import type { Tag } from "@/lib/crm/types";
 
 const PAGE_SIZE = 100;
 
-function saveError(err: unknown) {
-  toast.error(
-    errorStatus(err) === 403 ? "You don't have permission to do that" : errorMessage(err),
-  );
-}
-
 export default function TagsPage() {
+  const t = useTranslations("tags");
+  const tn = useTranslations("nav");
   const { href } = useSession();
-  useBreadcrumbs([{ label: "Tags", href: href("/tags") }]);
+  useBreadcrumbs([{ label: tn("tags"), href: href("/tags") }]);
 
   const [search, setSearch] = useState("");
   const [query, setQuery] = useState("");
@@ -45,17 +42,17 @@ export default function TagsPage() {
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       setQuery(search.trim());
       setPage(1);
     }, 250);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [search]);
 
   const { data, isLoading } = useListTagsQuery({
     page,
     page_size: PAGE_SIZE,
-    name: query || undefined,
+    search: query || undefined,
   });
 
   const tags = useMemo(() => data?.results ?? [], [data]);
@@ -64,9 +61,9 @@ export default function TagsPage() {
     <>
       <PageHeader
         icon={<TagIcon />}
-        title="Tags"
+        title={tn("tags")}
         count={data?.count ?? null}
-        description="One shared vocabulary for people, organizations and deals"
+        description={t("description")}
         actions={
           <Tooltip>
             <TooltipTrigger
@@ -78,11 +75,9 @@ export default function TagsPage() {
                 />
               }
             >
-              <Plus data-icon="inline-start" /> New tag
+              <Plus data-icon="inline-start" /> {t("newTag")}
             </TooltipTrigger>
-            <TooltipContent side="bottom">
-              Create a label you can attach to people, organizations and deals
-            </TooltipContent>
+            <TooltipContent side="bottom">{t("newTagHint")}</TooltipContent>
           </Tooltip>
         }
         toolbar={
@@ -91,9 +86,9 @@ export default function TagsPage() {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search tags…"
+              placeholder={t("searchPlaceholder")}
               className="h-8 pl-8 text-sm"
-              aria-label="Search tags"
+              aria-label={t("searchLabel")}
             />
           </div>
         }
@@ -110,15 +105,11 @@ export default function TagsPage() {
           ) : tags.length === 0 ? (
             <EmptyState
               icon={<TagIcon />}
-              title={query ? "No tags match that search" : "No tags yet"}
-              description={
-                query
-                  ? "Try a different name, or create the tag you were looking for."
-                  : "Tags group people, organizations and deals — “Enterprise”, “Newsletter”, “Churn risk”."
-              }
+              title={query ? t("empty.noMatchTitle") : t("empty.title")}
+              description={query ? t("empty.noMatchDescription") : t("empty.description")}
               action={
                 <Button className="ibl-button-primary" onClick={() => setCreating(true)}>
-                  <Plus data-icon="inline-start" /> New tag
+                  <Plus data-icon="inline-start" /> {t("newTag")}
                 </Button>
               }
             />
@@ -135,7 +126,7 @@ export default function TagsPage() {
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}
-          label="tags"
+          label={t("paginationLabel")}
         />
       </div>
 
@@ -149,10 +140,18 @@ export default function TagsPage() {
 }
 
 function TagCard({ tag }: { tag: Tag }) {
+  const t = useTranslations("tags");
+  const tc = useTranslations("common");
+  const locale = useLocale();
   const [update] = useUpdateTagMutation();
   const [remove, { isLoading: removing }] = useDeleteTagMutation();
   const [confirm, setConfirm] = useState(false);
   const color = tag.color || "#888888";
+
+  const saveError = (err: unknown) =>
+    toast.error(
+      errorStatus(err) === 403 ? tc("errorForbidden") : errorMessage(err, tc("errorGeneric")),
+    );
 
   const patch = async (body: { name?: string; color?: string }) => {
     try {
@@ -168,17 +167,17 @@ function TagCard({ tag }: { tag: Tag }) {
         <TagColorPicker
           color={color}
           onChange={(c) => void patch({ color: c })}
-          label={`Change the color of ${tag.name}`}
+          label={t("card.changeColor", { name: tag.name })}
         />
         <div className="min-w-0 flex-1">
           <InlineText
             value={tag.name}
             onSave={(v) => (v.trim() ? patch({ name: v.trim() }) : undefined)}
-            placeholder="Untitled tag"
+            placeholder={t("card.untitled")}
             className="text-sm font-medium text-gray-900"
           />
           <p className="text-muted-foreground mt-0.5 px-1.5 text-[11px]">
-            Created {formatDate(tag.created_at)}
+            {t("card.created", { date: formatDate(tag.created_at, locale) })}
           </p>
         </div>
         <Tooltip>
@@ -189,13 +188,13 @@ function TagCard({ tag }: { tag: Tag }) {
                 size="icon-sm"
                 className="text-gray-400 hover:text-rose-600"
                 onClick={() => setConfirm(true)}
-                aria-label={`Delete tag ${tag.name}`}
+                aria-label={t("card.deleteLabel", { name: tag.name })}
               />
             }
           >
             <Trash2 />
           </TooltipTrigger>
-          <TooltipContent>Removes the tag from every person, organization and deal</TooltipContent>
+          <TooltipContent>{t("card.deleteHint")}</TooltipContent>
         </Tooltip>
       </div>
 
@@ -207,16 +206,16 @@ function TagCard({ tag }: { tag: Tag }) {
       <ConfirmDialog
         open={confirm}
         onOpenChange={setConfirm}
-        title={`Delete “${tag.name}”?`}
-        description="This removes the tag from every person, organization and deal it is attached to. The records themselves are kept."
-        confirmLabel="Delete tag"
+        title={t("card.deleteTitle", { name: tag.name })}
+        description={t("card.deleteDescription")}
+        confirmLabel={t("card.deleteConfirm")}
         destructive
         loading={removing}
         onConfirm={async () => {
           try {
             await remove(tag.id).unwrap();
             setConfirm(false);
-            toast.success("Tag deleted");
+            toast.success(t("card.deleted"));
           } catch (err) {
             saveError(err);
           }

@@ -1,10 +1,6 @@
 import type { NextRequest } from "next/server";
 import { applyCsp } from "@iblai/iblai-js/security/next";
 
-// NOTE: on Next.js 16+ this file convention is deprecated — rename it to
-// `proxy.ts` and rename the exported function to `proxy`. The body is
-// unchanged. See https://nextjs.org/docs/messages/middleware-to-proxy
-
 // Server components don't have direct access to the request URL/pathname.
 // Forward the pathname as a header so layouts can read it via `headers()` and
 // branch on the current route.

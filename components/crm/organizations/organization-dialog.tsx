@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -15,9 +16,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@iblai/iblai-js/web-containers";
 import { OwnerSelect } from "@/components/crm/owner-select";
-import { toastApiError } from "@/components/crm/people/crm-error";
+import { useToastApiError } from "@/components/crm/people/crm-error";
 import { useSession } from "@/hooks/use-session";
 import { useCreateOrganizationMutation } from "@/lib/crm/api";
 import type { Address, Organization } from "@/lib/crm/types";
@@ -36,6 +37,9 @@ export function OrganizationDialog({
   navigateOnCreate?: boolean;
   onCreated?: (organization: Organization) => void;
 }) {
+  const t = useTranslations("companies");
+  const tc = useTranslations("common");
+  const toastApiError = useToastApiError();
   const router = useRouter();
   const nameRef = useRef<HTMLInputElement>(null);
   const { href, userId } = useSession();
@@ -68,12 +72,12 @@ export function OrganizationDialog({
         address: Object.keys(cleaned).length ? cleaned : undefined,
         owner: owner ?? null,
       }).unwrap();
-      toast.success(`${organization.name} added`);
+      toast.success(t("dialog.added", { name: organization.name }));
       onOpenChange(false);
       onCreated?.(organization);
-      if (navigateOnCreate) router.push(href(`/organizations/${organization.id}`));
+      if (navigateOnCreate) router.push(href(`/companies/${organization.id}`));
     } catch (err) {
-      toastApiError(err, "Could not create this organization");
+      toastApiError(err, t("dialog.createError"));
     }
   };
 
@@ -81,10 +85,8 @@ export function OrganizationDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md" initialFocus={nameRef}>
         <DialogHeader>
-          <DialogTitle>New organization</DialogTitle>
-          <DialogDescription>
-            Companies group the people you talk to and the deals you run with them.
-          </DialogDescription>
+          <DialogTitle>{t("actions.new")}</DialogTitle>
+          <DialogDescription>{t("dialog.description")}</DialogDescription>
         </DialogHeader>
 
         <form
@@ -96,91 +98,93 @@ export function OrganizationDialog({
         >
           <div className="grid gap-1.5">
             <Label htmlFor="org-name" className="text-muted-foreground text-xs">
-              Name <span className="text-destructive">*</span>
+              {tc("name")} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="org-name"
               ref={nameRef}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Acme University"
+              placeholder={t("dialog.namePlaceholder")}
               required
             />
           </div>
 
           <div className="grid gap-1.5">
             <Label htmlFor="org-street" className="text-muted-foreground text-xs">
-              Street
+              {t("address.street")}
             </Label>
             <Input
               id="org-street"
               value={address.street}
               onChange={(e) => set("street", e.target.value)}
-              placeholder="1 Innovation Way"
+              placeholder={t("address.example.street")}
             />
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="grid gap-1.5">
               <Label htmlFor="org-city" className="text-muted-foreground text-xs">
-                City
+                {t("address.city")}
               </Label>
               <Input
                 id="org-city"
                 value={address.city}
                 onChange={(e) => set("city", e.target.value)}
-                placeholder="Boston"
+                placeholder={t("address.example.city")}
               />
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="org-state" className="text-muted-foreground text-xs">
-                State / region
+                {t("address.state")}
               </Label>
               <Input
                 id="org-state"
                 value={address.state}
                 onChange={(e) => set("state", e.target.value)}
-                placeholder="MA"
+                placeholder={t("address.example.state")}
               />
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="org-postal" className="text-muted-foreground text-xs">
-                Postal code
+                {t("address.postalCode")}
               </Label>
               <Input
                 id="org-postal"
                 value={address.postal_code}
                 onChange={(e) => set("postal_code", e.target.value)}
-                placeholder="02110"
+                placeholder={t("address.example.postalCode")}
               />
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="org-country" className="text-muted-foreground text-xs">
-                Country
+                {t("address.country")}
               </Label>
               <Input
                 id="org-country"
                 value={address.country}
                 onChange={(e) => set("country", e.target.value)}
-                placeholder="United States"
+                placeholder={t("address.example.country")}
               />
             </div>
           </div>
 
           <div className="grid gap-1.5">
-            <Label className="text-muted-foreground text-xs">Owner</Label>
+            <Label className="text-muted-foreground text-xs">{tc("owner")}</Label>
             <OwnerSelect value={owner} onChange={setOwner} />
           </div>
 
           <DialogFooter className="mt-1">
-            <DialogClose render={<Button variant="outline" type="button" />}>Cancel</DialogClose>
+            <DialogClose render={<Button variant="outline" type="button" />}>
+              {tc("cancel")}
+            </DialogClose>
             <Button
               type="submit"
               className="ibl-button-primary"
               disabled={!name.trim() || isLoading}
             >
-              {isLoading ? <Spinner data-icon="inline-start" /> : null}
-              Create organization
+              {isLoading ? <Spinner size="sm" className="size-4 text-current" /> : null}
+              {t("dialog.submit")}
             </Button>
           </DialogFooter>
         </form>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -12,9 +13,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@iblai/iblai-js/web-containers";
 
-const SUGGESTIONS = ["Price", "Lost to a competitor", "No budget", "No decision", "Bad timing"];
+// The shown label is what gets saved as `lost_reason`.
+const SUGGESTIONS = ["price", "competitor", "noBudget", "noDecision", "badTiming"] as const;
 
 /** Closing a deal as lost always asks why — the API requires a reason. */
 export function LostDialog({
@@ -22,8 +24,8 @@ export function LostDialog({
   onOpenChange,
   onConfirm,
   loading,
-  title = "Mark this deal lost?",
-  description = "The deal closes and moves to the lost stage. The reason is kept on the record.",
+  title,
+  description,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -32,6 +34,8 @@ export function LostDialog({
   title?: string;
   description?: string;
 }) {
+  const t = useTranslations("deals");
+  const tc = useTranslations("common");
   const [reason, setReason] = useState("");
   useEffect(() => {
     if (open) setReason("");
@@ -41,37 +45,40 @@ export function LostDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogTitle>{title ?? t("lost.title")}</DialogTitle>
+          <DialogDescription>{description ?? t("lost.description")}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-2">
-          <Label htmlFor="lost-reason">Reason</Label>
+          <Label htmlFor="lost-reason">{t("lost.reason")}</Label>
           <Textarea
             id="lost-reason"
             rows={3}
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            placeholder="Why was this deal lost?"
+            placeholder={t("lost.reasonPlaceholder")}
           />
           <div className="flex flex-wrap gap-1.5">
-            {SUGGESTIONS.map((s) => (
-              <Button key={s} variant="outline" size="xs" onClick={() => setReason(s)}>
-                {s}
-              </Button>
-            ))}
+            {SUGGESTIONS.map((key) => {
+              const label = t(`lost.suggestions.${key}`);
+              return (
+                <Button key={key} variant="outline" size="xs" onClick={() => setReason(label)}>
+                  {label}
+                </Button>
+              );
+            })}
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-            Cancel
+            {tc("cancel")}
           </Button>
           <Button
             variant="destructive"
             disabled={!reason.trim() || loading}
             onClick={() => void onConfirm(reason.trim())}
           >
-            {loading ? <Spinner data-icon="inline-start" /> : null}
-            Mark lost
+            {loading ? <Spinner size="sm" className="size-4 text-current" /> : null}
+            {t("actions.markLost")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Check, Pencil, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ export function FieldRow({
   children: ReactNode;
   className?: string;
 }) {
+  const t = useTranslations("fields");
   return (
     <div
       className={cn("grid grid-cols-[7.5rem_minmax(0,1fr)] items-start gap-2 py-1.5", className)}
@@ -29,7 +31,7 @@ export function FieldRow({
       <dt className="text-muted-foreground flex items-center gap-1 pt-1 text-xs font-medium">
         <span className="min-w-0 truncate">{label}</span>
         {hint ? (
-          <InfoTip label={typeof label === "string" ? `About ${label}` : "About this field"}>
+          <InfoTip label={typeof label === "string" ? t("about", { label }) : t("aboutThisField")}>
             {hint}
           </InfoTip>
         ) : null}
@@ -43,7 +45,7 @@ export function FieldRow({
 export function InlineText({
   value,
   onSave,
-  placeholder = "Empty",
+  placeholder,
   type = "text",
   multiline = false,
   disabled,
@@ -60,6 +62,7 @@ export function InlineText({
   /** Custom read-mode rendering (e.g. a mailto link). */
   render?: (value: string) => ReactNode;
 }) {
+  const tc = useTranslations("common");
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value ?? "");
   const [saving, setSaving] = useState(false);
@@ -92,7 +95,7 @@ export function InlineText({
         type="button"
         disabled={disabled}
         onClick={() => setEditing(true)}
-        title={disabled ? undefined : "Click to edit"}
+        title={disabled ? undefined : tc("clickToEdit")}
         className={cn(
           "group/field -mx-1.5 flex w-[calc(100%+0.75rem)] min-w-0 items-start justify-between gap-2 rounded-md px-1.5 py-1 text-left hover:bg-gray-50 disabled:hover:bg-transparent",
           className,
@@ -105,7 +108,7 @@ export function InlineText({
             multiline && "whitespace-pre-wrap",
           )}
         >
-          {value ? (render ? render(value) : value) : placeholder}
+          {value ? (render ? render(value) : value) : (placeholder ?? tc("empty"))}
         </span>
         {!disabled ? (
           <Pencil className="mt-0.5 size-3 shrink-0 text-gray-300 opacity-0 transition-opacity group-hover/field:opacity-100" />
@@ -145,7 +148,7 @@ export function InlineText({
         size="icon-xs"
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => void commit()}
-        aria-label="Save"
+        aria-label={tc("save")}
       >
         <Check />
       </Button>
@@ -157,7 +160,7 @@ export function InlineText({
           setDraft(value ?? "");
           setEditing(false);
         }}
-        aria-label="Cancel"
+        aria-label={tc("cancel")}
       >
         <X />
       </Button>

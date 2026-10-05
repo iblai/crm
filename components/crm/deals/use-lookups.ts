@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import {
   useListLeadSourcesQuery,
   useListOrganizationsQuery,
@@ -17,8 +18,12 @@ import type { LeadSource, Organization, Person, Pipeline, PipelineStage } from "
  * each surface may call this freely.
  */
 export function useDealLookups(options?: { skip?: boolean }) {
+  const t = useTranslations("deals");
   const skip = options?.skip;
-  const { data: persons, isLoading: personsLoading } = useListPersonsQuery({ page_size: 100 }, { skip });
+  const { data: persons, isLoading: personsLoading } = useListPersonsQuery(
+    { page_size: 100 },
+    { skip },
+  );
   const { data: organizations, isLoading: orgsLoading } = useListOrganizationsQuery(
     { page_size: 100 },
     { skip },
@@ -68,10 +73,13 @@ export function useDealLookups(options?: { skip?: boolean }) {
     stageById,
     sourceById,
     defaultPipeline,
-    personName: (id?: string | null) => (id ? (personById.get(id)?.name ?? "Unknown person") : "—"),
+    personName: (id?: string | null) =>
+      id ? (personById.get(id)?.name ?? t("unknownPerson")) : "—",
     organizationName: (id?: string | null) => (id ? (organizationById.get(id)?.name ?? "") : ""),
-    stageName: (id?: number | null) => (id ? (stageById.get(id)?.name ?? `Stage #${id}`) : "—"),
-    sourceName: (id?: number | null) => (id ? (sourceById.get(id)?.name ?? `Source #${id}`) : ""),
+    stageName: (id?: number | null) =>
+      id ? (stageById.get(id)?.name ?? t("fields.stageFallback", { id })) : "—",
+    sourceName: (id?: number | null) =>
+      id ? (sourceById.get(id)?.name ?? t("fields.sourceFallback", { id })) : "",
     isLoading: personsLoading || orgsLoading || pipelinesLoading || sourcesLoading,
   };
 }

@@ -1,13 +1,5 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "typescript",
-    "unicorn",
-    "oxc",
-    "react",
-    "nextjs",
-    "jsx-a11y",
-    "vitest"
-  ],
-  "ignorePatterns": []
+  "plugins": ["typescript", "unicorn", "oxc", "react", "nextjs", "jsx-a11y", "vitest"],
+  "ignorePatterns": ["components/ui/**"]
 }

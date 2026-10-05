@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
@@ -45,6 +46,7 @@ export function TagColorSwatches({
   onChange: (color: string) => void;
   className?: string;
 }) {
+  const t = useTranslations("tags");
   const [hex, setHex] = useState(color);
 
   useEffect(() => setHex(color), [color]);
@@ -59,7 +61,7 @@ export function TagColorSwatches({
             key={c}
             type="button"
             onClick={() => onChange(c)}
-            aria-label={`Use color ${c}`}
+            aria-label={t("colorPicker.use", { color: c })}
             className={cn(
               "flex size-7 items-center justify-center rounded-lg ring-1 ring-black/10 transition-transform hover:scale-105",
               c.toLowerCase() === color.toLowerCase() && "ring-2 ring-gray-900 ring-offset-1",
@@ -74,7 +76,7 @@ export function TagColorSwatches({
       </div>
       <div className="grid gap-1.5">
         <Label htmlFor="tag-hex" className="text-muted-foreground text-xs">
-          Custom hex
+          {t("colorPicker.customHex")}
         </Label>
         <Input
           id="tag-hex"
@@ -90,7 +92,7 @@ export function TagColorSwatches({
           className="h-8 font-mono text-sm"
         />
         {!hexValid ? (
-          <p className="text-[11px] text-rose-600">Use a 6-digit hex like #0058cc.</p>
+          <p className="text-[11px] text-rose-600">{t("colorPicker.invalidHex")}</p>
         ) : null}
       </div>
     </div>
@@ -103,7 +105,7 @@ export function TagColorPicker({
   onChange,
   disabled,
   size = "md",
-  label = "Change color",
+  label,
 }: {
   color: string;
   onChange: (color: string) => void;
@@ -111,6 +113,7 @@ export function TagColorPicker({
   size?: "sm" | "md";
   label?: string;
 }) {
+  const t = useTranslations("tags");
   const [open, setOpen] = useState(false);
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -119,7 +122,7 @@ export function TagColorPicker({
           render={
             <PopoverTrigger
               disabled={disabled}
-              aria-label={label}
+              aria-label={label ?? t("colorPicker.change")}
               className={cn(
                 "shrink-0 rounded-lg ring-1 ring-black/10 transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-[#0058cc] disabled:cursor-not-allowed disabled:opacity-60",
                 size === "sm" ? "size-5" : "size-7",
@@ -128,7 +131,7 @@ export function TagColorPicker({
             />
           }
         />
-        <TooltipContent>Change color</TooltipContent>
+        <TooltipContent>{t("colorPicker.change")}</TooltipContent>
       </Tooltip>
       <PopoverContent className="w-60" align="start">
         <TagColorSwatches color={color} onChange={onChange} />

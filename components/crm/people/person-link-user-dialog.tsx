@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -14,10 +15,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@iblai/iblai-js/web-containers";
 import { SimpleSelect } from "@/components/crm/simple-select";
-import { toastApiError } from "@/components/crm/people/crm-error";
-import { memberLabel, useMembers } from "@/hooks/use-members";
+import { useToastApiError } from "@/components/crm/people/crm-error";
+import { useMemberLabel, useMembers } from "@/hooks/use-members";
 import { useSession } from "@/hooks/use-session";
 import { useLinkPersonUserMutation } from "@/lib/crm/api";
 import type { Person } from "@/lib/crm/types";
@@ -36,8 +37,12 @@ export function PersonLinkUserDialog({
   onOpenChange: (open: boolean) => void;
   person: Person;
 }) {
+  const t = useTranslations("people");
+  const tc = useTranslations("common");
+  const toastApiError = useToastApiError();
   const { tenantKey } = useSession();
   const { members, isLoading: loadingMembers } = useMembers(tenantKey, { skip: !open });
+  const memberLabel = useMemberLabel();
   const [linkUser, { isLoading }] = useLinkPersonUserMutation();
   const [selected, setSelected] = useState("");
   const [manualId, setManualId] = useState("");
@@ -56,9 +61,9 @@ export function PersonLinkUserDialog({
     try {
       await linkUser({ id: person.id, user_id: userId }).unwrap();
       onOpenChange(false);
-      toast.success(`${person.name} is now linked to user #${userId}`);
+      toast.success(t("linkUser.linked", { name: person.name, id: String(userId) }));
     } catch (err) {
-      toastApiError(err, "Could not link this person");
+      toastApiError(err, t("linkUser.error"));
     }
   };
 
@@ -66,10 +71,8 @@ export function PersonLinkUserDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Link to a platform user</DialogTitle>
-          <DialogDescription>
-            Connect {person.name} to an account that already exists on this organization.
-          </DialogDescription>
+          <DialogTitle>{t("linkUser.title")}</DialogTitle>
+          <DialogDescription>{t("linkUser.description", { name: person.name })}</DialogDescription>
         </DialogHeader>
 
         <form
@@ -80,7 +83,7 @@ export function PersonLinkUserDialog({
           }}
         >
           <div className="grid gap-1.5">
-            <Label className="text-muted-foreground text-xs">Member</Label>
+            <Label className="text-muted-foreground text-xs">{tc("member")}</Label>
             <SimpleSelect
               value={selected}
               onChange={(v) => {
@@ -89,33 +92,35 @@ export function PersonLinkUserDialog({
               }}
               options={members.map((m) => ({ value: String(m.id), label: memberLabel(m) }))}
               allowEmpty
-              emptyLabel="Choose a member…"
-              placeholder={loadingMembers ? "Loading members…" : "Choose a member…"}
-              aria-label="Member"
+              emptyLabel={t("linkUser.chooseMember")}
+              placeholder={
+                loadingMembers ? t("linkUser.loadingMembers") : t("linkUser.chooseMember")
+              }
+              aria-label={tc("member")}
             />
           </div>
 
           <div className="grid gap-1.5">
             <Label htmlFor="link-user-id" className="text-muted-foreground text-xs">
-              …or enter a user id
+              {t("linkUser.manualLabel")}
             </Label>
             <Input
               id="link-user-id"
               inputMode="numeric"
               value={manualId}
               onChange={(e) => setManualId(e.target.value.replace(/[^0-9]/g, ""))}
-              placeholder="e.g. 4821"
+              placeholder={t("linkUser.manualPlaceholder")}
             />
-            <p className="text-muted-foreground text-xs">
-              Use this when the member directory is not available to you.
-            </p>
+            <p className="text-muted-foreground text-xs">{t("linkUser.manualHint")}</p>
           </div>
 
           <DialogFooter className="mt-1">
-            <DialogClose render={<Button variant="outline" type="button" />}>Cancel</DialogClose>
+            <DialogClose render={<Button variant="outline" type="button" />}>
+              {tc("cancel")}
+            </DialogClose>
             <Button type="submit" className="ibl-button-primary" disabled={!valid || isLoading}>
-              {isLoading ? <Spinner data-icon="inline-start" /> : null}
-              Link user
+              {isLoading ? <Spinner size="sm" className="size-4 text-current" /> : null}
+              {t("linkUser.submit")}
             </Button>
           </DialogFooter>
         </form>

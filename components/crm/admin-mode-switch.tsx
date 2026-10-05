@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAdminMode } from "@/components/crm/admin-mode";
@@ -9,6 +10,8 @@ import { cn } from "@/lib/utils";
 
 /** User / Admin view switch for org admins. Renders nothing for members. */
 export function AdminModeSwitch({ className }: { className?: string }) {
+  const t = useTranslations("shell");
+  const tc = useTranslations("common");
   const { isAdmin, adminMode, setAdminMode } = useAdminMode();
   const { href } = useSession();
   const router = useRouter();
@@ -18,7 +21,7 @@ export function AdminModeSwitch({ className }: { className?: string }) {
     <div
       className={cn("text-muted-foreground flex items-center gap-2 text-xs font-medium", className)}
     >
-      <span className={adminMode ? "" : "text-[#0058cc]"}>User</span>
+      <span className={adminMode ? "" : "text-[#0058cc]"}>{tc("user")}</span>
       <Tooltip>
         <TooltipTrigger
           render={
@@ -29,16 +32,14 @@ export function AdminModeSwitch({ className }: { className?: string }) {
                 setAdminMode(on);
                 if (!on && /\/(admin|settings)(\/|$)/.test(pathname)) router.push(href());
               }}
-              aria-label="Admin mode"
+              aria-label={t("adminMode")}
               className="data-[checked]:bg-[#0058cc]"
             />
           }
         />
-        <TooltipContent side="bottom">
-          Admin mode shows Settings and Users &amp; roles; User mode is what members see
-        </TooltipContent>
+        <TooltipContent side="bottom">{t("adminModeHint")}</TooltipContent>
       </Tooltip>
-      <span className={adminMode ? "text-[#0058cc]" : ""}>Admin</span>
+      <span className={adminMode ? "text-[#0058cc]" : ""}>{tc("admin")}</span>
     </div>
   );
 }

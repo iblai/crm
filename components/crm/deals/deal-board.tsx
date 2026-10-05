@@ -12,46 +12,39 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { InfoTip } from "@/components/crm/info-tip";
 import { DealCard, DraggableDealCard } from "@/components/crm/deals/deal-card";
 import { errorMessage, useMoveDealStageMutation } from "@/lib/crm/api";
-import { dealValue, formatCompactCurrency, sortStages, toDate } from "@/lib/crm/format";
-import type { Deal, Pipeline, PipelineStage } from "@/lib/crm/types";
+import { formatCompactCurrency } from "@/lib/crm/format";
+import type { Deal, DealBoard as DealBoardData, DealBoardStage } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
 
-const DAY = 24 * 60 * 60 * 1000;
-
-function isStale(deal: Deal, rottenDays?: number) {
-  if (!rottenDays || deal.status !== "open") return false;
-  const updated = toDate(deal.updated_at);
-  if (!updated) return false;
-  return Date.now() - updated.getTime() > rottenDays * DAY;
-}
-
 /**
- * The pipeline board: one column per stage, cards dragged between them with
- * @dnd-kit. A move is applied locally first and reverted with a toast if the
- * API refuses it; the card's "Move to…" menu does the same without dragging.
+ * The pipeline board from `/deals/board/`: one column per stage with the
+ * server's count and totals, cards dragged between them with @dnd-kit. A move
+ * is applied locally first and reverted with a toast if the API refuses it;
+ * the card's "Move to…" menu does the same without dragging.
  */
 export function DealBoard({
-  pipeline,
-  deals,
+  board,
   isLoading,
   personName,
   organizationName,
   className,
 }: {
-  pipeline?: Pipeline;
-  deals: Deal[];
+  board?: DealBoardData;
   isLoading?: boolean;
   personName: (id?: string | null) => string;
   organizationName: (id?: string | null) => string;
   className?: string;
 }) {
-  const stages = useMemo(() => sortStages(pipeline?.stages ?? []), [pipeline]);
+  const t = useTranslations("deals");
+  const stages = useMemo(() => (board?.stages ?? []).map((s) => s.stage), [board]);
+  const deals = useMemo(() => (board?.stages ?? []).flatMap((s) => s.deals), [board]);
   const [moveStage] = useMoveDealStageMutation();
   const [activeId, setActiveId] = useState<number | null>(null);
   /** dealId → optimistic stage id, held until the server agrees. */
@@ -85,9 +78,12 @@ export function DealBoard({
       const bucket = byStage.get(pending[deal.id] ?? deal.stage);
       if (bucket) bucket.push(deal);
     }
-    return stages.map((stage) => ({ stage, deals: byStage.get(stage.id) ?? [] }));
+    return (board?.stages ?? []).map((column) => ({
+      column,
+      deals: byStage.get(column.stage.id) ?? [],
+    }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stages, deals, pending]);
+  }, [board, stages, deals, pending]);
 
   const activeDeal = activeId ? deals.find((d) => d.id === activeId) : undefined;
 
@@ -103,7 +99,7 @@ export function DealBoard({
         delete next[deal.id];
         return next;
       });
-      toast.error(errorMessage(err, "Could not move the deal"));
+      toast.error(errorMessage(err, t("toast.moveFailed")));
     }
   };
 
@@ -121,7 +117,7 @@ export function DealBoard({
     if (deal) void move(deal, stageId);
   };
 
-  if (isLoading && deals.length === 0) {
+  if (isLoading && !board) {
     return (
       <div className={cn("flex h-full gap-3 overflow-hidden p-4", className)}>
         {[0, 1, 2, 3].map((i) => (
@@ -135,10 +131,10 @@ export function DealBoard({
     );
   }
 
-  if (!pipeline || stages.length === 0) {
+  if (!board || stages.length === 0) {
     return (
       <div className="text-muted-foreground flex h-full items-center justify-center p-6 text-sm">
-        This pipeline has no stages yet. An admin can add them in Settings.
+        {t("board.noStages")}
       </div>
     );
   }
@@ -157,13 +153,13 @@ export function DealBoard({
           className,
         )}
       >
-        {columns.map(({ stage, deals: rows }) => (
+        {columns.map(({ column, deals: rows }) => (
           <BoardColumn
-            key={stage.id}
-            stage={stage}
+            key={column.stage.id}
+            column={column}
             deals={rows}
             stages={stages}
-            rottenDays={pipeline.rotten_days}
+            rottenDays={board.pipeline.rotten_days}
             personName={personName}
             organizationName={organizationName}
             onMove={move}
@@ -176,8 +172,8 @@ export function DealBoard({
             deal={activeDeal}
             personName={personName(activeDeal.person)}
             organizationName={organizationName(activeDeal.organization)}
-            stale={isStale(activeDeal, pipeline.rotten_days)}
-            rottenDays={pipeline.rotten_days}
+            stale={activeDeal.is_stale}
+            rottenDays={board.pipeline.rotten_days}
             overlay
           />
         ) : null}
@@ -187,7 +183,7 @@ export function DealBoard({
 }
 
 function BoardColumn({
-  stage,
+  column,
   deals,
   stages,
   rottenDays,
@@ -195,21 +191,24 @@ function BoardColumn({
   organizationName,
   onMove,
 }: {
-  stage: PipelineStage;
+  column: DealBoardStage;
   deals: Deal[];
-  stages: PipelineStage[];
+  stages: DealBoardStage["stage"][];
   rottenDays?: number;
   personName: (id?: string | null) => string;
   organizationName: (id?: string | null) => string;
   onMove: (deal: Deal, stageId: number) => void;
 }) {
+  const t = useTranslations("deals");
+  const locale = useLocale();
+  const { stage } = column;
   const { setNodeRef, isOver } = useDroppable({
     id: `stage-${stage.id}`,
     data: { stageId: stage.id },
   });
-  const total = deals.reduce((sum, d) => sum + dealValue(d), 0);
   const currency = deals[0]?.currency || "USD";
   const tone = stage.is_won ? "won" : stage.is_lost ? "lost" : "open";
+  const hidden = Math.max(0, column.count - deals.length);
 
   return (
     <section
@@ -221,7 +220,7 @@ function BoardColumn({
         tone === "open" && "border-[var(--border-color,#e5e7eb)]",
         isOver && "border-[#0058cc] bg-[#eef6fc]/70 ring-2 ring-[#0058cc]/20",
       )}
-      aria-label={`${stage.name} stage`}
+      aria-label={t("board.stageLabel", { stage: stage.name })}
     >
       <header
         className={cn(
@@ -244,8 +243,11 @@ function BoardColumn({
         {typeof stage.probability === "number" && !stage.is_won && !stage.is_lost ? (
           <span className="flex shrink-0 items-center gap-1 rounded-full bg-gray-100 px-1.5 py-px text-[10px] font-medium text-gray-500">
             {stage.probability}%
-            <InfoTip label={`What ${stage.probability}% means`} className="text-gray-400">
-              Win probability used for the weighted pipeline
+            <InfoTip
+              label={t("board.probabilityLabel", { probability: stage.probability })}
+              className="text-gray-400"
+            >
+              {t("board.probabilityHint")}
             </InfoTip>
           </span>
         ) : null}
@@ -255,11 +257,9 @@ function BoardColumn({
               <span className="shrink-0 cursor-default rounded-full bg-gray-100 px-1.5 py-px text-[10px] font-medium text-gray-600 tabular-nums" />
             }
           >
-            {deals.length}
+            {column.count}
           </TooltipTrigger>
-          <TooltipContent>
-            {deals.length === 1 ? "1 deal in this stage" : `${deals.length} deals in this stage`}
-          </TooltipContent>
+          <TooltipContent>{t("board.countInStage", { count: column.count })}</TooltipContent>
         </Tooltip>
       </header>
       <Tooltip>
@@ -277,9 +277,9 @@ function BoardColumn({
             />
           }
         >
-          {formatCompactCurrency(total, currency)}
+          {formatCompactCurrency(Number(column.total_value), currency, locale)}
         </TooltipTrigger>
-        <TooltipContent side="bottom">Total value of the deals in this stage</TooltipContent>
+        <TooltipContent side="bottom">{t("board.totalHint")}</TooltipContent>
       </Tooltip>
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-2 pb-3">
         {deals.map((deal) => (
@@ -288,7 +288,7 @@ function BoardColumn({
             deal={deal}
             personName={personName(deal.person)}
             organizationName={organizationName(deal.organization)}
-            stale={isStale(deal, rottenDays)}
+            stale={deal.is_stale}
             rottenDays={rottenDays}
             stages={stages}
             onMove={(stageId) => onMove(deal, stageId)}
@@ -296,7 +296,12 @@ function BoardColumn({
         ))}
         {deals.length === 0 ? (
           <p className="text-muted-foreground rounded-lg border border-dashed border-gray-200 px-3 py-6 text-center text-[11px]">
-            Drag a deal here to move it to {stage.name}
+            {t("board.dropHint", { stage: stage.name })}
+          </p>
+        ) : null}
+        {hidden > 0 ? (
+          <p className="text-muted-foreground px-1 pt-1 text-center text-[11px]">
+            {t("board.moreCards", { count: hidden })}
           </p>
         ) : null}
       </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Spinner } from "@iblai/iblai-js/web-containers";
 import { cn } from "@/lib/utils";
 
@@ -20,10 +21,11 @@ export function LoadingScreen({
   overlay?: boolean;
   className?: string;
 }) {
+  const tc = useTranslations("common");
   return (
     <output
       aria-live="polite"
-      aria-label={message ?? "Loading"}
+      aria-label={message ?? tc("loading")}
       className={cn(
         "flex flex-col items-center justify-center gap-4 bg-white",
         overlay ? "fixed inset-0 z-[9999]" : "min-h-screen w-full",
@@ -31,7 +33,7 @@ export function LoadingScreen({
       )}
     >
       <Spinner className="h-14 w-14 text-[#2563EB]" />
-      {message && <p className="text-sm text-muted-foreground">{message}</p>}
+      {message && <p className="text-muted-foreground text-sm">{message}</p>}
     </output>
   );
 }

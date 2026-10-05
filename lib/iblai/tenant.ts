@@ -24,6 +24,7 @@ export type TenantEntry = {
   name?: string;
   platform_name?: string;
   show_paywall?: boolean;
+  enable_monetization?: boolean | null;
   [k: string]: unknown;
 };
 

@@ -50,13 +50,14 @@ People, organizations, deals, activities and tags — for every organization you
 
 ## Why ibl.ai/crm
 
-|                                   |                                                                                                                                                                                                           |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🔓 **Your code, your data**       | MIT-licensed and self-hostable. The CRM records live in your ibl.ai organization, scoped by the platform's own multi-tenancy — no second database, no vendor lock-in.                                     |
-| 🏢 **Every organization you own** | Sign in once with ibl.ai SSO and switch between all of your organizations, exactly like [os.ibl.ai](https://os.ibl.ai). Each organization gets its own people, pipelines, deals and roles.                |
-| 🧭 **The Twenty way, on ibl.ai**  | The information architecture of [Twenty](https://github.com/twentyhq/twenty) — objects in a sidebar, table & kanban views, record pages with a timeline — built on the ibl.ai CRM API and SDK components. |
-| 📱 **Truly everywhere**           | One codebase ships as web, macOS, Windows, Linux, iOS and Android — native shells around the same app.                                                                                                    |
-| 🔐 **Enterprise-ready**           | SSO (OAuth / OIDC / SAML via the platform), four seeded CRM roles (Viewer, User, Manager, Inviter), org-level notifications, invitations that turn leads into platform users.                             |
+|                                   |                                                                                                                                                                                                                                         |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🔓 **Your code, your data**       | MIT-licensed and self-hostable. The CRM records live in your ibl.ai organization, scoped by the platform's own multi-tenancy — no second database, no vendor lock-in.                                                                   |
+| 🏢 **Every organization you own** | Sign in once with ibl.ai SSO and switch between all of your organizations, exactly like [os.ibl.ai](https://os.ibl.ai). Each organization gets its own people, pipelines, deals and roles.                                              |
+| 🧭 **The Twenty way, on ibl.ai**  | The information architecture of [Twenty](https://github.com/twentyhq/twenty) — objects in a sidebar, saved table & board views, favorites, record pages with a timeline and a history — built on the ibl.ai CRM API and SDK components. |
+| 🌍 **Four languages**             | English, Spanish, French and Chinese, following the language you chose in any other ibl.ai app.                                                                                                                                         |
+| 📱 **Truly everywhere**           | One codebase ships as web, macOS, Windows, Linux, iOS and Android — native shells around the same app.                                                                                                                                  |
+| 🔐 **Enterprise-ready**           | SSO (OAuth / OIDC / SAML via the platform), four seeded CRM roles (Viewer, User, Manager, Inviter), org-level notifications, invitations that turn leads into platform users.                                                           |
 
 ---
 
@@ -87,18 +88,19 @@ The native apps are [Tauri 2](https://tauri.app) WebView shells around the hoste
 <tr>
 <td width="50%" valign="top">
 
-**👥 People & organizations**
+**👥 People & companies**
 
-- **People** — leads, contacts and customers with lifecycle stage, owner, job title, emails, phones, tags and free-form metadata
-- **Organizations** — accounts with address, owner and tags; the people and deals that belong to them
+- **People** — leads, contacts and customers with lifecycle stage, owner, job title, emails, phones, tags and free-form metadata; merged duplicates stay out of the way
+- **Companies** — accounts with address, owner and tags; the people, deals and the timeline that belong to them
 - **Invite · link · merge** — turn a lead into a platform user by email invitation, link a person to an existing user, or merge duplicates in one click
-- **Tags** — colored labels shared across people, organizations and deals
+- **Tags** — colored labels shared across people, companies and deals
+- **Search, sort, views** — server-side search and sorting on every list; save a view with its filters, sort and columns (table or board); star anything into the sidebar's Favorites
 
 **💼 Deals & pipelines**
 
 - **Kanban board** — drag deals between stages; columns show count, value and win probability; stale deals are flagged after the pipeline's `rotten_days`
 - **Table view** — filter by status, owner, source, tags; page through everything
-- **Deal page** — stage stepper, mark won / lost (with reason), reopen, value & currency, expected close, timeline
+- **Deal page** — stage stepper, mark won / lost (with reason), reopen, value & currency, expected close, timeline, field-change history
 - **Pipelines & stages** — seeded default pipeline (New → Qualified → Proposal → Negotiation → Won / Lost); create your own, reorder stages, set probabilities and terminal flags; lead sources
 
 </td>
@@ -106,20 +108,20 @@ The native apps are [Tauri 2](https://tauri.app) WebView shells around the hoste
 
 **🗓️ Activities**
 
-- **Timeline** on every person and deal — calls, meetings, emails, notes, tasks, lunches, deadlines
+- **Timeline** on every person, company and deal — calls, meetings, emails, notes, tasks, lunches, deadlines
 - **Schedule & remind** — scheduled work with owner reminders; overdue / today / upcoming views; mark done
 - **Auto-recorded history** — stage changes are logged for you
 
 **📊 Home**
 
-- **Dashboard** — open deals, pipeline and weighted value, won this month, work due today; deals by stage; won vs lost over six months; what's up next
+- **Dashboard** — open deals, pipeline and weighted value, won this month, work due today; deals by stage; won vs lost over six months; what's up next — with a period picker (today, 7, 30, 90 days)
 
 **🏢 Operate & scale**
 
 - **Multi-organization** — the organization is in the URL (`/platform/<org>/…`); switch between every organization you belong to from the sidebar or the profile menu
 - **SSO & roles** — ibl.ai sign-in; CRM Viewer / User / Manager / Inviter roles assigned on the Users & roles page (the SDK's Management surface)
 - **Notifications** — person created, deal stage changed, person linked to user — in the bell and the notifications center
-- **⌘K** — search people, organizations and deals; jump anywhere; create anything
+- **⌘K** — one server-side search across people, companies and deals; jump anywhere; create anything
 - **Native shells** — macOS, Windows, Linux, iOS, Android via Tauri 2
 
 </td>
@@ -153,6 +155,8 @@ No configuration is required against hosted `iblai.app`: the service URLs defaul
 
 **Using [Claude Code](https://claude.ai/claude-code)?** This repo ships with the [iblai/vibe](https://github.com/iblai/vibe) skills in mind — read [`AGENTS.md`](AGENTS.md) first.
 
+Node.js 22+ and pnpm 12 (`corepack enable` picks the pinned version up from `package.json`).
+
 > **Node.js 25+ note:** the `dev` script sets `NODE_OPTIONS='--no-experimental-webstorage'` so the SDK's browser-storage guards do not collide with Node's experimental `localStorage`. Keep that flag if you customize the script.
 
 ### Scripts
@@ -162,8 +166,10 @@ No configuration is required against hosted `iblai.app`: the service URLs defaul
 | `pnpm dev`           | Dev server on port 3000                            |
 | `pnpm build`         | Production build (standalone output)               |
 | `pnpm start`         | Serve the production build                         |
-| `pnpm typecheck`     | TypeScript                                         |
+| `pnpm typecheck`     | TypeScript 7                                       |
 | `pnpm lint`          | oxlint                                             |
+| `pnpm format`        | oxfmt (`pnpm format:check` in CI)                  |
+| `pnpm i18n:check`    | The four message catalogs have the same keys       |
 | `pnpm test`          | Vitest unit tests                                  |
 | `pnpm test:e2e`      | Playwright journeys (needs `e2e/.env.development`) |
 | `pnpm tauri dev`     | Desktop shell in dev mode (needs Rust)             |
@@ -250,7 +256,7 @@ crm/
 │   ├── platform/[tenantKey]/             # everything inside one organization
 │   │   ├── layout.tsx                    # sidebar + top bar shell (admin gate)
 │   │   ├── page.tsx                      # Home dashboard
-│   │   ├── people/ · organizations/      # lists + record pages
+│   │   ├── people/ · companies/          # lists + record pages (timeline · history)
 │   │   ├── deals/                        # kanban · table · deal page
 │   │   ├── activities/ · tags/           # timeline work · labels
 │   │   ├── settings/                     # pipelines · stages · lead sources
@@ -262,7 +268,8 @@ crm/
 ├── components/crm/                       # sidebar, top bar, ⌘K, record widgets
 ├── components/ui/                        # shadcn/ui (Base UI) primitives
 ├── hooks/                                # useSession, useMembers
-├── lib/crm/                              # CRM types · RTK Query slice · formatting
+├── lib/crm/                              # CRM types · RTK Query slice · formatting · saved-view helpers
+├── i18n/ · messages/                     # next-intl config · en/es/fr/zh catalogs
 ├── lib/iblai/                            # config · tenant resolution · auth helpers
 ├── providers/iblai-providers.tsx         # Redux > AuthProvider > TenantProvider
 ├── store/iblai-store.ts                  # SDK slices + crmApi
@@ -286,14 +293,15 @@ Sign-in is the platform's hosted round trip (`login.<domain>/login?app=mentor&re
 
 ### The CRM API
 
-Eight Platform-scoped resources under `/dm/api/crm/`: persons, organizations, pipelines (with nested stages), lead-sources, deals (`move-stage/`, `won/`, `lost/`), activities (`done/`), tags (attach / detach on persons, organizations, deals). Every organization is seeded with a default pipeline, six stages and four lead sources. The full contract lives in the [`iblai-api-crm`](https://github.com/iblai/vibe/tree/main/skills/organizations/iblai-api-crm) and [`iblai-vibe-crm-overview`](https://github.com/iblai/vibe/tree/main/skills/organizations/iblai-vibe-crm-overview) skills of [iblai/vibe](https://github.com/iblai/vibe).
+Ten Platform-scoped resources under `/dm/api/crm/`: persons, organizations (the UI calls them companies), pipelines (with nested stages and `stages/reorder/`), lead-sources, deals (`move-stage/`, `won/`, `lost/`, the `board/`), activities (`done/`), tags (attach / detach on persons, organizations, deals), favorites and saved views — plus `search/`, `overview/` and `…/{id}/history/`, and `?search=` / `?ordering=` / `?date_filter=` on every list. Every organization is seeded with a default pipeline, six stages and four lead sources. The full contract lives in the [`iblai-api-crm`](https://github.com/iblai/vibe/tree/main/skills/organizations/iblai-api-crm) and [`iblai-vibe-crm-overview`](https://github.com/iblai/vibe/tree/main/skills/organizations/iblai-vibe-crm-overview) skills of [iblai/vibe](https://github.com/iblai/vibe). This release needs ibl-dm-pro 4.414.0 (`ibl-dm-crm-app` 1.3.0).
 
 ---
 
 ## Testing
 
 ```bash
-pnpm test            # Vitest — formatting, tenant resolution, SSO landing, config
+pnpm test            # Vitest — formatting, saved views, tenant resolution, SSO landing, config
+pnpm i18n:check      # en / es / fr / zh catalogs carry the same keys
 pnpm test:e2e        # Playwright journeys (copy e2e/.env.development.example first)
 pnpm test:e2e:ui     # interactive UI mode
 ```

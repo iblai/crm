@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 100,
+  "trailingComma": "all",
+  "sortTailwindcss": true,
+  "ignorePatterns": [
+    "components/ui/**",
+    "pnpm-lock.yaml",
+    "src-tauri/gen/**",
+    "src-tauri/target/**",
+    ".next/**",
+    "CHANGELOG.md"
+  ]
+}

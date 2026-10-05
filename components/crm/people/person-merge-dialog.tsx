@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -18,9 +19,9 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
-import { toastApiError } from "@/components/crm/people/crm-error";
+import { useToastApiError } from "@/components/crm/people/crm-error";
+import { useDebounced } from "@/hooks/use-debounced";
 import { useListPersonsQuery, useMergePersonsMutation } from "@/lib/crm/api";
-import { pluralize } from "@/lib/crm/format";
 import type { Person } from "@/lib/crm/types";
 
 /**
@@ -37,9 +38,16 @@ export function PersonMergeDialog({
   onOpenChange: (open: boolean) => void;
   person: Person;
 }) {
-  const { data, isLoading } = useListPersonsQuery({ page_size: 100 }, { skip: !open });
+  const t = useTranslations("people");
+  const tc = useTranslations("common");
+  const toastApiError = useToastApiError();
   const [merge, { isLoading: merging }] = useMergePersonsMutation();
   const [query, setQuery] = useState("");
+  const q = useDebounced(query.trim());
+  const { data, isLoading } = useListPersonsQuery(
+    { active: true, search: q || undefined, page_size: 50 },
+    { skip: !open },
+  );
   const [selected, setSelected] = useState<string[]>([]);
   const [confirm, setConfirm] = useState(false);
 
@@ -50,14 +58,10 @@ export function PersonMergeDialog({
     setConfirm(false);
   }, [open]);
 
-  const candidates = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return (data?.results ?? [])
-      .filter((p) => p.id !== person.id)
-      .filter((p) =>
-        q ? [p.name, p.primary_email, p.job_title].some((v) => v?.toLowerCase().includes(q)) : true,
-      );
-  }, [data, person.id, query]);
+  const candidates = useMemo(
+    () => (data?.results ?? []).filter((p) => p.id !== person.id),
+    [data, person.id],
+  );
 
   const toggle = (id: string) =>
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -67,10 +71,10 @@ export function PersonMergeDialog({
       await merge({ primary_id: person.id, duplicate_ids: selected }).unwrap();
       setConfirm(false);
       onOpenChange(false);
-      toast.success(`Merged ${pluralize(selected.length, "record")} into ${person.name}`);
+      toast.success(t("merge.merged", { count: selected.length, name: person.name }));
     } catch (err) {
       setConfirm(false);
-      toastApiError(err, "Could not merge these people");
+      toastApiError(err, t("merge.error"));
     }
   };
 
@@ -79,11 +83,8 @@ export function PersonMergeDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Merge duplicates into {person.name}</DialogTitle>
-            <DialogDescription>
-              Pick the duplicate records. Their deals, activities and tags move onto {person.name},
-              and the duplicates are deleted.
-            </DialogDescription>
+            <DialogTitle>{t("merge.title", { name: person.name })}</DialogTitle>
+            <DialogDescription>{t("merge.description", { name: person.name })}</DialogDescription>
           </DialogHeader>
 
           <div className="relative">
@@ -94,9 +95,9 @@ export function PersonMergeDialog({
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search people…"
+              placeholder={t("merge.searchPlaceholder")}
               className="pl-8"
-              aria-label="Search people to merge"
+              aria-label={t("merge.searchLabel")}
             />
           </div>
 
@@ -109,7 +110,7 @@ export function PersonMergeDialog({
               </div>
             ) : candidates.length === 0 ? (
               <p className="text-muted-foreground p-6 text-center text-sm">
-                {query.trim() ? "No matching people." : "There is no one else to merge yet."}
+                {query.trim() ? t("merge.noMatch") : t("merge.noOne")}
               </p>
             ) : (
               <ul className="divide-y divide-gray-100">
@@ -119,7 +120,7 @@ export function PersonMergeDialog({
                       <Checkbox
                         checked={selected.includes(p.id)}
                         onCheckedChange={() => toggle(p.id)}
-                        aria-label={`Merge ${p.name}`}
+                        aria-label={t("merge.select", { name: p.name })}
                       />
                       <EntityAvatar name={p.name} seed={p.id} kind="person" size="sm" />
                       <span className="min-w-0 flex-1">
@@ -140,13 +141,15 @@ export function PersonMergeDialog({
           </div>
 
           <DialogFooter>
-            <DialogClose render={<Button variant="outline" type="button" />}>Cancel</DialogClose>
+            <DialogClose render={<Button variant="outline" type="button" />}>
+              {tc("cancel")}
+            </DialogClose>
             <Button
               variant="destructive"
               disabled={selected.length === 0 || merging}
               onClick={() => setConfirm(true)}
             >
-              Merge {selected.length ? pluralize(selected.length, "record") : "records"}
+              {t("merge.submit", { count: selected.length })}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -155,9 +158,9 @@ export function PersonMergeDialog({
       <ConfirmDialog
         open={confirm}
         onOpenChange={setConfirm}
-        title="Merge these records?"
-        description={`${pluralize(selected.length, "duplicate")} will be folded into ${person.name} and then deleted. This cannot be undone.`}
-        confirmLabel="Merge and delete duplicates"
+        title={t("merge.confirmTitle")}
+        description={t("merge.confirmBody", { count: selected.length, name: person.name })}
+        confirmLabel={t("merge.confirm")}
         destructive
         loading={merging}
         onConfirm={runMerge}

@@ -1,7 +1,8 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { formatCompactCurrency, formatCurrency, pluralize } from "@/lib/crm/format";
+import { formatCompactCurrency, formatCurrency } from "@/lib/crm/format";
 
 export interface StageDatum {
   name: string;
@@ -13,10 +14,12 @@ const SERIES = ["#0058cc", "#0a72e0", "#00b0ef", "#6cc4f5", "#93C5FD"];
 
 /** Open pipeline value per stage of the default pipeline. */
 export function DealsByStageChart({ data, currency }: { data: StageDatum[]; currency: string }) {
+  const t = useTranslations("dashboard");
+  const locale = useLocale();
   if (data.every((d) => d.count === 0)) {
     return (
       <p className="text-muted-foreground flex h-56 items-center justify-center text-sm">
-        No open deals in this pipeline yet.
+        {t("panels.byStage.empty")}
       </p>
     );
   }
@@ -42,7 +45,10 @@ export function DealsByStageChart({ data, currency }: { data: StageDatum[]; curr
                 <div className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs shadow-md">
                   <p className="font-medium text-gray-900">{d.name}</p>
                   <p className="text-muted-foreground">
-                    {pluralize(d.count, "deal")} · {formatCurrency(d.value, currency)}
+                    {t("panels.byStage.tooltip", {
+                      count: d.count,
+                      value: formatCurrency(d.value, currency, locale),
+                    })}
                   </p>
                 </div>
               );
@@ -57,7 +63,7 @@ export function DealsByStageChart({ data, currency }: { data: StageDatum[]; curr
               position: "right",
               fontSize: 11,
               fill: "#6b7280",
-              formatter: (v: number) => formatCompactCurrency(Number(v), currency),
+              formatter: (v: number) => formatCompactCurrency(Number(v), currency, locale),
             }}
           >
             {data.map((d, i) => (

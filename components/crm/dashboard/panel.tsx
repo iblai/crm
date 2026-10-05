@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { InfoTip } from "@/components/crm/info-tip";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +14,7 @@ export function Panel({
   info,
   description,
   href,
-  linkLabel = "View all",
+  linkLabel,
   action,
   children,
   className,
@@ -32,6 +33,8 @@ export function Panel({
   className?: string;
   bodyClassName?: string;
 }) {
+  const t = useTranslations("dashboard");
+  const tf = useTranslations("fields");
   return (
     <section
       className={cn(
@@ -43,7 +46,15 @@ export function Panel({
         <div className="min-w-0">
           <h2 className="flex items-center gap-1 text-sm font-semibold text-gray-900">
             <span className="truncate">{title}</span>
-            {info ? <InfoTip label={`About ${titleText ?? "this panel"}`}>{info}</InfoTip> : null}
+            {info ? (
+              <InfoTip
+                label={
+                  titleText == null ? t("panel.aboutThisPanel") : tf("about", { label: titleText })
+                }
+              >
+                {info}
+              </InfoTip>
+            ) : null}
           </h2>
           {description ? (
             <p className="text-muted-foreground truncate text-xs">{description}</p>
@@ -55,7 +66,7 @@ export function Panel({
               href={href}
               className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-[#0058cc] hover:underline"
             >
-              {linkLabel} <ArrowRight className="size-3" />
+              {linkLabel ?? t("panel.viewAll")} <ArrowRight className="size-3" />
             </Link>
           ) : null)}
       </header>

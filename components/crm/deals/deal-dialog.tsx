@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, ChevronsUpDown, Handshake } from "lucide-react";
+import { Handshake } from "lucide-react";
+import { useTranslations, type Messages } from "next-intl";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -12,22 +13,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Spinner } from "@/components/ui/spinner";
-import { EntityAvatar } from "@/components/crm/entity-avatar";
+import { Spinner } from "@iblai/iblai-js/web-containers";
 import { InfoTip } from "@/components/crm/info-tip";
+import { SearchPicker } from "@/components/crm/search-picker";
 import { SimpleSelect } from "@/components/crm/simple-select";
 import { OwnerSelect } from "@/components/crm/owner-select";
 import { openStages, useDealLookups } from "@/components/crm/deals/use-lookups";
@@ -68,6 +60,10 @@ export function DealDialog({
   defaultPipeline?: number | null;
   onCreated?: (deal: Deal) => void;
 }) {
+  const t = useTranslations("deals");
+  const tc = useTranslations("common");
+  const about = (field: keyof Messages["deals"]["fields"]) =>
+    t("dialog.fieldAbout", { field: t(`fields.${field}`).toLowerCase() });
   const router = useRouter();
   const { href, userId } = useSession();
   const lookups = useDealLookups({ skip: !open });
@@ -75,7 +71,6 @@ export function DealDialog({
 
   const [title, setTitle] = useState("");
   const [personId, setPersonId] = useState("");
-  const [personOpen, setPersonOpen] = useState(false);
   const [organizationId, setOrganizationId] = useState("");
   const [pipelineId, setPipelineId] = useState("");
   const [stageId, setStageId] = useState("");
@@ -91,8 +86,6 @@ export function DealDialog({
   const { data: seededPerson } = useGetPersonQuery(defaultPerson ?? "", {
     skip: !open || !defaultPerson,
   });
-  const selectedPerson =
-    lookups.personById.get(personId) ?? (seededPerson?.id === personId ? seededPerson : undefined);
 
   // Reset to the defaults each time the dialog opens.
   useEffect(() => {
@@ -126,11 +119,11 @@ export function DealDialog({
     if (!stages.some((s) => String(s.id) === stageId)) setStageId(String(stages[0].id));
   }, [stages, stageId]);
 
-  // Inherit the person's organization when the user has not picked one.
+  // A deep-linked person brings their company along.
   useEffect(() => {
-    if (!selectedPerson?.organization || organizationId) return;
-    setOrganizationId(selectedPerson.organization);
-  }, [selectedPerson, organizationId]);
+    if (!seededPerson?.organization || seededPerson.id !== personId || organizationId) return;
+    setOrganizationId(seededPerson.organization);
+  }, [seededPerson, personId, organizationId]);
 
   const currencyOptions = useMemo(() => {
     const all = new Set([config.defaultCurrency(), ...CURRENCIES]);
@@ -156,12 +149,12 @@ export function DealDialog({
         owner: owner ?? null,
         description: description.trim() || undefined,
       }).unwrap();
-      toast.success(`Deal “${deal.title}” created`);
+      toast.success(t("toast.created", { title: deal.title }));
       onOpenChange(false);
       onCreated?.(deal);
       router.push(href(`/deals/${deal.id}`));
     } catch (err) {
-      toast.error(errorMessage(err, "Could not create the deal"));
+      toast.error(errorMessage(err, t("toast.createFailed")));
     }
   };
 
@@ -173,136 +166,81 @@ export function DealDialog({
             <span className="flex size-7 items-center justify-center rounded-lg bg-[#eef6fc] text-[#0058cc]">
               <Handshake className="size-4" />
             </span>
-            New deal
+            {t("newDeal")}
           </DialogTitle>
-          <DialogDescription>
-            Deals belong to a person and live in one stage of a pipeline.
-          </DialogDescription>
+          <DialogDescription>{t("dialog.description")}</DialogDescription>
         </DialogHeader>
 
         <div className="grid max-h-[60vh] gap-3 overflow-y-auto pr-0.5 sm:grid-cols-2">
           <div className="grid gap-1.5 sm:col-span-2">
-            <Label htmlFor="deal-title">Title</Label>
+            <Label htmlFor="deal-title">{t("fields.title")}</Label>
             <Input
               id="deal-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enterprise licence — 25 seats"
+              placeholder={t("dialog.titlePlaceholder")}
               aria-invalid={touched && !title.trim()}
             />
           </div>
 
           <div className="grid gap-1.5 sm:col-span-2">
             <Label className="flex items-center gap-1">
-              Person
-              <InfoTip label="About the person field">
-                Every deal belongs to one person; add them first under People
-              </InfoTip>
+              {t("fields.person")}
+              <InfoTip label={about("person")}>{t("dialog.personHint")}</InfoTip>
             </Label>
-            <Popover open={personOpen} onOpenChange={setPersonOpen}>
-              <PopoverTrigger
-                render={
-                  <Button
-                    variant="outline"
-                    className="h-9 w-full justify-between font-normal"
-                    aria-invalid={touched && !personId}
-                  />
-                }
-              >
-                {selectedPerson ? (
-                  <span className="flex min-w-0 items-center gap-2">
-                    <EntityAvatar name={selectedPerson.name} seed={selectedPerson.id} size="xs" />
-                    <span className="truncate">{selectedPerson.name}</span>
-                  </span>
-                ) : (
-                  <span className="text-muted-foreground">Search for a person…</span>
-                )}
-                <ChevronsUpDown className="ml-auto size-4 shrink-0 opacity-50" />
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-0" align="start">
-                <Command>
-                  <CommandInput autoFocus placeholder="Search people…" />
-                  <CommandList>
-                    <CommandEmpty>No person found.</CommandEmpty>
-                    <CommandGroup>
-                      {lookups.persons.map((p) => (
-                        <CommandItem
-                          key={p.id}
-                          value={`${p.name} ${p.primary_email ?? ""}`}
-                          onSelect={() => {
-                            setPersonId(p.id);
-                            if (p.organization) setOrganizationId(p.organization);
-                            setPersonOpen(false);
-                          }}
-                        >
-                          <EntityAvatar name={p.name} seed={p.id} size="xs" />
-                          <span className="min-w-0 flex-1 truncate">
-                            {p.name}
-                            {p.primary_email ? (
-                              <span className="text-muted-foreground ml-1.5 text-xs">
-                                {p.primary_email}
-                              </span>
-                            ) : null}
-                          </span>
-                          {personId === p.id ? (
-                            <Check className="size-4 shrink-0 text-[#0058cc]" />
-                          ) : null}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <SearchPicker
+              kind="person"
+              value={personId || null}
+              onChange={(id, hit) => {
+                setPersonId(id ?? "");
+                if (hit?.organization && !organizationId) setOrganizationId(hit.organization);
+              }}
+              placeholder={t("dialog.personPlaceholder")}
+              invalid={touched && !personId}
+              className="h-9"
+            />
           </div>
 
           <div className="grid gap-1.5 sm:col-span-2">
-            <Label>Organization</Label>
-            <SimpleSelect
-              value={organizationId}
-              onChange={setOrganizationId}
-              options={lookups.organizations.map((o) => ({ value: o.id, label: o.name }))}
-              allowEmpty
-              emptyLabel="No organization"
-              placeholder="No organization"
+            <Label>{t("fields.company")}</Label>
+            <SearchPicker
+              kind="organization"
+              value={organizationId || null}
+              onChange={(id) => setOrganizationId(id ?? "")}
+              placeholder={t("fields.noCompany")}
+              className="h-9"
             />
           </div>
 
           <div className="grid gap-1.5">
             <Label className="flex items-center gap-1">
-              Pipeline
-              <InfoTip label="About the pipeline field">
-                The set of stages this deal moves through
-              </InfoTip>
+              {t("fields.pipeline")}
+              <InfoTip label={about("pipeline")}>{t("dialog.pipelineHint")}</InfoTip>
             </Label>
             <SimpleSelect
               value={pipelineId}
               onChange={setPipelineId}
               options={lookups.pipelines.map((p) => ({ value: String(p.id), label: p.name }))}
-              placeholder="Pipeline"
+              placeholder={t("fields.pipeline")}
             />
           </div>
           <div className="grid gap-1.5">
             <Label className="flex items-center gap-1">
-              Stage
-              <InfoTip label="About the stage field">
-                Deals start here; move them from the board
-              </InfoTip>
+              {t("fields.stage")}
+              <InfoTip label={about("stage")}>{t("dialog.stageHint")}</InfoTip>
             </Label>
             <SimpleSelect
               value={stageId}
               onChange={setStageId}
               options={stages.map((s) => ({ value: String(s.id), label: s.name }))}
-              placeholder="Stage"
+              placeholder={t("fields.stage")}
             />
           </div>
 
           <div className="grid gap-1.5">
             <Label htmlFor="deal-value" className="flex items-center gap-1">
-              Value
-              <InfoTip label="About the value field">
-                What the deal is worth; it feeds the pipeline totals
-              </InfoTip>
+              {t("fields.value")}
+              <InfoTip label={about("value")}>{t("dialog.valueHint")}</InfoTip>
             </Label>
             <Input
               id="deal-value"
@@ -317,36 +255,30 @@ export function DealDialog({
           </div>
           <div className="grid gap-1.5">
             <Label className="flex items-center gap-1">
-              Currency
-              <InfoTip label="About the currency field">
-                Set per deal — totals are added up as-is, not converted
-              </InfoTip>
+              {t("fields.currency")}
+              <InfoTip label={about("currency")}>{t("dialog.currencyHint")}</InfoTip>
             </Label>
             <SimpleSelect value={currency} onChange={setCurrency} options={currencyOptions} />
           </div>
 
           <div className="grid gap-1.5">
             <Label className="flex items-center gap-1">
-              Source
-              <InfoTip label="About the source field">
-                Where the deal came from; admins manage the list in Settings
-              </InfoTip>
+              {t("fields.source")}
+              <InfoTip label={about("source")}>{t("dialog.sourceHint")}</InfoTip>
             </Label>
             <SimpleSelect
               value={sourceId}
               onChange={setSourceId}
               options={lookups.sources.map((s) => ({ value: String(s.id), label: s.name }))}
               allowEmpty
-              emptyLabel="No source"
-              placeholder="No source"
+              emptyLabel={t("fields.noSource")}
+              placeholder={t("fields.noSource")}
             />
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="deal-close" className="flex items-center gap-1">
-              Expected close
-              <InfoTip label="About the expected close field">
-                When you expect to close; the card flags it once it passes
-              </InfoTip>
+              {t("fields.expectedClose")}
+              <InfoTip label={about("expectedClose")}>{t("dialog.expectedCloseHint")}</InfoTip>
             </Label>
             <Input
               id="deal-close"
@@ -357,33 +289,33 @@ export function DealDialog({
           </div>
 
           <div className="grid gap-1.5 sm:col-span-2">
-            <Label>Owner</Label>
+            <Label>{tc("owner")}</Label>
             <OwnerSelect value={owner} onChange={setOwner} />
           </div>
 
           <div className="grid gap-1.5 sm:col-span-2">
-            <Label htmlFor="deal-description">Description</Label>
+            <Label htmlFor="deal-description">{tc("description")}</Label>
             <Textarea
               id="deal-description"
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="What is this deal about?"
+              placeholder={t("dialog.descriptionPlaceholder")}
             />
           </div>
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-            Cancel
+            {tc("cancel")}
           </Button>
           <Button
             className={cn("ibl-button-primary")}
             disabled={!valid || isLoading}
             onClick={() => void submit()}
           >
-            {isLoading ? <Spinner data-icon="inline-start" /> : null}
-            Create deal
+            {isLoading ? <Spinner size="sm" className="size-4 text-current" /> : null}
+            {t("dialog.submit")}
           </Button>
         </DialogFooter>
       </DialogContent>

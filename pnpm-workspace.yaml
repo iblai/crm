@@ -1,5 +1,8 @@
 allowBuilds:
+  "@parcel/watcher": false
+  "@swc/core": false
   canvas: false
+  core-js: false
   msw: false
   sharp: false
   unrs-resolver: false
@@ -7,4 +10,14 @@ ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
 minimumReleaseAgeExclude:
-  - '@iblai/*'
+  - "@iblai/*"
+  - icu-minify@4.14.9
+  - next-intl-swc-plugin-extractor@4.14.9
+  - next-intl@4.14.9
+  - use-intl@4.14.9
+# One physical copy of each @iblai/* package, hoisted to the root: the SDK's
+# React contexts live on the module instance, so a second copy makes its
+# RTK Query hooks return undefined.
+dedupePeerDependents: true
+publicHoistPattern:
+  - "@iblai/*"

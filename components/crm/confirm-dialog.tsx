@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@iblai/iblai-js/web-containers";
 
 /** Confirm a destructive or outward-facing action (delete, invite, merge). */
 export function ConfirmDialog({
@@ -19,8 +20,8 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  confirmLabel,
+  cancelLabel,
   destructive = false,
   loading = false,
   onConfirm,
@@ -35,6 +36,7 @@ export function ConfirmDialog({
   loading?: boolean;
   onConfirm: () => void | Promise<void>;
 }) {
+  const tc = useTranslations("common");
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent size="sm">
@@ -43,7 +45,7 @@ export function ConfirmDialog({
           {description ? <AlertDialogDescription>{description}</AlertDialogDescription> : null}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={loading}>{cancelLabel}</AlertDialogCancel>
+          <AlertDialogCancel disabled={loading}>{cancelLabel ?? tc("cancel")}</AlertDialogCancel>
           <AlertDialogAction
             variant={destructive ? "destructive" : "default"}
             disabled={loading}
@@ -52,8 +54,8 @@ export function ConfirmDialog({
               void onConfirm();
             }}
           >
-            {loading ? <Spinner data-icon="inline-start" /> : null}
-            {confirmLabel}
+            {loading ? <Spinner size="sm" className="size-4 text-current" /> : null}
+            {confirmLabel ?? tc("confirm")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

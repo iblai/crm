@@ -2,8 +2,8 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { addDays, endOfDay, endOfWeek, isToday, startOfDay, startOfWeek } from "date-fns";
 import { CalendarCheck2, ChevronDown, ChevronRight, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -17,100 +17,16 @@ import { InfoTip } from "@/components/crm/info-tip";
 import { ActivityDialog } from "@/components/crm/activities/activity-dialog";
 import { useBreadcrumbs } from "@/components/crm/breadcrumbs";
 import { useSession } from "@/hooks/use-session";
+import { groupActivities, RANGE_OPTIONS, rangeParams, type Range } from "@/lib/crm/activities";
 import { useListActivitiesQuery } from "@/lib/crm/api";
-import {
-  ACTIVITY_TYPES,
-  type Activity,
-  type ActivityListParams,
-  type ActivityType,
-} from "@/lib/crm/types";
+import { useCrmEnums } from "@/lib/crm/i18n";
+import type { Activity, ActivityListParams, ActivityType } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 100;
 
 type Scope = "mine" | "everyone";
 type Status = "open" | "done" | "all";
-type Range = "all" | "overdue" | "today" | "week" | "next7";
-
-const RANGE_OPTIONS = [
-  { value: "overdue", label: "Overdue" },
-  { value: "today", label: "Today" },
-  { value: "week", label: "This week" },
-  { value: "next7", label: "Next 7 days" },
-  { value: "all", label: "All dates" },
-];
-
-/** Translate the quick-range picker into the API's `schedule_from` window. */
-export function rangeParams(range: Range, now = new Date()): Partial<ActivityListParams> {
-  switch (range) {
-    case "overdue":
-      return { schedule_from__lte: now.toISOString(), is_done: false };
-    case "today":
-      return {
-        schedule_from__gte: startOfDay(now).toISOString(),
-        schedule_from__lte: endOfDay(now).toISOString(),
-      };
-    case "week":
-      return {
-        schedule_from__gte: startOfWeek(now, { weekStartsOn: 1 }).toISOString(),
-        schedule_from__lte: endOfWeek(now, { weekStartsOn: 1 }).toISOString(),
-      };
-    case "next7":
-      return {
-        schedule_from__gte: now.toISOString(),
-        schedule_from__lte: endOfDay(addDays(now, 7)).toISOString(),
-      };
-    default:
-      return {};
-  }
-}
-
-interface Grouped {
-  overdue: Activity[];
-  today: Activity[];
-  upcoming: Activity[];
-  unscheduled: Activity[];
-  done: Activity[];
-}
-
-/** Bucket activities the way a rep reads them: late, today, ahead, someday, history. */
-export function groupActivities(rows: Activity[], now = new Date()): Grouped {
-  const dayStart = startOfDay(now).getTime();
-  const out: Grouped = { overdue: [], today: [], upcoming: [], unscheduled: [], done: [] };
-  for (const a of rows) {
-    if (a.is_done) {
-      out.done.push(a);
-      continue;
-    }
-    if (!a.schedule_from) {
-      out.unscheduled.push(a);
-      continue;
-    }
-    const at = new Date(a.schedule_from);
-    if (Number.isNaN(at.getTime())) {
-      out.unscheduled.push(a);
-    } else if (isToday(at)) {
-      out.today.push(a);
-    } else if (at.getTime() < dayStart) {
-      out.overdue.push(a);
-    } else {
-      out.upcoming.push(a);
-    }
-  }
-  const byScheduleAsc = (a: Activity, b: Activity) =>
-    new Date(a.schedule_from ?? 0).getTime() - new Date(b.schedule_from ?? 0).getTime();
-  out.overdue.sort(byScheduleAsc);
-  out.today.sort(byScheduleAsc);
-  out.upcoming.sort(byScheduleAsc);
-  out.unscheduled.sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-  );
-  out.done.sort(
-    (a, b) =>
-      new Date(b.done_at ?? b.updated_at).getTime() - new Date(a.done_at ?? a.updated_at).getTime(),
-  );
-  return out;
-}
 
 export default function ActivitiesPage() {
   return (
@@ -121,9 +37,10 @@ export default function ActivitiesPage() {
 }
 
 function ActivitiesFallback() {
+  const tn = useTranslations("nav");
   return (
     <>
-      <PageHeader icon={<CalendarCheck2 />} title="Activities" />
+      <PageHeader icon={<CalendarCheck2 />} title={tn("activities")} />
       <div className="flex-1 overflow-auto p-4 md:p-6">
         <ListSkeleton />
       </div>
@@ -132,10 +49,14 @@ function ActivitiesFallback() {
 }
 
 function ActivitiesView() {
+  const t = useTranslations("activities");
+  const tc = useTranslations("common");
+  const tn = useTranslations("nav");
+  const { activityTypeOptions } = useCrmEnums();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userId, href } = useSession();
-  useBreadcrumbs([{ label: "Activities", href: href("/activities") }]);
+  useBreadcrumbs([{ label: tn("activities"), href: href("/activities") }]);
 
   const [scope, setScope] = useState<Scope>("mine");
   const [status, setStatus] = useState<Status>("open");
@@ -190,9 +111,9 @@ function ActivitiesView() {
     <>
       <PageHeader
         icon={<CalendarCheck2 />}
-        title="Activities"
+        title={tn("activities")}
         count={data?.count ?? null}
-        description="Calls, meetings, tasks and notes across every deal and contact"
+        description={t("list.description")}
         actions={
           <Tooltip>
             <TooltipTrigger
@@ -200,11 +121,9 @@ function ActivitiesView() {
                 <Button size="sm" className="ibl-button-primary" onClick={() => openEdit()} />
               }
             >
-              <Plus data-icon="inline-start" /> New activity
+              <Plus data-icon="inline-start" /> {t("newActivity")}
             </TooltipTrigger>
-            <TooltipContent side="bottom">
-              Log a call or note, or schedule a task or meeting
-            </TooltipContent>
+            <TooltipContent side="bottom">{t("list.newHint")}</TooltipContent>
           </Tooltip>
         }
         toolbar={
@@ -219,7 +138,7 @@ function ActivitiesView() {
               variant="outline"
               size="sm"
               spacing={0}
-              aria-label="Owner scope"
+              aria-label={t("list.scopeLabel")}
             >
               <Tooltip>
                 <TooltipTrigger
@@ -230,9 +149,9 @@ function ActivitiesView() {
                     />
                   }
                 >
-                  Mine
+                  {t("list.mine")}
                 </TooltipTrigger>
-                <TooltipContent side="bottom">Mine — activities you own</TooltipContent>
+                <TooltipContent side="bottom">{t("list.mineHint")}</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger
@@ -243,11 +162,9 @@ function ActivitiesView() {
                     />
                   }
                 >
-                  Everyone
+                  {t("list.everyone")}
                 </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  Everyone — activities owned by anyone on the team
-                </TooltipContent>
+                <TooltipContent side="bottom">{t("list.everyoneHint")}</TooltipContent>
               </Tooltip>
             </ToggleGroup>
 
@@ -261,7 +178,7 @@ function ActivitiesView() {
               variant="outline"
               size="sm"
               spacing={0}
-              aria-label="Status"
+              aria-label={t("list.statusLabel")}
             >
               <Tooltip>
                 <TooltipTrigger
@@ -272,9 +189,9 @@ function ActivitiesView() {
                     />
                   }
                 >
-                  Open
+                  {tc("open")}
                 </TooltipTrigger>
-                <TooltipContent side="bottom">Open — still to do</TooltipContent>
+                <TooltipContent side="bottom">{t("list.openHint")}</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger
@@ -285,9 +202,9 @@ function ActivitiesView() {
                     />
                   }
                 >
-                  Done
+                  {tc("done")}
                 </TooltipTrigger>
-                <TooltipContent side="bottom">Done — already completed</TooltipContent>
+                <TooltipContent side="bottom">{t("list.doneHint")}</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger
@@ -298,35 +215,38 @@ function ActivitiesView() {
                     />
                   }
                 >
-                  All
+                  {tc("all")}
                 </TooltipTrigger>
-                <TooltipContent side="bottom">All — open and done together</TooltipContent>
+                <TooltipContent side="bottom">{t("list.allHint")}</TooltipContent>
               </Tooltip>
             </ToggleGroup>
 
             <SimpleSelect
               value={type}
               onChange={resetPage(setType)}
-              options={ACTIVITY_TYPES}
+              options={activityTypeOptions}
               allowEmpty
-              emptyLabel="All types"
-              placeholder="All types"
+              emptyLabel={t("list.allTypes")}
+              placeholder={t("list.allTypes")}
               size="sm"
               className="w-36"
-              aria-label="Activity type"
+              aria-label={t("typeLabel")}
             />
 
             <SimpleSelect
               value={range}
               onChange={resetPage((v: string) => setRange(v as Range))}
-              options={RANGE_OPTIONS}
+              options={RANGE_OPTIONS.map((value) => ({
+                value,
+                label: value === "overdue" || value === "today" ? tc(value) : t(`range.${value}`),
+              }))}
               size="sm"
               className="w-36"
-              aria-label="Date range"
+              aria-label={t("list.rangeLabel")}
             />
 
             {isFetching && !isLoading ? (
-              <span className="text-muted-foreground text-xs">Refreshing…</span>
+              <span className="text-muted-foreground text-xs">{t("list.refreshing")}</span>
             ) : null}
           </>
         }
@@ -339,46 +259,20 @@ function ActivitiesView() {
           ) : !hasRows ? (
             <EmptyState
               icon={<CalendarCheck2 />}
-              title="Nothing scheduled here"
-              description={
-                scope === "mine"
-                  ? "Nothing of yours matches these filters. Try “Everyone”, widen the date range, or log a call or task from a person or deal page."
-                  : "Nothing matches these filters. Widen the date range, or log a call or task from a person or deal page."
-              }
+              title={t("list.emptyTitle")}
+              description={scope === "mine" ? t("list.emptyMine") : t("list.emptyEveryone")}
               action={
                 <Button className="ibl-button-primary" onClick={() => openEdit()}>
-                  <Plus data-icon="inline-start" /> New activity
+                  <Plus data-icon="inline-start" /> {t("newActivity")}
                 </Button>
               }
             />
           ) : (
             <div className="flex flex-col gap-6">
-              <Section
-                title="Overdue"
-                tone="overdue"
-                info="Scheduled before today and still not done."
-                items={groups.overdue}
-                onEdit={openEdit}
-              />
-              <Section
-                title="Today"
-                tone="today"
-                info="Scheduled for today and still open."
-                items={groups.today}
-                onEdit={openEdit}
-              />
-              <Section
-                title="Upcoming"
-                info="Scheduled after today."
-                items={groups.upcoming}
-                onEdit={openEdit}
-              />
-              <Section
-                title="Unscheduled"
-                info="Open work with no date yet — newest first."
-                items={groups.unscheduled}
-                onEdit={openEdit}
-              />
+              <Section kind="overdue" items={groups.overdue} onEdit={openEdit} />
+              <Section kind="today" items={groups.today} onEdit={openEdit} />
+              <Section kind="upcoming" items={groups.upcoming} onEdit={openEdit} />
+              <Section kind="unscheduled" items={groups.unscheduled} onEdit={openEdit} />
               {groups.done.length ? (
                 <section>
                   <button
@@ -392,7 +286,7 @@ function ActivitiesView() {
                     ) : (
                       <ChevronRight className="size-3.5" />
                     )}
-                    Done
+                    {tc("done")}
                     <span className="rounded-full bg-gray-100 px-1.5 py-px text-[11px] font-medium text-gray-600 normal-case">
                       {groups.done.length}
                     </span>
@@ -414,7 +308,7 @@ function ActivitiesView() {
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}
-          label="activities"
+          label={t("list.paginationLabel")}
         />
       </div>
 
@@ -433,37 +327,35 @@ function ActivitiesView() {
 const TONES = {
   overdue: "text-rose-600",
   today: "text-[#0058cc]",
-  default: "text-muted-foreground",
+  upcoming: "text-muted-foreground",
+  unscheduled: "text-muted-foreground",
 };
 
 function Section({
-  title,
+  kind,
   items,
-  tone = "default",
-  info,
   onEdit,
 }: {
-  title: string;
+  kind: keyof typeof TONES;
   items: Activity[];
-  tone?: keyof typeof TONES;
-  /** One short sentence explaining what lands in this bucket. */
-  info?: string;
   onEdit: (activity: Activity) => void;
 }) {
+  const t = useTranslations("activities");
+  const tc = useTranslations("common");
   if (!items.length) return null;
   return (
     <section>
       <h2
         className={cn(
           "mb-2 flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase",
-          TONES[tone],
+          TONES[kind],
         )}
       >
-        {title}
+        {kind === "upcoming" ? t("sections.upcoming") : tc(kind)}
         <span className="rounded-full bg-gray-100 px-1.5 py-px text-[11px] font-medium text-gray-600 normal-case">
           {items.length}
         </span>
-        {info ? <InfoTip label={`About ${title.toLowerCase()}`}>{info}</InfoTip> : null}
+        <InfoTip label={t(`sections.${kind}About`)}>{t(`sections.${kind}Info`)}</InfoTip>
       </h2>
       <ul className="space-y-2">
         {items.map((a) => (
@@ -482,6 +374,7 @@ function RowShell({
   activity: Activity;
   onEdit: (activity: Activity) => void;
 }) {
+  const tc = useTranslations("common");
   return (
     <div className="group/row relative">
       <ActivityRow activity={activity} showDealLink showPersonLink />
@@ -490,7 +383,7 @@ function RowShell({
         onClick={() => onEdit(activity)}
         className="absolute top-2 right-20 rounded-md px-2 py-0.5 text-[11px] font-medium text-[#0058cc] opacity-0 transition-opacity group-hover/row:opacity-100 hover:bg-[#eef6fc]"
       >
-        Edit
+        {tc("edit")}
       </button>
     </div>
   );

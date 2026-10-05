@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { tagStyle } from "@/lib/crm/format";
 import type { TagChip as TagChipType } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ export function TagChip({
   size?: "xs" | "sm";
   className?: string;
 }) {
+  const t = useTranslations("fields");
   return (
     <span
       className={cn(
@@ -39,7 +41,7 @@ export function TagChip({
             onRemove();
           }}
           className="-mr-0.5 rounded-full p-px opacity-60 hover:opacity-100"
-          aria-label={`Remove tag ${tag.name}`}
+          aria-label={t("tags.remove", { name: tag.name })}
         >
           <X className="size-3" />
         </button>

@@ -8,7 +8,7 @@
  * slice's cache is reset by the org-scoped `tenantKey` we thread through
  * `providesTags`/`invalidatesTags` and by a full `resetApiState` on switch.
  */
-import { createApi, fetchBaseQuery, type FetchArgs } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import config from "@/lib/iblai/config";
 import { LOCAL_STORAGE_KEYS } from "@/lib/iblai/auth-utils";
 import type {
@@ -17,14 +17,21 @@ import type {
   ActivityListParams,
   CrmApiError,
   Deal,
+  DealBoard,
+  DealBoardParams,
   DealInput,
   DealListParams,
+  Favorite,
+  FavoriteInput,
+  HistoryEntry,
   LeadSource,
   LeadSourceInput,
   LeadSourceListParams,
   Organization,
   OrganizationInput,
   OrganizationListParams,
+  Overview,
+  OverviewParams,
   Paginated,
   Person,
   PersonInput,
@@ -38,6 +45,10 @@ import type {
   PipelineListParams,
   PipelineStage,
   PipelineStageInput,
+  SavedView,
+  SavedViewInput,
+  SavedViewObject,
+  SearchResponse,
   Tag,
   TagAttachResponse,
   TagInput,
@@ -52,6 +63,11 @@ export const CRM_TAG_TYPES = [
   "Deal",
   "Activity",
   "Tag",
+  "Favorite",
+  "SavedView",
+  "Overview",
+  "Board",
+  "History",
 ] as const;
 
 type TagType = (typeof CRM_TAG_TYPES)[number];
@@ -140,13 +156,14 @@ export const crmApi = createApi({
     }),
     createPerson: builder.mutation<Person, PersonInput>({
       query: (body) => ({ url: "/persons/", method: "POST", body }),
-      invalidatesTags: [{ type: "Person", id: LIST }],
+      invalidatesTags: [{ type: "Person", id: LIST }, "Overview"],
     }),
     updatePerson: builder.mutation<Person, { id: string; body: PersonInput }>({
       query: ({ id, body }) => ({ url: `/persons/${id}/`, method: "PATCH", body }),
       invalidatesTags: (_r, _e, { id }) => [
         { type: "Person", id },
         { type: "Person", id: LIST },
+        { type: "History", id: `person-${id}` },
       ],
     }),
     deletePerson: builder.mutation<void, string>({
@@ -154,6 +171,8 @@ export const crmApi = createApi({
       invalidatesTags: [
         { type: "Person", id: LIST },
         { type: "Deal", id: LIST },
+        { type: "Favorite", id: LIST },
+        "Overview",
       ],
     }),
     invitePerson: builder.mutation<
@@ -204,6 +223,22 @@ export const crmApi = createApi({
         { type: "Person", id: LIST },
       ],
     }),
+    personHistory: builder.query<HistoryEntry[], string>({
+      query: (id) => `/persons/${id}/history/`,
+      providesTags: (_r, _e, id) => [{ type: "History", id: `person-${id}` }],
+    }),
+
+    // --------------------------------------------------------------- Search
+    search: builder.query<SearchResponse, { q: string; limit?: number }>({
+      query: (params) => ({ url: "/search/", params: cleanParams(params) }),
+      providesTags: ["Person", "Organization", "Deal"],
+    }),
+
+    // ------------------------------------------------------------- Overview
+    overview: builder.query<Overview, OverviewParams | void>({
+      query: (params) => ({ url: "/overview/", params: cleanParams(params ?? undefined) }),
+      providesTags: ["Overview"],
+    }),
 
     // ------------------------------------------------------- Organizations
     listOrganizations: builder.query<Paginated<Organization>, OrganizationListParams | void>({
@@ -216,13 +251,14 @@ export const crmApi = createApi({
     }),
     createOrganization: builder.mutation<Organization, OrganizationInput>({
       query: (body) => ({ url: "/organizations/", method: "POST", body }),
-      invalidatesTags: [{ type: "Organization", id: LIST }],
+      invalidatesTags: [{ type: "Organization", id: LIST }, "Overview"],
     }),
     updateOrganization: builder.mutation<Organization, { id: string; body: OrganizationInput }>({
       query: ({ id, body }) => ({ url: `/organizations/${id}/`, method: "PATCH", body }),
       invalidatesTags: (_r, _e, { id }) => [
         { type: "Organization", id },
         { type: "Organization", id: LIST },
+        { type: "History", id: `organization-${id}` },
       ],
     }),
     deleteOrganization: builder.mutation<void, string>({
@@ -231,6 +267,8 @@ export const crmApi = createApi({
         { type: "Organization", id: LIST },
         { type: "Person", id: LIST },
         { type: "Deal", id: LIST },
+        { type: "Favorite", id: LIST },
+        "Overview",
       ],
     }),
     attachOrganizationTag: builder.mutation<TagAttachResponse, { id: string; tag_id: number }>({
@@ -253,6 +291,10 @@ export const crmApi = createApi({
         { type: "Organization", id },
         { type: "Organization", id: LIST },
       ],
+    }),
+    organizationHistory: builder.query<HistoryEntry[], string>({
+      query: (id) => `/organizations/${id}/history/`,
+      providesTags: (_r, _e, id) => [{ type: "History", id: `organization-${id}` }],
     }),
 
     // ----------------------------------------------------------- Pipelines
@@ -321,6 +363,19 @@ export const crmApi = createApi({
         { type: "Pipeline", id: LIST },
       ],
     }),
+    reorderStages: builder.mutation<Pipeline, { pipeline: number; order: number[] }>({
+      query: ({ pipeline, order }) => ({
+        url: `/pipelines/${pipeline}/stages/reorder/`,
+        method: "POST",
+        body: { order },
+      }),
+      invalidatesTags: (_r, _e, { pipeline }) => [
+        { type: "Pipeline", id: pipeline },
+        { type: "Pipeline", id: LIST },
+        "Board",
+        "Overview",
+      ],
+    }),
 
     // -------------------------------------------------------- Lead sources
     listLeadSources: builder.query<Paginated<LeadSource>, LeadSourceListParams | void>({
@@ -351,25 +406,14 @@ export const crmApi = createApi({
       query: (params) => ({ url: "/deals/", params: cleanParams(params ?? undefined) }),
       providesTags: (res) => listTags("Deal", res?.results),
     }),
-    /** Every deal matching the filters — walks the pages (kanban, dashboard). */
-    listAllDeals: builder.query<Deal[], Omit<DealListParams, "page" | "page_size"> | void>({
-      async queryFn(params, _api, _extra, fetchWithBQ) {
-        const all: Deal[] = [];
-        let page = 1;
-        for (let i = 0; i < 50; i++) {
-          const res = await fetchWithBQ({
-            url: "/deals/",
-            params: cleanParams({ ...(params ?? {}), page, page_size: 100 }),
-          } as FetchArgs);
-          if (res.error) return { error: res.error };
-          const data = res.data as Paginated<Deal>;
-          all.push(...data.results);
-          if (!data.next_page) break;
-          page = data.next_page;
-        }
-        return { data: all };
-      },
-      providesTags: (res) => listTags("Deal", res),
+    /** One pipeline's deals grouped by stage, with per-stage totals (the kanban). */
+    dealBoard: builder.query<DealBoard, DealBoardParams | void>({
+      query: (params) => ({ url: "/deals/board/", params: cleanParams(params ?? undefined) }),
+      providesTags: ["Board"],
+    }),
+    dealHistory: builder.query<HistoryEntry[], number>({
+      query: (id) => `/deals/${id}/history/`,
+      providesTags: (_r, _e, id) => [{ type: "History", id: `deal-${id}` }],
     }),
     getDeal: builder.query<Deal, number>({
       query: (id) => `/deals/${id}/`,
@@ -380,6 +424,8 @@ export const crmApi = createApi({
       invalidatesTags: [
         { type: "Deal", id: LIST },
         { type: "Activity", id: LIST },
+        "Board",
+        "Overview",
       ],
     }),
     updateDeal: builder.mutation<Deal, { id: number; body: DealInput }>({
@@ -387,6 +433,9 @@ export const crmApi = createApi({
       invalidatesTags: (_r, _e, { id }) => [
         { type: "Deal", id },
         { type: "Deal", id: LIST },
+        { type: "History", id: `deal-${id}` },
+        "Board",
+        "Overview",
       ],
     }),
     deleteDeal: builder.mutation<void, number>({
@@ -394,6 +443,9 @@ export const crmApi = createApi({
       invalidatesTags: [
         { type: "Deal", id: LIST },
         { type: "Activity", id: LIST },
+        { type: "Favorite", id: LIST },
+        "Board",
+        "Overview",
       ],
     }),
     moveDealStage: builder.mutation<Deal, { id: number; stage_id?: number; stage_code?: string }>({
@@ -402,6 +454,9 @@ export const crmApi = createApi({
         { type: "Deal", id },
         { type: "Deal", id: LIST },
         { type: "Activity", id: LIST },
+        { type: "History", id: `deal-${id}` },
+        "Board",
+        "Overview",
       ],
     }),
     markDealWon: builder.mutation<Deal, { id: number; stage_code?: string }>({
@@ -410,6 +465,9 @@ export const crmApi = createApi({
         { type: "Deal", id },
         { type: "Deal", id: LIST },
         { type: "Activity", id: LIST },
+        { type: "History", id: `deal-${id}` },
+        "Board",
+        "Overview",
       ],
     }),
     markDealLost: builder.mutation<Deal, { id: number; lost_reason: string; stage_code?: string }>({
@@ -418,6 +476,9 @@ export const crmApi = createApi({
         { type: "Deal", id },
         { type: "Deal", id: LIST },
         { type: "Activity", id: LIST },
+        { type: "History", id: `deal-${id}` },
+        "Board",
+        "Overview",
       ],
     }),
     attachDealTag: builder.mutation<TagAttachResponse, { id: number; tag_id: number }>({
@@ -446,24 +507,26 @@ export const crmApi = createApi({
     }),
     createActivity: builder.mutation<Activity, ActivityInput>({
       query: (body) => ({ url: "/activities/", method: "POST", body }),
-      invalidatesTags: [{ type: "Activity", id: LIST }],
+      invalidatesTags: [{ type: "Activity", id: LIST }, "Overview"],
     }),
     updateActivity: builder.mutation<Activity, { id: number; body: ActivityInput }>({
       query: ({ id, body }) => ({ url: `/activities/${id}/`, method: "PATCH", body }),
       invalidatesTags: (_r, _e, { id }) => [
         { type: "Activity", id },
         { type: "Activity", id: LIST },
+        "Overview",
       ],
     }),
     deleteActivity: builder.mutation<void, number>({
       query: (id) => ({ url: `/activities/${id}/`, method: "DELETE" }),
-      invalidatesTags: [{ type: "Activity", id: LIST }],
+      invalidatesTags: [{ type: "Activity", id: LIST }, "Overview"],
     }),
     markActivityDone: builder.mutation<Activity, number>({
       query: (id) => ({ url: `/activities/${id}/done/`, method: "POST", body: {} }),
       invalidatesTags: (_r, _e, id) => [
         { type: "Activity", id },
         { type: "Activity", id: LIST },
+        "Overview",
       ],
     }),
 
@@ -498,6 +561,44 @@ export const crmApi = createApi({
         { type: "Deal", id: LIST },
       ],
     }),
+
+    // ----------------------------------------------------------- Favorites
+    listFavorites: builder.query<Paginated<Favorite>, void>({
+      query: () => ({ url: "/favorites/", params: { page_size: 100 } }),
+      providesTags: (res) => listTags("Favorite", res?.results),
+    }),
+    addFavorite: builder.mutation<Favorite, FavoriteInput>({
+      query: (body) => ({ url: "/favorites/", method: "POST", body }),
+      invalidatesTags: [{ type: "Favorite", id: LIST }],
+    }),
+    removeFavorite: builder.mutation<void, number>({
+      query: (id) => ({ url: `/favorites/${id}/`, method: "DELETE" }),
+      invalidatesTags: [{ type: "Favorite", id: LIST }],
+    }),
+
+    // --------------------------------------------------------- Saved views
+    listSavedViews: builder.query<Paginated<SavedView>, { object_type?: SavedViewObject } | void>({
+      query: (params) => ({
+        url: "/views/",
+        params: cleanParams({ page_size: 100, ...(params ?? {}) }),
+      }),
+      providesTags: (res) => listTags("SavedView", res?.results),
+    }),
+    createSavedView: builder.mutation<SavedView, SavedViewInput>({
+      query: (body) => ({ url: "/views/", method: "POST", body }),
+      invalidatesTags: [{ type: "SavedView", id: LIST }],
+    }),
+    updateSavedView: builder.mutation<SavedView, { id: number; body: SavedViewInput }>({
+      query: ({ id, body }) => ({ url: `/views/${id}/`, method: "PATCH", body }),
+      invalidatesTags: (_r, _e, { id }) => [
+        { type: "SavedView", id },
+        { type: "SavedView", id: LIST },
+      ],
+    }),
+    deleteSavedView: builder.mutation<void, number>({
+      query: (id) => ({ url: `/views/${id}/`, method: "DELETE" }),
+      invalidatesTags: [{ type: "SavedView", id: LIST }],
+    }),
   }),
 });
 
@@ -513,6 +614,9 @@ export const {
   useMergePersonsMutation,
   useAttachPersonTagMutation,
   useDetachPersonTagMutation,
+  usePersonHistoryQuery,
+  useSearchQuery,
+  useOverviewQuery,
   useListOrganizationsQuery,
   useLazyListOrganizationsQuery,
   useGetOrganizationQuery,
@@ -521,6 +625,7 @@ export const {
   useDeleteOrganizationMutation,
   useAttachOrganizationTagMutation,
   useDetachOrganizationTagMutation,
+  useOrganizationHistoryQuery,
   useListPipelinesQuery,
   useGetPipelineQuery,
   useCreatePipelineMutation,
@@ -530,13 +635,15 @@ export const {
   useCreateStageMutation,
   useUpdateStageMutation,
   useDeleteStageMutation,
+  useReorderStagesMutation,
   useListLeadSourcesQuery,
   useCreateLeadSourceMutation,
   useUpdateLeadSourceMutation,
   useDeleteLeadSourceMutation,
   useListDealsQuery,
   useLazyListDealsQuery,
-  useListAllDealsQuery,
+  useDealBoardQuery,
+  useDealHistoryQuery,
   useGetDealQuery,
   useCreateDealMutation,
   useUpdateDealMutation,
@@ -556,6 +663,13 @@ export const {
   useCreateTagMutation,
   useUpdateTagMutation,
   useDeleteTagMutation,
+  useListFavoritesQuery,
+  useAddFavoriteMutation,
+  useRemoveFavoriteMutation,
+  useListSavedViewsQuery,
+  useCreateSavedViewMutation,
+  useUpdateSavedViewMutation,
+  useDeleteSavedViewMutation,
 } = crmApi;
 
 /** Read the normalized error message off an RTK Query error. */

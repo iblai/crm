@@ -3,12 +3,14 @@
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Menu, PanelLeft } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { NotificationDropdown } from "@iblai/iblai-js/web-containers";
+import { useSidebar } from "@iblai/iblai-js/web-containers/next";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useSidebar } from "@/components/ui/sidebar";
 import { UserMenu } from "@/components/crm/user-menu";
 import { AdminModeSwitch } from "@/components/crm/admin-mode-switch";
+import { LanguageMenu } from "@/components/crm/language-menu";
 import { Breadcrumbs } from "@/components/crm/breadcrumbs";
 import { useSession } from "@/hooks/use-session";
 
@@ -18,6 +20,7 @@ import { useSession } from "@/hooks/use-session";
  * notification bell and the SDK profile dropdown on the right.
  */
 export function TopBar() {
+  const t = useTranslations("shell");
   const router = useRouter();
   const { tenantKey, username, isAdmin, href } = useSession();
   const { toggleSidebar, isMobile } = useSidebar();
@@ -40,18 +43,19 @@ export function TopBar() {
                 size="icon"
                 className="cursor-pointer text-[#5f5f61]"
                 onClick={toggleSidebar}
-                aria-label="Toggle sidebar"
+                aria-label={t("toggleSidebar")}
               />
             }
           >
             {isMobile ? <Menu className="size-5" /> : <PanelLeft className="size-5" />}
           </TooltipTrigger>
-          <TooltipContent side="bottom">Collapse or expand the sidebar (⌘B)</TooltipContent>
+          <TooltipContent side="bottom">{t("toggleSidebarHint")}</TooltipContent>
         </Tooltip>
         <Breadcrumbs />
       </div>
       <div className="flex items-center gap-3 md:gap-5">
         <AdminModeSwitch className="hidden md:flex" />
+        <LanguageMenu className="hidden items-center gap-1 md:flex" />
         {tenantKey && username ? (
           <NotificationDropdown
             org={tenantKey}

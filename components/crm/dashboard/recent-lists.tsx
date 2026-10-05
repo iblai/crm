@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { DealStatusBadge, LifecycleBadge } from "@/components/crm/badges";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
 import { useSession } from "@/hooks/use-session";
@@ -9,9 +10,14 @@ import type { Deal, Person } from "@/lib/crm/types";
 
 /** The five people most recently added to the organization. */
 export function RecentPeopleList({ people }: { people: Person[] }) {
+  const t = useTranslations("dashboard");
   const { href } = useSession();
   if (people.length === 0) {
-    return <p className="text-muted-foreground py-6 text-center text-sm">No people yet.</p>;
+    return (
+      <p className="text-muted-foreground py-6 text-center text-sm">
+        {t("panels.recentPeople.empty")}
+      </p>
+    );
   }
   return (
     <ul className="divide-y divide-gray-100">
@@ -44,9 +50,15 @@ export function RecentDealsList({
   deals: Deal[];
   personName: (id?: string | null) => string;
 }) {
+  const t = useTranslations("dashboard");
+  const locale = useLocale();
   const { href } = useSession();
   if (deals.length === 0) {
-    return <p className="text-muted-foreground py-6 text-center text-sm">No deals yet.</p>;
+    return (
+      <p className="text-muted-foreground py-6 text-center text-sm">
+        {t("panels.recentDeals.empty")}
+      </p>
+    );
   }
   return (
     <ul className="divide-y divide-gray-100">
@@ -60,12 +72,15 @@ export function RecentDealsList({
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-medium text-gray-900">{d.title}</span>
               <span className="text-muted-foreground block truncate text-xs">
-                {personName(d.person)} · added {formatRelative(d.created_at)}
+                {t("panels.recentDeals.meta", {
+                  person: personName(d.person),
+                  when: formatRelative(d.created_at, locale),
+                })}
               </span>
             </span>
             <span className="shrink-0 text-right">
               <span className="block text-sm font-medium text-gray-900 tabular-nums">
-                {formatCurrency(d.lead_value, d.currency)}
+                {formatCurrency(d.lead_value, d.currency, locale)}
               </span>
               <DealStatusBadge status={d.status} className="mt-0.5" />
             </span>

@@ -2,23 +2,20 @@
 
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { UserProfileDropdown } from "@iblai/iblai-js/web-containers/next";
 import { useTenantMetadata, type Tenant } from "@iblai/iblai-js/web-utils";
 import { useSession } from "@/hooks/use-session";
 import config from "@/lib/iblai/config";
 import { handleLogout, handleTenantSwitch } from "@/lib/iblai/auth-utils";
-import {
-  isUnnamedTenant,
-  shortTenantKey,
-  tenantDisplayName,
-  type TenantEntry,
-} from "@/lib/iblai/tenant";
+import { isUnnamedTenant, shortTenantKey, type TenantEntry } from "@/lib/iblai/tenant";
 
 /**
  * The SDK's profile dropdown — avatar, profile & account modal, organization
  * switcher, help, logout — wired to this app's multi-org session.
  */
 export function UserMenu() {
+  const ts = useTranslations("shell");
   const {
     tenantKey,
     username,
@@ -31,7 +28,7 @@ export function UserMenu() {
   // The SDK dropdown prints `platform_name`; give unnamed orgs a readable one.
   const friendly = (t: TenantEntry) =>
     isUnnamedTenant(t)
-      ? { ...t, platform_name: `${tenantDisplayName(t)} ${shortTenantKey(t.key)}` }
+      ? { ...t, platform_name: `${ts("organization")} ${shortTenantKey(t.key)}` }
       : t;
   const tenants = rawTenants.map(friendly);
   const currentTenant = rawCurrent ? friendly(rawCurrent) : undefined;
@@ -79,7 +76,8 @@ export function UserMenu() {
       currentPlan=""
       metadata={
         metadata as
-          { support_url?: string; help_center_url?: string; show_help?: boolean } | undefined
+          | { support_url?: string; help_center_url?: string; show_help?: boolean }
+          | undefined
       }
       metadataLoaded={metadataLoaded}
       authURL={config.authUrl()}

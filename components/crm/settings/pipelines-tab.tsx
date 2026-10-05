@@ -29,12 +29,13 @@ import {
   XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@iblai/iblai-js/web-containers";
 import {
   Dialog,
   DialogContent,
@@ -49,7 +50,7 @@ import { InfoTip } from "@/components/crm/info-tip";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { InlineText } from "@/components/crm/inline-field";
 import { SimpleSelect } from "@/components/crm/simple-select";
-import { slugify, toastSettingsError } from "@/components/crm/settings/utils";
+import { slugify, useToastSettingsError } from "@/components/crm/settings/utils";
 import {
   errorStatus,
   useCreatePipelineMutation,
@@ -59,19 +60,25 @@ import {
   useListPipelinesQuery,
   useListStagesQuery,
   useUpdatePipelineMutation,
+  useReorderStagesMutation,
   useUpdateStageMutation,
 } from "@/lib/crm/api";
 import { sortStages } from "@/lib/crm/format";
+import { useCrmEnums } from "@/lib/crm/i18n";
 import type { Pipeline, PipelineInput, PipelineStage, PipelineStageInput } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
 
 type Terminal = "flight" | "won" | "lost";
 
-const TERMINAL_OPTIONS = [
-  { value: "flight", label: "In flight" },
-  { value: "won", label: "Won" },
-  { value: "lost", label: "Lost" },
-];
+function useTerminalOptions() {
+  const t = useTranslations("settings");
+  const { dealStatus } = useCrmEnums();
+  return [
+    { value: "flight", label: t("pipelines.inFlight") },
+    { value: "won", label: dealStatus("won") },
+    { value: "lost", label: dealStatus("lost") },
+  ];
+}
 
 function terminalOf(stage: Pick<PipelineStage, "is_won" | "is_lost">): Terminal {
   if (stage.is_won) return "won";
@@ -85,6 +92,7 @@ function terminalBody(value: Terminal) {
 }
 
 export function PipelinesTab() {
+  const t = useTranslations("settings");
   const { data, isLoading } = useListPipelinesQuery({ page_size: 100 });
   const pipelines = useMemo(() => data?.results ?? [], [data]);
   const [pickedId, setSelectedId] = useState<number | null>(null);
@@ -110,11 +118,11 @@ export function PipelinesTab() {
       <>
         <EmptyState
           icon={<GitBranch />}
-          title="No pipelines yet"
-          description="A pipeline is the set of stages a deal moves through. Most organizations start with one."
+          title={t("pipelines.emptyTitle")}
+          description={t("pipelines.emptyDescription")}
           action={
             <Button className="ibl-button-primary" onClick={() => setCreating(true)}>
-              <Plus data-icon="inline-start" /> New pipeline
+              <Plus data-icon="inline-start" /> {t("pipelines.new")}
             </Button>
           }
         />
@@ -149,16 +157,14 @@ export function PipelinesTab() {
                   </span>
                   {p.is_default ? (
                     <span className="rounded-full bg-[#0058cc]/10 px-1.5 py-px text-[10px] font-semibold text-[#0058cc]">
-                      Default
+                      {t("pipelines.default")}
                     </span>
                   ) : null}
                 </span>
                 <span className="text-muted-foreground flex items-center gap-2 text-[11px]">
                   <span className="font-mono">{p.code}</span>
                   <span>·</span>
-                  <span>
-                    {p.stages?.length ?? 0} stage{(p.stages?.length ?? 0) === 1 ? "" : "s"}
-                  </span>
+                  <span>{t("pipelines.stageCount", { count: p.stages?.length ?? 0 })}</span>
                 </span>
               </button>
             </li>
@@ -170,7 +176,7 @@ export function PipelinesTab() {
           className="justify-start border-dashed"
           onClick={() => setCreating(true)}
         >
-          <Plus data-icon="inline-start" /> New pipeline
+          <Plus data-icon="inline-start" /> {t("pipelines.new")}
         </Button>
       </aside>
 
@@ -184,6 +190,9 @@ export function PipelinesTab() {
 }
 
 function PipelineEditor({ pipeline, onDeleted }: { pipeline: Pipeline; onDeleted: () => void }) {
+  const t = useTranslations("settings");
+  const tc = useTranslations("common");
+  const toastSettingsError = useToastSettingsError();
   const [update] = useUpdatePipelineMutation();
   const [remove, { isLoading: removing }] = useDeletePipelineMutation();
   const [confirm, setConfirm] = useState(false);
@@ -206,7 +215,7 @@ function PipelineEditor({ pipeline, onDeleted }: { pipeline: Pipeline; onDeleted
               <InlineText
                 value={pipeline.name}
                 onSave={(v) => (v.trim() ? patch({ name: v.trim() }) : undefined)}
-                placeholder="Pipeline name"
+                placeholder={t("pipelines.namePlaceholder")}
               />
             </div>
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
@@ -215,7 +224,7 @@ function PipelineEditor({ pipeline, onDeleted }: { pipeline: Pipeline; onDeleted
               </span>
               {pipeline.is_default ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-[#0058cc]/10 px-2 py-0.5 text-[11px] font-semibold text-[#0058cc]">
-                  <Star className="size-3" /> Default pipeline
+                  <Star className="size-3" /> {t("pipelines.defaultPipeline")}
                 </span>
               ) : null}
             </div>
@@ -233,7 +242,7 @@ function PipelineEditor({ pipeline, onDeleted }: { pipeline: Pipeline; onDeleted
                         setMakingDefault(true);
                         try {
                           await update({ id: pipeline.id, body: { is_default: true } }).unwrap();
-                          toast.success(`“${pipeline.name}” is now the default pipeline`);
+                          toast.success(t("pipelines.madeDefault", { name: pipeline.name }));
                         } catch (err) {
                           toastSettingsError(err);
                         } finally {
@@ -243,9 +252,9 @@ function PipelineEditor({ pipeline, onDeleted }: { pipeline: Pipeline; onDeleted
                     />
                   }
                 >
-                  <Star data-icon="inline-start" /> Make default
+                  <Star data-icon="inline-start" /> {t("pipelines.makeDefault")}
                 </TooltipTrigger>
-                <TooltipContent side="bottom">New deals use the default pipeline</TooltipContent>
+                <TooltipContent side="bottom">{t("pipelines.makeDefaultHint")}</TooltipContent>
               </Tooltip>
             ) : null}
             <Tooltip>
@@ -259,11 +268,9 @@ function PipelineEditor({ pipeline, onDeleted }: { pipeline: Pipeline; onDeleted
                   />
                 }
               >
-                <Trash2 data-icon="inline-start" /> Delete
+                <Trash2 data-icon="inline-start" /> {tc("delete")}
               </TooltipTrigger>
-              <TooltipContent side="bottom">
-                Only possible when no deals reference this pipeline
-              </TooltipContent>
+              <TooltipContent side="bottom">{t("pipelines.deleteHint")}</TooltipContent>
             </Tooltip>
           </div>
         </div>
@@ -271,10 +278,8 @@ function PipelineEditor({ pipeline, onDeleted }: { pipeline: Pipeline; onDeleted
         <dl className="mt-4 grid gap-3 border-t border-gray-100 pt-3 sm:grid-cols-2">
           <div className="grid grid-cols-[8rem_minmax(0,1fr)] items-center gap-2">
             <dt className="text-muted-foreground flex items-center gap-1 text-xs font-medium">
-              Rotten after
-              <InfoTip label="About the rotten threshold">
-                Deals idle longer than this are flagged stale on the board
-              </InfoTip>
+              {t("pipelines.rottenAfter")}
+              <InfoTip label={t("pipelines.rottenLabel")}>{t("pipelines.rottenTip")}</InfoTip>
             </dt>
             <dd className="flex items-center gap-1.5 text-sm text-gray-900">
               <div className="w-20">
@@ -288,11 +293,11 @@ function PipelineEditor({ pipeline, onDeleted }: { pipeline: Pipeline; onDeleted
                   }}
                 />
               </div>
-              <span className="text-muted-foreground text-xs">days without movement</span>
+              <span className="text-muted-foreground text-xs">{t("pipelines.rottenUnit")}</span>
             </dd>
           </div>
           <div className="grid grid-cols-[8rem_minmax(0,1fr)] items-center gap-2">
-            <dt className="text-muted-foreground text-xs font-medium">Stages</dt>
+            <dt className="text-muted-foreground text-xs font-medium">{t("stages.title")}</dt>
             <dd className="text-sm text-gray-900">{pipeline.stages?.length ?? 0}</dd>
           </div>
         </dl>
@@ -303,9 +308,9 @@ function PipelineEditor({ pipeline, onDeleted }: { pipeline: Pipeline; onDeleted
       <ConfirmDialog
         open={confirm}
         onOpenChange={setConfirm}
-        title={`Delete “${pipeline.name}”?`}
-        description="Every stage of this pipeline goes with it. Deals that still sit in this pipeline must be moved first."
-        confirmLabel="Delete pipeline"
+        title={t("deleteTitle", { name: pipeline.name })}
+        description={t("pipelines.deleteDescription")}
+        confirmLabel={t("pipelines.deleteConfirm")}
         destructive
         loading={removing}
         onConfirm={async () => {
@@ -313,12 +318,10 @@ function PipelineEditor({ pipeline, onDeleted }: { pipeline: Pipeline; onDeleted
             await remove(pipeline.id).unwrap();
             setConfirm(false);
             onDeleted();
-            toast.success("Pipeline deleted");
+            toast.success(t("pipelines.deleted"));
           } catch (err) {
             if (errorStatus(err) === 409) {
-              toast.error(
-                "Deals still reference this pipeline — move them to another pipeline first.",
-              );
+              toast.error(t("pipelines.deleteBlocked"));
             } else {
               toastSettingsError(err);
             }
@@ -330,8 +333,10 @@ function PipelineEditor({ pipeline, onDeleted }: { pipeline: Pipeline; onDeleted
 }
 
 function StagesEditor({ pipeline }: { pipeline: Pipeline }) {
+  const t = useTranslations("settings");
+  const toastSettingsError = useToastSettingsError();
   const { data, isLoading } = useListStagesQuery({ pipeline: pipeline.id });
-  const [updateStage] = useUpdateStageMutation();
+  const [reorderStages] = useReorderStagesMutation();
   const [adding, setAdding] = useState(false);
   const [order, setOrder] = useState<PipelineStage[]>([]);
   const [reordering, setReordering] = useState(false);
@@ -355,20 +360,10 @@ function StagesEditor({ pipeline }: { pipeline: Pipeline }) {
     if (from < 0 || to < 0) return;
     const next = arrayMove(order, from, to);
     setOrder(next);
-    const changed = next
-      .map((stage, index) => ({ stage, index }))
-      .filter(({ stage, index }) => (stage.sort_order ?? 0) !== index);
-    if (!changed.length) return;
     setReordering(true);
     try {
-      for (const { stage, index } of changed) {
-        await updateStage({
-          pipeline: pipeline.id,
-          id: stage.id,
-          body: { sort_order: index },
-        }).unwrap();
-      }
-      toast.success("Stage order saved");
+      await reorderStages({ pipeline: pipeline.id, order: next.map((s) => s.id) }).unwrap();
+      toast.success(t("stages.orderSaved"));
     } catch (err) {
       setOrder(stages);
       toastSettingsError(err);
@@ -382,14 +377,12 @@ function StagesEditor({ pipeline }: { pipeline: Pipeline }) {
       <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-4 py-2.5">
         <div className="flex items-center gap-2">
           <Layers className="size-4 text-[#0058cc]" strokeWidth={1.75} />
-          <h3 className="text-sm font-semibold text-gray-900">Stages</h3>
-          <span className="text-muted-foreground text-[11px]">
-            Drag to reorder — the order is the board's column order.
-          </span>
+          <h3 className="text-sm font-semibold text-gray-900">{t("stages.title")}</h3>
+          <span className="text-muted-foreground text-[11px]">{t("stages.reorderHint")}</span>
           {reordering ? <Spinner className="text-muted-foreground size-3.5" /> : null}
         </div>
         <Button variant="outline" size="sm" onClick={() => setAdding(true)}>
-          <Plus data-icon="inline-start" /> Add stage
+          <Plus data-icon="inline-start" /> {t("stages.add")}
         </Button>
       </div>
 
@@ -400,9 +393,7 @@ function StagesEditor({ pipeline }: { pipeline: Pipeline }) {
           ))}
         </div>
       ) : order.length === 0 ? (
-        <p className="text-muted-foreground p-8 text-center text-sm">
-          No stages yet. Add the first one — deals need somewhere to sit.
-        </p>
+        <p className="text-muted-foreground p-8 text-center text-sm">{t("stages.empty")}</p>
       ) : (
         <DndContext
           sensors={sensors}
@@ -433,6 +424,9 @@ function StageRow({ stage, pipelineId }: { stage: PipelineStage; pipelineId: num
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: stage.id,
   });
+  const t = useTranslations("settings");
+  const toastSettingsError = useToastSettingsError();
+  const terminalOptions = useTerminalOptions();
   const [updateStage] = useUpdateStageMutation();
   const [removeStage, { isLoading: removing }] = useDeleteStageMutation();
   const [confirm, setConfirm] = useState(false);
@@ -462,7 +456,7 @@ function StageRow({ stage, pipelineId }: { stage: PipelineStage; pipelineId: num
             <button
               type="button"
               className="shrink-0 cursor-grab touch-none rounded p-1 text-gray-300 hover:text-gray-500 active:cursor-grabbing"
-              aria-label={`Reorder ${stage.name}`}
+              aria-label={t("stages.reorderLabel", { name: stage.name })}
               {...attributes}
               {...listeners}
             />
@@ -470,14 +464,14 @@ function StageRow({ stage, pipelineId }: { stage: PipelineStage; pipelineId: num
         >
           <GripVertical className="size-4" strokeWidth={1.75} />
         </TooltipTrigger>
-        <TooltipContent side="right">Drag to reorder — the board follows this order</TooltipContent>
+        <TooltipContent side="right">{t("stages.dragHint")}</TooltipContent>
       </Tooltip>
 
       <div className="min-w-40 flex-1 text-sm font-medium text-gray-900">
         <InlineText
           value={stage.name}
           onSave={(v) => (v.trim() ? patch({ name: v.trim() }) : undefined)}
-          placeholder="Stage name"
+          placeholder={t("stages.namePlaceholder")}
         />
       </div>
 
@@ -498,10 +492,7 @@ function StageRow({ stage, pipelineId }: { stage: PipelineStage; pipelineId: num
           />
         </div>
         <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
-          %
-          <InfoTip label="About the stage probability">
-            Chance of winning from this stage — it drives the weighted pipeline
-          </InfoTip>
+          %<InfoTip label={t("stages.probabilityLabel")}>{t("stages.probabilityTip")}</InfoTip>
         </span>
         <div className="h-1.5 w-20 overflow-hidden rounded-full bg-gray-100" aria-hidden>
           <div className="h-full rounded-full bg-[#0058cc]" style={{ width: `${probability}%` }} />
@@ -513,14 +504,12 @@ function StageRow({ stage, pipelineId }: { stage: PipelineStage; pipelineId: num
           <SimpleSelect
             value={terminal}
             onChange={(v) => void patch(terminalBody(v as Terminal))}
-            options={TERMINAL_OPTIONS}
+            options={terminalOptions}
             size="sm"
-            aria-label={`Outcome of ${stage.name}`}
+            aria-label={t("stages.outcomeOf", { name: stage.name })}
           />
         </TooltipTrigger>
-        <TooltipContent side="bottom">
-          Won and Lost stages close the deal; In flight keeps it open
-        </TooltipContent>
+        <TooltipContent side="bottom">{t("stages.outcomeHint")}</TooltipContent>
       </Tooltip>
 
       <span className="hidden w-5 shrink-0 sm:block">
@@ -536,31 +525,31 @@ function StageRow({ stage, pipelineId }: { stage: PipelineStage; pipelineId: num
               size="icon-sm"
               className="shrink-0 text-gray-400 hover:text-rose-600"
               onClick={() => setConfirm(true)}
-              aria-label={`Delete stage ${stage.name}`}
+              aria-label={t("stages.deleteLabel", { name: stage.name })}
             />
           }
         >
           <Trash2 />
         </TooltipTrigger>
-        <TooltipContent side="left">Only possible once no deal sits in this stage</TooltipContent>
+        <TooltipContent side="left">{t("stages.deleteHint")}</TooltipContent>
       </Tooltip>
 
       <ConfirmDialog
         open={confirm}
         onOpenChange={setConfirm}
-        title={`Delete stage “${stage.name}”?`}
-        description="Deals sitting in this stage have to be moved before it can go."
-        confirmLabel="Delete stage"
+        title={t("stages.deleteTitle", { name: stage.name })}
+        description={t("stages.deleteDescription")}
+        confirmLabel={t("stages.deleteConfirm")}
         destructive
         loading={removing}
         onConfirm={async () => {
           try {
             await removeStage({ pipeline: pipelineId, id: stage.id }).unwrap();
             setConfirm(false);
-            toast.success("Stage deleted");
+            toast.success(t("stages.deleted"));
           } catch (err) {
             if (errorStatus(err) === 409) {
-              toast.error("Deals still sit in this stage — move them first.");
+              toast.error(t("stages.deleteBlocked"));
             } else {
               toastSettingsError(err);
             }
@@ -580,6 +569,9 @@ function PipelineDialog({
   onOpenChange: (open: boolean) => void;
   onCreated?: (id: number) => void;
 }) {
+  const t = useTranslations("settings");
+  const tc = useTranslations("common");
+  const toastSettingsError = useToastSettingsError();
   const [create, { isLoading }] = useCreatePipelineMutation();
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
@@ -610,7 +602,7 @@ function PipelineDialog({
         rotten_days: Math.max(0, Math.round(Number(rottenDays) || 30)),
         is_default: isDefault,
       }).unwrap();
-      toast.success(`Pipeline “${pipeline.name}” created`);
+      toast.success(t("pipelines.created", { name: pipeline.name }));
       onCreated?.(pipeline.id);
       onOpenChange(false);
     } catch (err) {
@@ -622,16 +614,14 @@ function PipelineDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="gap-0 p-0 sm:max-w-md">
         <DialogHeader className="p-4 pb-3">
-          <DialogTitle>New pipeline</DialogTitle>
-          <DialogDescription>
-            A pipeline holds the stages a deal moves through. Add its stages next.
-          </DialogDescription>
+          <DialogTitle>{t("pipelines.new")}</DialogTitle>
+          <DialogDescription>{t("pipelines.dialogDescription")}</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-3.5 px-4 pb-4">
           <div className="grid gap-1.5">
             <Label htmlFor="pipeline-name" className="text-muted-foreground text-xs">
-              Name
+              {tc("name")}
             </Label>
             <Input
               id="pipeline-name"
@@ -640,14 +630,14 @@ function PipelineDialog({
                 setName(e.target.value);
                 if (!codeTouched) setCode(slugify(e.target.value));
               }}
-              placeholder="New business"
+              placeholder={t("pipelines.nameExample")}
               className="h-8 text-sm"
               aria-invalid={touched && !name.trim()}
             />
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="pipeline-code" className="text-muted-foreground text-xs">
-              Code
+              {t("code")}
             </Label>
             <Input
               id="pipeline-code"
@@ -656,23 +646,19 @@ function PipelineDialog({
                 setCodeTouched(true);
                 setCode(slugify(e.target.value));
               }}
-              placeholder="new-business"
+              placeholder={t("pipelines.codeExample")}
               className="h-8 font-mono text-sm"
               aria-invalid={touched && !code.trim()}
             />
-            <p className="text-muted-foreground text-[11px]">
-              The stable identifier used by the API — it cannot be changed later.
-            </p>
+            <p className="text-muted-foreground text-[11px]">{t("codeHint")}</p>
           </div>
           <div className="grid gap-1.5">
             <Label
               htmlFor="pipeline-rotten"
               className="text-muted-foreground flex items-center gap-1 text-xs"
             >
-              Rotten after (days)
-              <InfoTip label="About the rotten threshold">
-                Deals idle longer than this are flagged stale on the board
-              </InfoTip>
+              {t("pipelines.rottenAfterDays")}
+              <InfoTip label={t("pipelines.rottenLabel")}>{t("pipelines.rottenTip")}</InfoTip>
             </Label>
             <Input
               id="pipeline-rotten"
@@ -685,26 +671,26 @@ function PipelineDialog({
           </div>
           <div className="flex items-center justify-between gap-3 rounded-lg border border-[var(--border-color,#e5e7eb)] px-3 py-2">
             <div>
-              <p className="text-sm font-medium text-gray-900">Make it the default</p>
+              <p className="text-sm font-medium text-gray-900">{t("pipelines.makeItDefault")}</p>
               <p className="text-muted-foreground text-[11px]">
-                New deals land in the default pipeline.
+                {t("pipelines.makeItDefaultHint")}
               </p>
             </div>
             <Switch
               checked={isDefault}
               onCheckedChange={setIsDefault}
-              aria-label="Make it the default pipeline"
+              aria-label={t("pipelines.makeItDefaultLabel")}
             />
           </div>
         </div>
 
         <DialogFooter className="mx-0 mb-0 rounded-b-xl">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-            Cancel
+            {tc("cancel")}
           </Button>
           <Button className="ibl-button-primary" onClick={() => void submit()} disabled={isLoading}>
-            {isLoading ? <Spinner data-icon="inline-start" /> : null}
-            Create pipeline
+            {isLoading ? <Spinner size="sm" className="size-4 text-current" /> : null}
+            {t("pipelines.create")}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -723,6 +709,10 @@ function AddStageDialog({
   pipelineId: number;
   nextSortOrder: number;
 }) {
+  const t = useTranslations("settings");
+  const tc = useTranslations("common");
+  const toastSettingsError = useToastSettingsError();
+  const terminalOptions = useTerminalOptions();
   const [create, { isLoading }] = useCreateStageMutation();
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
@@ -757,7 +747,7 @@ function AddStageDialog({
           ...terminalBody(terminal),
         },
       }).unwrap();
-      toast.success("Stage added");
+      toast.success(t("stages.added"));
       onOpenChange(false);
     } catch (err) {
       toastSettingsError(err);
@@ -768,16 +758,14 @@ function AddStageDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="gap-0 p-0 sm:max-w-md">
         <DialogHeader className="p-4 pb-3">
-          <DialogTitle>Add stage</DialogTitle>
-          <DialogDescription>
-            It is appended to the end of the pipeline — drag it where it belongs afterwards.
-          </DialogDescription>
+          <DialogTitle>{t("stages.add")}</DialogTitle>
+          <DialogDescription>{t("stages.dialogDescription")}</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-3.5 px-4 pb-4">
           <div className="grid gap-1.5">
             <Label htmlFor="stage-name" className="text-muted-foreground text-xs">
-              Name
+              {tc("name")}
             </Label>
             <Input
               id="stage-name"
@@ -786,14 +774,14 @@ function AddStageDialog({
                 setName(e.target.value);
                 if (!codeTouched) setCode(slugify(e.target.value));
               }}
-              placeholder="Proposal sent"
+              placeholder={t("stages.nameExample")}
               className="h-8 text-sm"
               aria-invalid={touched && !name.trim()}
             />
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="stage-code" className="text-muted-foreground text-xs">
-              Code
+              {t("code")}
             </Label>
             <Input
               id="stage-code"
@@ -802,7 +790,7 @@ function AddStageDialog({
                 setCodeTouched(true);
                 setCode(slugify(e.target.value));
               }}
-              placeholder="proposal-sent"
+              placeholder={t("stages.codeExample")}
               className="h-8 font-mono text-sm"
               aria-invalid={touched && !code.trim()}
             />
@@ -810,7 +798,7 @@ function AddStageDialog({
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1.5">
               <Label htmlFor="stage-probability" className="text-muted-foreground text-xs">
-                Probability (%)
+                {t("stages.probability")}
               </Label>
               <Input
                 id="stage-probability"
@@ -823,13 +811,13 @@ function AddStageDialog({
               />
             </div>
             <div className="grid gap-1.5">
-              <Label className="text-muted-foreground text-xs">Outcome</Label>
+              <Label className="text-muted-foreground text-xs">{t("stages.outcome")}</Label>
               <SimpleSelect
                 value={terminal}
                 onChange={(v) => setTerminal(v as Terminal)}
-                options={TERMINAL_OPTIONS}
+                options={terminalOptions}
                 size="sm"
-                aria-label="Stage outcome"
+                aria-label={t("stages.outcomeLabel")}
               />
             </div>
           </div>
@@ -837,11 +825,11 @@ function AddStageDialog({
 
         <DialogFooter className="mx-0 mb-0 rounded-b-xl">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-            Cancel
+            {tc("cancel")}
           </Button>
           <Button className="ibl-button-primary" onClick={() => void submit()} disabled={isLoading}>
-            {isLoading ? <Spinner data-icon="inline-start" /> : null}
-            Add stage
+            {isLoading ? <Spinner size="sm" className="size-4 text-current" /> : null}
+            {t("stages.add")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Link2, Merge, MoreHorizontal, Trash2, UserPlus, Users } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +18,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
+import { FavoriteButton } from "@/components/crm/favorite-button";
+import { HistoryTab } from "@/components/crm/history-tab";
 import { LifecycleBadge } from "@/components/crm/badges";
 import { useBreadcrumbs } from "@/components/crm/breadcrumbs";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
@@ -25,11 +28,12 @@ import { EntityAvatar } from "@/components/crm/entity-avatar";
 import { FieldRow, InlineSelect, InlineText } from "@/components/crm/inline-field";
 import { OwnerSelect } from "@/components/crm/owner-select";
 import { TagPicker } from "@/components/crm/tag-picker";
-import { toastApiError } from "@/components/crm/people/crm-error";
+import { useToastApiError } from "@/components/crm/people/crm-error";
 import { DealsMiniTable } from "@/components/crm/people/deals-mini-table";
 import { PersonInviteDialog } from "@/components/crm/people/person-invite-dialog";
 import { PersonLinkUserDialog } from "@/components/crm/people/person-link-user-dialog";
 import { PersonMergeDialog } from "@/components/crm/people/person-merge-dialog";
+import { SearchPicker } from "@/components/crm/search-picker";
 import { useSession } from "@/hooks/use-session";
 import {
   errorStatus,
@@ -37,11 +41,12 @@ import {
   useDeletePersonMutation,
   useDetachPersonTagMutation,
   useGetPersonQuery,
-  useListOrganizationsQuery,
+  useGetOrganizationQuery,
   useUpdatePersonMutation,
 } from "@/lib/crm/api";
 import { formatDateTime, formatRelative } from "@/lib/crm/format";
-import { LIFECYCLE_STAGES, type LifecycleStage, type PersonInput } from "@/lib/crm/types";
+import { useCrmEnums } from "@/lib/crm/i18n";
+import type { LifecycleStage, PersonInput } from "@/lib/crm/types";
 
 const CARD =
   "rounded-xl border border-[var(--border-color,#e5e7eb)] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]";
@@ -56,13 +61,19 @@ function toList(value: string) {
 
 /** Person "show page": the record, its fields, its timeline and its deals. */
 export default function PersonDetailPage() {
+  const t = useTranslations("people");
+  const tc = useTranslations("common");
+  const tf = useTranslations("fields");
+  const tn = useTranslations("nav");
+  const locale = useLocale();
+  const { lifecycleOptions } = useCrmEnums();
+  const toastApiError = useToastApiError();
   const params = useParams<{ id: string }>();
   const id = params?.id ? decodeURIComponent(params.id) : "";
   const router = useRouter();
   const { href } = useSession();
 
   const { data: person, isLoading, error } = useGetPersonQuery(id, { skip: !id });
-  const { data: orgs } = useListOrganizationsQuery({ page_size: 100 });
   const [updatePerson] = useUpdatePersonMutation();
   const [deletePerson, { isLoading: deleting }] = useDeletePersonMutation();
   const [attachTag] = useAttachPersonTagMutation();
@@ -73,21 +84,21 @@ export default function PersonDetailPage() {
   const [mergeOpen, setMergeOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  useBreadcrumbs([{ label: "People", href: href("/people") }, { label: person?.name ?? "Person" }]);
+  useBreadcrumbs([
+    { label: tn("people"), href: href("/people") },
+    { label: person?.name ?? t("detail.breadcrumb") },
+  ]);
 
-  const orgOptions = useMemo(
-    () => (orgs?.results ?? []).map((o) => ({ value: o.id, label: o.name })),
-    [orgs],
-  );
-  const orgName = person?.organization
-    ? orgOptions.find((o) => o.value === person.organization)?.label
-    : undefined;
+  const { data: org } = useGetOrganizationQuery(person?.organization ?? "", {
+    skip: !person?.organization,
+  });
+  const orgName = org?.name;
 
   const save = async (body: PersonInput) => {
     try {
       await updatePerson({ id, body }).unwrap();
     } catch (err) {
-      toastApiError(err, "Could not save this change");
+      toastApiError(err, tf("saveError"));
     }
   };
 
@@ -96,11 +107,11 @@ export default function PersonDetailPage() {
       <div className="flex min-h-0 flex-1 flex-col p-4 md:p-6">
         <EmptyState
           icon={<Users strokeWidth={1.75} />}
-          title="This person no longer exists"
-          description="The record may have been deleted or merged into another person."
+          title={t("detail.notFound")}
+          description={t("detail.notFoundHint")}
           action={
             <Button variant="outline" onClick={() => router.push(href("/people"))}>
-              <ArrowLeft data-icon="inline-start" strokeWidth={1.75} /> Back to People
+              <ArrowLeft data-icon="inline-start" strokeWidth={1.75} /> {t("detail.back")}
             </Button>
           }
         />
@@ -121,9 +132,8 @@ export default function PersonDetailPage() {
   }
 
   const canInvite = Boolean(person.primary_email) && !person.platform_user;
-  const inviteHint = person.platform_user
-    ? "Already linked to a platform user"
-    : "Add a primary email first";
+  const inviteHint = person.platform_user ? t("detail.alreadyLinked") : t("detail.needsEmail");
+  const stages = Object.fromEntries(lifecycleOptions.map((o) => [o.value, o.label]));
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-auto p-4 md:p-6">
@@ -137,13 +147,13 @@ export default function PersonDetailPage() {
                 <InlineText
                   value={person.name}
                   onSave={(v) => (v.trim() ? save({ name: v.trim() }) : undefined)}
-                  placeholder="Unnamed person"
+                  placeholder={t("detail.unnamed")}
                 />
               </div>
               <div className="mt-1 flex flex-wrap items-center gap-2">
                 <InlineSelect
                   value={person.lifecycle_stage ?? "lead"}
-                  options={LIFECYCLE_STAGES}
+                  options={lifecycleOptions}
                   onSave={(v) => save({ lifecycle_stage: (v || "lead") as LifecycleStage })}
                   renderValue={(v) => <LifecycleBadge stage={v as LifecycleStage} />}
                 />
@@ -154,10 +164,10 @@ export default function PersonDetailPage() {
                         <span className="inline-flex cursor-default items-center gap-1 rounded-full bg-[#eef6fc] px-2 py-0.5 text-[11px] font-medium text-[#0058cc] ring-1 ring-[#0058cc]/20 ring-inset" />
                       }
                     >
-                      <Link2 className="size-3" strokeWidth={1.75} /> Linked to platform user #
-                      {person.platform_user}
+                      <Link2 className="size-3" strokeWidth={1.75} />{" "}
+                      {t("detail.linkedUser", { id: String(person.platform_user) })}
                     </TooltipTrigger>
-                    <TooltipContent>This person can sign in to the platform</TooltipContent>
+                    <TooltipContent>{t("detail.linkedUserHint")}</TooltipContent>
                   </Tooltip>
                 ) : null}
                 {!person.active ? (
@@ -167,11 +177,9 @@ export default function PersonDetailPage() {
                         <span className="inline-flex cursor-default items-center rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600 ring-1 ring-gray-500/20 ring-inset" />
                       }
                     >
-                      Inactive
+                      {t("detail.inactive")}
                     </TooltipTrigger>
-                    <TooltipContent>
-                      Archived — kept for history, not worked any more
-                    </TooltipContent>
+                    <TooltipContent>{t("detail.inactiveHint")}</TooltipContent>
                   </Tooltip>
                 ) : null}
               </div>
@@ -184,48 +192,47 @@ export default function PersonDetailPage() {
                 <TooltipTrigger
                   render={<Button variant="outline" onClick={() => setInviteOpen(true)} />}
                 >
-                  <UserPlus data-icon="inline-start" strokeWidth={1.75} /> Invite to platform
+                  <UserPlus data-icon="inline-start" strokeWidth={1.75} /> {t("detail.invite")}
                 </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  Emails an ibl.ai invitation; the person becomes a platform user
-                </TooltipContent>
+                <TooltipContent side="bottom">{t("detail.inviteHint")}</TooltipContent>
               </Tooltip>
             ) : (
               <Tooltip>
                 <TooltipTrigger
                   render={<Button variant="outline" nativeButton={false} disabled />}
-                  aria-label={`Invite to platform — ${inviteHint}`}
+                  aria-label={t("detail.inviteDisabled", { reason: inviteHint })}
                 >
-                  <UserPlus data-icon="inline-start" strokeWidth={1.75} /> Invite to platform
+                  <UserPlus data-icon="inline-start" strokeWidth={1.75} /> {t("detail.invite")}
                 </TooltipTrigger>
                 <TooltipContent>{inviteHint}</TooltipContent>
               </Tooltip>
             )}
+            <FavoriteButton target={{ person: person.id }} />
             <DropdownMenu>
               <Tooltip>
                 <TooltipTrigger
                   render={
                     <DropdownMenuTrigger
-                      render={<Button variant="outline" size="icon" aria-label="More actions" />}
+                      render={
+                        <Button variant="outline" size="icon" aria-label={tc("moreActions")} />
+                      }
                     />
                   }
                 >
                   <MoreHorizontal strokeWidth={1.75} />
                 </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  Link to a user, merge duplicates, delete
-                </TooltipContent>
+                <TooltipContent side="bottom">{t("detail.moreHint")}</TooltipContent>
               </Tooltip>
               <DropdownMenuContent align="end" className="w-52">
                 <DropdownMenuItem onClick={() => setLinkOpen(true)}>
-                  <Link2 strokeWidth={1.75} /> Link to user
+                  <Link2 strokeWidth={1.75} /> {t("detail.linkUser")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setMergeOpen(true)}>
-                  <Merge strokeWidth={1.75} /> Merge duplicates
+                  <Merge strokeWidth={1.75} /> {t("detail.merge")}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive" onClick={() => setConfirmDelete(true)}>
-                  <Trash2 strokeWidth={1.75} /> Delete person
+                  <Trash2 strokeWidth={1.75} /> {t("detail.delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -236,15 +243,15 @@ export default function PersonDetailPage() {
         <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start">
           <section className={`${CARD} p-4`}>
             <h2 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
-              Details
+              {tc("details")}
             </h2>
             <dl className="divide-y divide-gray-100">
-              <FieldRow label="Email">
+              <FieldRow label={tc("email")}>
                 <InlineText
                   value={person.primary_email}
                   type="email"
                   onSave={(v) => save({ primary_email: v.trim() })}
-                  placeholder="Add an email"
+                  placeholder={t("detail.addEmail")}
                   render={(v) => (
                     <a
                       href={`mailto:${v}`}
@@ -256,48 +263,50 @@ export default function PersonDetailPage() {
                   )}
                 />
               </FieldRow>
-              <FieldRow label="Other emails" hint="Comma-separated.">
+              <FieldRow label={t("detail.otherEmails")} hint={t("detail.commaSeparated")}>
                 <InlineText
                   value={(person.emails ?? []).join(", ")}
                   onSave={(v) => save({ emails: toList(v) })}
-                  placeholder="Add emails, comma separated"
+                  placeholder={t("detail.addEmails")}
                 />
               </FieldRow>
-              <FieldRow label="Phones" hint="Comma-separated.">
+              <FieldRow label={t("detail.phones")} hint={t("detail.commaSeparated")}>
                 <InlineText
                   value={(person.contact_numbers ?? []).join(", ")}
                   onSave={(v) => save({ contact_numbers: toList(v) })}
-                  placeholder="Add phone numbers"
+                  placeholder={t("detail.addPhones")}
                 />
               </FieldRow>
-              <FieldRow label="Job title">
+              <FieldRow label={t("fields.jobTitle")}>
                 <InlineText
                   value={person.job_title}
                   onSave={(v) => save({ job_title: v.trim() })}
-                  placeholder="Add a job title"
+                  placeholder={t("detail.addJobTitle")}
                 />
               </FieldRow>
-              <FieldRow label="Organization">
+              <FieldRow label={t("fields.company")}>
                 <div className="min-w-0">
-                  <InlineSelect
-                    value={person.organization ?? ""}
-                    options={orgOptions}
-                    onSave={(v) => save({ organization: v || null })}
-                    allowEmpty
-                    emptyLabel="No organization"
-                    placeholder="No organization"
+                  <SearchPicker
+                    kind="organization"
+                    value={person.organization}
+                    onChange={(id) => void save({ organization: id })}
+                    placeholder={t("fields.noCompany")}
+                    size="sm"
+                    className="h-8 border-transparent bg-transparent shadow-none hover:bg-gray-50"
                   />
                   {person.organization ? (
                     <Link
-                      href={href(`/organizations/${person.organization}`)}
+                      href={href(`/companies/${person.organization}`)}
                       className="mt-0.5 ml-1.5 inline-block text-xs text-[#0058cc] hover:underline"
                     >
-                      Open {orgName ?? "organization"}
+                      {orgName
+                        ? t("detail.openCompanyNamed", { name: orgName })
+                        : t("detail.openCompany")}
                     </Link>
                   ) : null}
                 </div>
               </FieldRow>
-              <FieldRow label="Owner" hint="The teammate responsible for this contact.">
+              <FieldRow label={tc("owner")} hint={t("detail.ownerHint")}>
                 <OwnerSelect
                   value={person.owner}
                   onChange={(owner) => void save({ owner })}
@@ -305,24 +314,21 @@ export default function PersonDetailPage() {
                   className="h-8 border-transparent bg-transparent shadow-none hover:bg-gray-50"
                 />
               </FieldRow>
-              <FieldRow
-                label="Lifecycle"
-                hint="How far along this contact is: Lead → Qualified → Opportunity → Customer · Churned."
-              >
+              <FieldRow label={t("fields.lifecycle")} hint={t("detail.lifecycleHint", stages)}>
                 <InlineSelect
                   value={person.lifecycle_stage ?? "lead"}
-                  options={LIFECYCLE_STAGES}
+                  options={lifecycleOptions}
                   onSave={(v) => save({ lifecycle_stage: (v || "lead") as LifecycleStage })}
                 />
               </FieldRow>
-              <FieldRow label="External id" hint="Id from another system, unique per organization.">
+              <FieldRow label={t("detail.externalId")} hint={t("detail.externalIdHint")}>
                 <InlineText
                   value={person.unique_id}
                   onSave={(v) => save({ unique_id: v.trim() })}
-                  placeholder="Add an external id"
+                  placeholder={t("detail.addExternalId")}
                 />
               </FieldRow>
-              <FieldRow label="Tags" hint="Shared labels; manage them under Tags.">
+              <FieldRow label={tc("tags")} hint={tf("tagsHint")}>
                 <TagPicker
                   tags={person.tags ?? []}
                   onAttach={(tag_id) => attachTag({ id: person.id, tag_id }).unwrap()}
@@ -330,14 +336,20 @@ export default function PersonDetailPage() {
                   compact
                 />
               </FieldRow>
-              <FieldRow label="Created">
-                <span className="text-muted-foreground" title={formatDateTime(person.created_at)}>
-                  {formatRelative(person.created_at)}
+              <FieldRow label={tc("created")}>
+                <span
+                  className="text-muted-foreground"
+                  title={formatDateTime(person.created_at, locale)}
+                >
+                  {formatRelative(person.created_at, locale)}
                 </span>
               </FieldRow>
-              <FieldRow label="Updated">
-                <span className="text-muted-foreground" title={formatDateTime(person.updated_at)}>
-                  {formatRelative(person.updated_at)}
+              <FieldRow label={tc("updated")}>
+                <span
+                  className="text-muted-foreground"
+                  title={formatDateTime(person.updated_at, locale)}
+                >
+                  {formatRelative(person.updated_at, locale)}
                 </span>
               </FieldRow>
             </dl>
@@ -346,8 +358,9 @@ export default function PersonDetailPage() {
           <section className="min-w-0">
             <Tabs defaultValue="timeline">
               <TabsList variant="line">
-                <TabsTrigger value="timeline">Timeline</TabsTrigger>
-                <TabsTrigger value="deals">Deals</TabsTrigger>
+                <TabsTrigger value="timeline">{tc("timeline")}</TabsTrigger>
+                <TabsTrigger value="deals">{tn("deals")}</TabsTrigger>
+                <TabsTrigger value="history">{tc("history")}</TabsTrigger>
               </TabsList>
               <TabsContent value="timeline" className="pt-4">
                 <ActivityTimeline person={person.id} />
@@ -355,8 +368,11 @@ export default function PersonDetailPage() {
               <TabsContent value="deals" className="pt-4">
                 <DealsMiniTable
                   person={person.id}
-                  emptyDescription={`No deal is open with ${person.name} yet.`}
+                  emptyDescription={t("detail.noDeals", { name: person.name })}
                 />
+              </TabsContent>
+              <TabsContent value="history" className="pt-4">
+                <HistoryTab kind="person" id={person.id} />
               </TabsContent>
             </Tabs>
           </section>
@@ -369,19 +385,19 @@ export default function PersonDetailPage() {
       <ConfirmDialog
         open={confirmDelete}
         onOpenChange={setConfirmDelete}
-        title={`Delete ${person.name}?`}
-        description="The person, their activities and their tag assignments are removed. Deals stay, but lose their contact."
-        confirmLabel="Delete person"
+        title={t("detail.deleteTitle", { name: person.name })}
+        description={t("detail.deleteHint")}
+        confirmLabel={t("detail.delete")}
         destructive
         loading={deleting}
         onConfirm={async () => {
           try {
             await deletePerson(person.id).unwrap();
             setConfirmDelete(false);
-            toast.success(`${person.name} deleted`);
+            toast.success(tc("deletedToast", { name: person.name }));
             router.push(href("/people"));
           } catch (err) {
-            toastApiError(err, "Could not delete this person");
+            toastApiError(err, t("detail.deleteError"));
           }
         }}
       />

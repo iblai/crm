@@ -3,36 +3,54 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Search, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageHeader } from "@/components/crm/page-header";
-import { InfoTip } from "@/components/crm/info-tip";
 import { EmptyState } from "@/components/crm/empty-state";
 import { PaginationBar } from "@/components/crm/pagination-bar";
-import { SimpleSelect } from "@/components/crm/simple-select";
-import { OwnerSelect } from "@/components/crm/owner-select";
-import { PeopleTable } from "@/components/crm/people/people-table";
+import { ViewBar } from "@/components/crm/view-bar";
+import { PeopleTable, type PersonColumn } from "@/components/crm/people/people-table";
 import { PersonDialog } from "@/components/crm/people/person-dialog";
-import { useListOrganizationsQuery, useListPersonsQuery, useListTagsQuery } from "@/lib/crm/api";
-import { LIFECYCLE_STAGES, type LifecycleStage } from "@/lib/crm/types";
+import { useDebounced } from "@/hooks/use-debounced";
+import { useListOrganizationsQuery, useListPersonsQuery } from "@/lib/crm/api";
+import type { SavedView } from "@/lib/crm/types";
+import {
+  applyClientFilters,
+  draftFrom,
+  emptyDraft,
+  filtersToParams,
+  sortsToOrdering,
+  type ViewDraft,
+} from "@/lib/crm/views";
 
 const PAGE_SIZE = 50;
 
+/** View field id → people-table column. */
+const PERSON_COLUMN: Record<string, PersonColumn> = {
+  job_title: "job_title",
+  organization: "organization",
+  owner: "owner",
+  tags: "tags",
+  created_at: "created",
+};
+
 /**
- * People — every contact in the organization. The CRM API has no free-text
- * person search, so the toolbar filters on the server (lifecycle, owner, tag)
- * and the search box narrows the loaded page on the client.
+ * People — every contact in the organization: server search and views. Merged
+ * and linked duplicates (`active=false`) stay hidden unless a view filters on Active.
  */
 export default function PeoplePage() {
+  const t = useTranslations("people");
+  const tc = useTranslations("common");
+  const tn = useTranslations("nav");
   const router = useRouter();
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [lifecycle, setLifecycle] = useState("");
-  const [owner, setOwner] = useState<number | null>(null);
-  const [tag, setTag] = useState("");
+  const [draft, setDraft] = useState<ViewDraft>(() => emptyDraft("persons"));
   const [createOpen, setCreateOpen] = useState(false);
+  const q = useDebounced(search.trim());
 
   // `?new=1` (sidebar / command palette / deep link) opens the create dialog.
   useEffect(() => {
@@ -44,64 +62,61 @@ export default function PeoplePage() {
     router.replace(`${window.location.pathname}${qs ? `?${qs}` : ""}`);
   }, [router]);
 
-  const hasServerFilter = Boolean(lifecycle || owner || tag);
+  const serverFilters = useMemo(() => filtersToParams("persons", draft.filters), [draft.filters]);
+  const ordering = sortsToOrdering("persons", draft.sorts);
 
   useEffect(() => {
     setPage(1);
-  }, [lifecycle, owner, tag]);
+  }, [q, serverFilters, ordering]);
 
   const { data, isLoading, isFetching } = useListPersonsQuery({
+    active: true,
+    ...serverFilters,
+    search: q || undefined,
+    ordering,
     page,
     page_size: PAGE_SIZE,
-    lifecycle_stage: (lifecycle || undefined) as LifecycleStage | undefined,
-    owner: owner ?? undefined,
-    tags: tag || undefined,
   });
 
   const { data: orgs } = useListOrganizationsQuery({ page_size: 100 });
-  const { data: tags } = useListTagsQuery();
-
   const orgNames = useMemo(
     () => new Map((orgs?.results ?? []).map((o) => [o.id, o.name] as const)),
     [orgs],
   );
 
-  const rows = useMemo(() => data?.results ?? [], [data]);
-  const q = search.trim().toLowerCase();
-  const filtered = useMemo(() => {
-    if (!q) return rows;
-    return rows.filter((p) =>
-      [p.name, p.primary_email, p.job_title].some((v) => v?.toLowerCase().includes(q)),
-    );
-  }, [rows, q]);
+  const rows = useMemo(
+    () => applyClientFilters(data?.results ?? [], "persons", draft.filters),
+    [data, draft.filters],
+  );
+  const columns = draft.columns
+    .filter((c) => c.visible && PERSON_COLUMN[c.id])
+    .map((c) => PERSON_COLUMN[c.id]);
 
+  const selectView = (view: SavedView | null) =>
+    setDraft(view ? draftFrom(view) : emptyDraft("persons"));
   const clearFilters = () => {
     setSearch("");
-    setLifecycle("");
-    setOwner(null);
-    setTag("");
+    setDraft((d) => ({ ...d, filters: [] }));
   };
 
-  const showEmptyState = !isLoading && rows.length === 0;
-  const noMatches = !isLoading && rows.length > 0 && filtered.length === 0;
+  const filtered = draft.filters.length > 0;
+  const empty = !isLoading && rows.length === 0;
 
   return (
     <>
       <PageHeader
         icon={<Users strokeWidth={1.75} />}
-        title="People"
+        title={tn("people")}
         count={data?.count ?? null}
-        description="Contacts across every organization you work with"
+        description={t("list.description")}
         actions={
           <Tooltip>
             <TooltipTrigger
               render={<Button className="ibl-button-primary" onClick={() => setCreateOpen(true)} />}
             >
-              <Plus data-icon="inline-start" strokeWidth={1.75} /> New person
+              <Plus data-icon="inline-start" strokeWidth={1.75} /> {t("actions.new")}
             </TooltipTrigger>
-            <TooltipContent side="bottom">
-              Add a contact — deals and activities hang off people
-            </TooltipContent>
+            <TooltipContent side="bottom">{t("actions.newHint")}</TooltipContent>
           </Tooltip>
         }
         toolbar={
@@ -114,88 +129,58 @@ export default function PeoplePage() {
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search this page by name, email, title…"
+                placeholder={t("list.searchPlaceholder")}
                 className="h-8 pl-8 text-sm"
-                aria-label="Search people"
+                aria-label={t("list.searchLabel")}
               />
             </div>
-            <span className="flex items-center gap-1">
-              <SimpleSelect
-                value={lifecycle}
-                onChange={setLifecycle}
-                options={LIFECYCLE_STAGES}
-                allowEmpty
-                emptyLabel="All stages"
-                placeholder="All stages"
-                size="sm"
-                className="w-40"
-                aria-label="Filter by lifecycle stage"
-              />
-              <InfoTip label="About lifecycle stages">
-                How far along a contact is: Lead → Qualified → Opportunity → Customer · Churned
-              </InfoTip>
-            </span>
-            <div className="w-44">
-              <OwnerSelect value={owner} onChange={setOwner} size="sm" />
-            </div>
-            <SimpleSelect
-              value={tag}
-              onChange={setTag}
-              options={(tags?.results ?? []).map((t) => ({ value: String(t.id), label: t.name }))}
-              allowEmpty
-              emptyLabel="All tags"
-              placeholder="All tags"
-              size="sm"
-              className="w-40"
-              aria-label="Filter by tag"
-            />
-            {search || hasServerFilter ? (
+            {q || filtered ? (
               <Button variant="ghost" size="sm" onClick={clearFilters}>
-                Clear
+                {tc("clear")}
               </Button>
             ) : null}
-            {q && !noMatches ? (
-              <span className="text-muted-foreground text-xs">
-                {filtered.length} of {rows.length} on this page
-              </span>
-            ) : null}
+            <ViewBar
+              objectType="persons"
+              draft={draft}
+              onChange={setDraft}
+              onSelectView={selectView}
+              className="basis-full"
+            />
           </>
         }
       />
 
       <div className="flex min-h-0 flex-1 flex-col p-4 md:p-6">
-        {showEmptyState ? (
-          hasServerFilter ? (
-            <EmptyState
-              icon={<Users strokeWidth={1.75} />}
-              title="No people match these filters"
-              description="Try a different lifecycle stage, owner or tag."
-              action={
-                <Button variant="outline" onClick={clearFilters}>
-                  Clear filters
-                </Button>
-              }
-            />
-          ) : (
-            <EmptyState
-              icon={<Users strokeWidth={1.75} />}
-              title="No people yet"
-              description="People are the contacts behind every deal — start with the one you are talking to today."
-              action={
-                <Button className="ibl-button-primary" onClick={() => setCreateOpen(true)}>
-                  <Plus data-icon="inline-start" strokeWidth={1.75} /> Add your first person
-                </Button>
-              }
-            />
-          )
-        ) : noMatches ? (
+        {empty && q ? (
           <EmptyState
             icon={<Search strokeWidth={1.75} />}
-            title={`Nothing on this page matches “${search.trim()}”`}
-            description="Search only looks at the people loaded on this page. Try another page or clear the search."
+            title={t("list.noMatchSearch", { query: q })}
+            description={t("list.noMatchSearchHint")}
             action={
               <Button variant="outline" onClick={() => setSearch("")}>
-                Clear search
+                {tc("clearSearch")}
+              </Button>
+            }
+          />
+        ) : empty && filtered ? (
+          <EmptyState
+            icon={<Users strokeWidth={1.75} />}
+            title={t("list.noMatchFilters")}
+            description={t("list.noMatchFiltersHint")}
+            action={
+              <Button variant="outline" onClick={clearFilters}>
+                {tc("clearFilters")}
+              </Button>
+            }
+          />
+        ) : empty ? (
+          <EmptyState
+            icon={<Users strokeWidth={1.75} />}
+            title={t("list.emptyTitle")}
+            description={t("list.emptyHint")}
+            action={
+              <Button className="ibl-button-primary" onClick={() => setCreateOpen(true)}>
+                <Plus data-icon="inline-start" strokeWidth={1.75} /> {t("list.addFirst")}
               </Button>
             }
           />
@@ -203,8 +188,9 @@ export default function PeoplePage() {
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-[var(--border-color,#e5e7eb)] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
             <div className="min-h-0 flex-1 overflow-auto">
               <PeopleTable
-                persons={filtered}
+                persons={rows}
                 isLoading={isLoading}
+                columns={columns}
                 orgNames={orgNames}
                 skeletonRows={10}
               />
@@ -214,9 +200,11 @@ export default function PeoplePage() {
               page={page}
               pageSize={PAGE_SIZE}
               onPageChange={setPage}
-              label="people"
+              label={t("list.paginationLabel")}
             />
-            {isFetching && !isLoading ? <output className="sr-only">Loading people</output> : null}
+            {isFetching && !isLoading ? (
+              <output className="sr-only">{t("list.loading")}</output>
+            ) : null}
           </div>
         )}
       </div>
