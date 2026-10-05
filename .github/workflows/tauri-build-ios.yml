@@ -20,15 +20,15 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -49,17 +49,14 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Tauri CLI
-        run: |
-          cargo install cargo-binstall --locked 2>/dev/null || true
-          cargo binstall tauri-cli --no-confirm 2>/dev/null || cargo install tauri-cli --locked
-
       - name: Override version
         if: inputs.version != ''
         working-directory: src-tauri
+        env:
+          APP_VERSION: ${{ inputs.version }}
         run: |
-          sed -i '' 's/"version": "[^"]*"/"version": "${{ inputs.version }}"/' tauri.conf.json
-          echo "Version set to ${{ inputs.version }}"
+          sed -i '' "s/\"version\": \"[^\"]*\"/\"version\": \"$APP_VERSION\"/" tauri.conf.json
+          echo "Version set to $APP_VERSION"
 
       - name: Decode App Store Connect API key
         env:
@@ -72,14 +69,14 @@ jobs:
           echo "APPLE_API_KEY_PATH=$KEY_DIR/AuthKey_${APPLE_API_KEY_ID}.p8" >> "$GITHUB_ENV"
 
       - name: Initialize iOS project
-        run: cargo tauri ios init
+        run: pnpm exec tauri ios init
 
       - name: Build iOS app
         env:
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
           APPLE_API_KEY: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_KEY_PATH: ${{ env.APPLE_API_KEY_PATH }}
-        run: cargo tauri ios build --export-method app-store-connect
+        run: pnpm exec tauri ios build --export-method app-store-connect
 
       - name: Locate IPA
         id: ipa

@@ -45,7 +45,8 @@
       "titlePlaceholder": "Llamada de presentación con el equipo…",
       "titleRequired": "El título es obligatorio.",
       "type": "Tipo",
-      "typeAbout": "Acerca del campo tipo"
+      "typeAbout": "Acerca del campo tipo",
+      "dealMismatch": "Este negocio pertenece a otra persona."
     },
     "list": {
       "allHint": "Todos: abiertos y hechos a la vez",
@@ -106,7 +107,8 @@
       "openAbout": "Acerca de las actividades abiertas",
       "openHint": "Aún sin hacer: marca el círculo para completar una",
       "viewPerson": "Ver persona",
-      "viewOrganization": "Ver organización"
+      "viewOrganization": "Ver organización",
+      "stageChanged": "Etapa cambiada"
     },
     "toast": {
       "created": "Actividad creada",
@@ -183,7 +185,8 @@
     "user": "Usuario",
     "yes": "Sí",
     "errorLoadTitle": "No se pudo cargar",
-    "errorProtectedByDeals": "{count, plural, one {# negocio todavía hace referencia} other {# negocios todavía hacen referencia}} a este registro."
+    "errorProtectedByDeals": "{count, plural, one {# negocio todavía hace referencia} other {# negocios todavía hacen referencia}} a este registro.",
+    "errorNetwork": "Sin conexión con el servidor."
   },
   "organizations": {
     "actions": {
@@ -291,7 +294,8 @@
         "link": "Abrir tablero",
         "title": "Negocios por etapa",
         "titleText": "negocios por etapa",
-        "tooltip": "{count, plural, one {# negocio} other {# negocios}} · {value}"
+        "tooltip": "{count, plural, one {# negocio} other {# negocios}} · {value}",
+        "noPipeline": "No hay pipeline predeterminado; elige uno en Configuración."
       },
       "recentDeals": {
         "empty": "Aún no hay negocios.",
@@ -342,7 +346,7 @@
       },
       "people": {
         "hint": "contactos registrados",
-        "info": "Todos los contactos de esta organización.",
+        "info": "Todos los contactos activos de esta organización.",
         "label": "Personas",
         "labelText": "personas"
       },
@@ -593,7 +597,13 @@
       "stage": "Etapa",
       "status": "Estado",
       "tags": "Etiquetas",
-      "title": "Título"
+      "title": "Título",
+      "description": "Descripción",
+      "currency": "Moneda",
+      "lost_reason": "Motivo de pérdida",
+      "closed_at": "Cerrado",
+      "pipeline": "Pipeline",
+      "metadata": "Campos personalizados"
     },
     "filterByTag": "Filtrar por etiqueta",
     "organizations": {
@@ -601,7 +611,9 @@
       "name": "Nombre",
       "owner": "Responsable",
       "tags": "Etiquetas",
-      "updated_at": "Actualizado"
+      "updated_at": "Actualizado",
+      "address": "Dirección",
+      "metadata": "Campos personalizados"
     },
     "owner": {
       "me": "Yo",
@@ -623,7 +635,12 @@
       "owner": "Responsable",
       "primary_email": "Correo",
       "tags": "Etiquetas",
-      "updated_at": "Actualizado"
+      "updated_at": "Actualizado",
+      "emails": "Otros correos",
+      "contact_numbers": "Teléfonos",
+      "unique_id": "Identificador externo",
+      "platform_user": "Usuario vinculado",
+      "metadata": "Campos personalizados"
     },
     "saveError": "No se pudo guardar este cambio",
     "select": "Seleccionar…",
@@ -713,7 +730,7 @@
       "commaSeparated": "Separados por comas.",
       "delete": "Eliminar persona",
       "deleteError": "No se pudo eliminar a esta persona",
-      "deleteHint": "No se puede eliminar a una persona con negocios; primero mueve o elimina sus negocios. Sus actividades y etiquetas asignadas se eliminan con ella.",
+      "deleteHint": "No se puede eliminar a una persona con negocios; fusiónala o elimina sus negocios primero. Sus actividades y etiquetas asignadas se eliminan con ella.",
       "deleteTitle": "¿Eliminar a {name}?",
       "externalId": "ID externo",
       "externalIdHint": "ID de otro sistema, único por organización.",
@@ -731,7 +748,7 @@
       "needsEmail": "Añade primero un correo principal",
       "noDeals": "Aún no hay ningún negocio abierto con {name}.",
       "notFound": "Esta persona ya no existe",
-      "notFoundHint": "Es posible que el registro se haya eliminado o fusionado con otra persona.",
+      "notFoundHint": "Puede que alguien de tu equipo haya eliminado el registro.",
       "openOrganization": "Abrir organización",
       "openOrganizationNamed": "Abrir {name}",
       "otherEmails": "Otros correos",
@@ -776,7 +793,8 @@
       "manualPlaceholder": "p. ej., 4821",
       "submit": "Vincular usuario",
       "title": "Vincular a un usuario de la plataforma",
-      "alreadyLinked": "Esta persona ya está vinculada a otro usuario."
+      "alreadyLinked": "Esta persona ya está vinculada a otro usuario.",
+      "notMember": "Aún no es miembro de esta organización; envíale una invitación."
     },
     "list": {
       "addFirst": "Añade tu primera persona",
@@ -786,14 +804,14 @@
       "loading": "Cargando personas",
       "noMatchFilters": "Ninguna persona coincide con estos filtros",
       "noMatchFiltersHint": "Prueba con otra etapa del ciclo de vida, otro responsable u otra etiqueta.",
-      "noMatchSearch": "Nada en esta página coincide con «{query}»",
-      "noMatchSearchHint": "La búsqueda solo revisa las personas cargadas en esta página. Prueba otra página o limpia la búsqueda.",
+      "noMatchSearch": "Nadie coincide con “{query}”",
+      "noMatchSearchHint": "La búsqueda recorre el nombre, el correo, el cargo y el identificador externo de todas las personas. Prueba otra grafía o borra la búsqueda.",
       "paginationLabel": "personas",
       "searchLabel": "Buscar personas",
-      "searchPlaceholder": "Buscar en esta página por nombre, correo, cargo…"
+      "searchPlaceholder": "Buscar por nombre, correo, cargo…"
     },
     "merge": {
-      "confirm": "Fusionar y eliminar duplicados",
+      "confirm": "Fusionar duplicados",
       "confirmBody": "{count, plural, one {# duplicado se integrará en {name} y quedará inactivo.} other {# duplicados se integrarán en {name} y quedarán inactivos.}} Esta acción no se puede deshacer.",
       "confirmTitle": "¿Fusionar estos registros?",
       "description": "Elige los registros duplicados. Sus negocios, actividades y etiquetas pasan a {name} y los duplicados quedan inactivos.",
@@ -997,14 +1015,9 @@
     "no": "No",
     "op": {
       "contains": "contiene",
-      "gte": "es al menos",
       "is": "es",
-      "isAfter": "es posterior a",
-      "isBefore": "es anterior a",
-      "isEmpty": "está vacío",
-      "isNot": "no es",
-      "isNotEmpty": "no está vacío",
-      "lte": "es como máximo"
+      "isAfter": "es a partir del",
+      "isBefore": "es hasta el"
     },
     "operand": "Condición",
     "pickerTitle": "Vistas",

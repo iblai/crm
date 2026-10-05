@@ -45,7 +45,8 @@
       "titlePlaceholder": "Appel de présentation avec l’équipe…",
       "titleRequired": "Le titre est obligatoire.",
       "type": "Type",
-      "typeAbout": "À propos du champ type"
+      "typeAbout": "À propos du champ type",
+      "dealMismatch": "Cette affaire appartient à une autre personne."
     },
     "list": {
       "allHint": "Tous — ouverts et terminés ensemble",
@@ -106,7 +107,8 @@
       "openAbout": "À propos des activités ouvertes",
       "openHint": "Pas encore terminées — cochez le cercle pour en terminer une",
       "viewPerson": "Voir la personne",
-      "viewOrganization": "Voir l’organisation"
+      "viewOrganization": "Voir l’organisation",
+      "stageChanged": "Étape modifiée"
     },
     "toast": {
       "created": "Activité créée",
@@ -183,7 +185,8 @@
     "user": "Utilisateur",
     "yes": "Oui",
     "errorLoadTitle": "Chargement impossible",
-    "errorProtectedByDeals": "{count, plural, one {# affaire fait encore référence} other {# affaires font encore référence}} à cette fiche."
+    "errorProtectedByDeals": "{count, plural, one {# affaire fait encore référence} other {# affaires font encore référence}} à cette fiche.",
+    "errorNetwork": "Pas de connexion au serveur."
   },
   "organizations": {
     "actions": {
@@ -291,7 +294,8 @@
         "link": "Ouvrir le tableau",
         "title": "Affaires par étape",
         "titleText": "affaires par étape",
-        "tooltip": "{count, plural, one {# affaire} other {# affaires}} · {value}"
+        "tooltip": "{count, plural, one {# affaire} other {# affaires}} · {value}",
+        "noPipeline": "Aucun pipeline par défaut : choisissez-en un dans les Paramètres."
       },
       "recentDeals": {
         "empty": "Aucune affaire pour l’instant.",
@@ -342,7 +346,7 @@
       },
       "people": {
         "hint": "contacts enregistrés",
-        "info": "Tous les contacts de cette organisation.",
+        "info": "Tous les contacts actifs de cette organisation.",
         "label": "Personnes",
         "labelText": "personnes"
       },
@@ -445,7 +449,7 @@
       "sourceHint": "D’où vient l’affaire ; les administrateurs gèrent la liste dans les Paramètres",
       "stageHint": "Les affaires démarrent ici ; déplacez-les depuis le tableau",
       "submit": "Créer l’affaire",
-      "titlePlaceholder": "Licence entreprise — 25 postes",
+      "titlePlaceholder": "Licence annuelle — 25 postes",
       "valueHint": "Ce que vaut l’affaire ; ce montant alimente les totaux du pipeline"
     },
     "fields": {
@@ -593,7 +597,13 @@
       "stage": "Étape",
       "status": "Statut",
       "tags": "Étiquettes",
-      "title": "Titre"
+      "title": "Titre",
+      "description": "Description",
+      "currency": "Devise",
+      "lost_reason": "Motif de perte",
+      "closed_at": "Clôturée",
+      "pipeline": "Pipeline",
+      "metadata": "Champs personnalisés"
     },
     "filterByTag": "Filtrer par étiquette",
     "organizations": {
@@ -601,7 +611,9 @@
       "name": "Nom",
       "owner": "Responsable",
       "tags": "Étiquettes",
-      "updated_at": "Mis à jour"
+      "updated_at": "Mis à jour",
+      "address": "Adresse",
+      "metadata": "Champs personnalisés"
     },
     "owner": {
       "me": "Moi",
@@ -623,7 +635,12 @@
       "owner": "Responsable",
       "primary_email": "E-mail",
       "tags": "Étiquettes",
-      "updated_at": "Mis à jour"
+      "updated_at": "Mis à jour",
+      "emails": "Autres e-mails",
+      "contact_numbers": "Numéros de téléphone",
+      "unique_id": "Identifiant externe",
+      "platform_user": "Utilisateur lié",
+      "metadata": "Champs personnalisés"
     },
     "saveError": "Impossible d’enregistrer cette modification",
     "select": "Sélectionner…",
@@ -713,7 +730,7 @@
       "commaSeparated": "Séparés par des virgules.",
       "delete": "Supprimer la personne",
       "deleteError": "Impossible de supprimer cette personne",
-      "deleteHint": "Une personne qui a des affaires ne peut pas être supprimée ; déplacez ou supprimez d’abord ses affaires. Ses activités et ses étiquettes partent avec elle.",
+      "deleteHint": "Une personne qui a des affaires ne peut pas être supprimée ; fusionnez-la ou supprimez d’abord ses affaires. Ses activités et ses étiquettes partent avec elle.",
       "deleteTitle": "Supprimer {name} ?",
       "externalId": "ID externe",
       "externalIdHint": "ID issu d’un autre système, unique par organisation.",
@@ -731,7 +748,7 @@
       "needsEmail": "Ajoutez d’abord un e-mail principal",
       "noDeals": "Aucune affaire ouverte avec {name} pour l’instant.",
       "notFound": "Cette personne n’existe plus",
-      "notFoundHint": "La fiche a peut-être été supprimée ou fusionnée avec une autre personne.",
+      "notFoundHint": "La fiche a peut-être été supprimée par quelqu’un de votre équipe.",
       "openOrganization": "Ouvrir l’organisation",
       "openOrganizationNamed": "Ouvrir {name}",
       "otherEmails": "Autres e-mails",
@@ -776,7 +793,8 @@
       "manualPlaceholder": "ex. 4821",
       "submit": "Lier l’utilisateur",
       "title": "Lier à un utilisateur de la plateforme",
-      "alreadyLinked": "Cette personne est déjà liée à un autre utilisateur."
+      "alreadyLinked": "Cette personne est déjà liée à un autre utilisateur.",
+      "notMember": "Pas encore membre de cette organisation : envoyez-lui une invitation."
     },
     "list": {
       "addFirst": "Ajoutez votre première personne",
@@ -786,14 +804,14 @@
       "loading": "Chargement des personnes",
       "noMatchFilters": "Aucune personne ne correspond à ces filtres",
       "noMatchFiltersHint": "Essayez une autre étape du cycle de vie, un autre responsable ou une autre étiquette.",
-      "noMatchSearch": "Rien sur cette page ne correspond à « {query} »",
-      "noMatchSearchHint": "La recherche ne porte que sur les personnes chargées sur cette page. Essayez une autre page ou effacez la recherche.",
+      "noMatchSearch": "Personne ne correspond à « {query} »",
+      "noMatchSearchHint": "La recherche parcourt le nom, l’e-mail, le poste et l’identifiant externe de chaque personne. Essayez une autre orthographe ou effacez la recherche.",
       "paginationLabel": "personnes",
       "searchLabel": "Rechercher des personnes",
-      "searchPlaceholder": "Rechercher dans cette page par nom, e-mail, poste…"
+      "searchPlaceholder": "Rechercher par nom, e-mail, poste…"
     },
     "merge": {
-      "confirm": "Fusionner et supprimer les doublons",
+      "confirm": "Fusionner les doublons",
       "confirmBody": "{count, plural, one {# doublon sera fusionné dans {name}, puis marqué inactif.} other {# doublons seront fusionnés dans {name}, puis marqués inactifs.}} Cette action est irréversible.",
       "confirmTitle": "Fusionner ces fiches ?",
       "description": "Choisissez les fiches en double. Leurs affaires, activités et étiquettes sont transférées vers {name}, puis les doublons sont marqués inactifs.",
@@ -997,14 +1015,9 @@
     "no": "Non",
     "op": {
       "contains": "contient",
-      "gte": "est au moins",
       "is": "est",
-      "isAfter": "est après",
-      "isBefore": "est avant",
-      "isEmpty": "est vide",
-      "isNot": "n’est pas",
-      "isNotEmpty": "n’est pas vide",
-      "lte": "est au plus"
+      "isAfter": "est à partir du",
+      "isBefore": "est jusqu’au"
     },
     "operand": "Condition",
     "pickerTitle": "Vues",

@@ -9,6 +9,7 @@ import { TopBar } from "@/components/crm/top-bar";
 import { BreadcrumbProvider } from "@/components/crm/breadcrumbs";
 import { CommandPaletteProvider } from "@/components/crm/command-palette";
 import { AdminModeProvider, useAdminMode, useCanManageCrm } from "@/components/crm/admin-mode";
+import { LanguagePreferenceSync } from "@/components/language-preference-sync";
 import { LoadingScreen } from "@/components/loading-screen";
 import { useSession } from "@/hooks/use-session";
 
@@ -32,6 +33,7 @@ export default function TenantLayout({ children }: { children: ReactNode }) {
 
   return (
     <AdminModeProvider isAdmin={isAdmin}>
+      <LanguagePreferenceSync />
       <TooltipProvider>
         <CommandPaletteProvider>
           <BreadcrumbProvider>

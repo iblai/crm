@@ -1,5 +1,4 @@
 import type {
-  DateFilter,
   SavedView,
   SavedViewInput,
   SavedViewObject,
@@ -10,16 +9,7 @@ import type {
 
 /** What a filterable field is, which decides its operands and its input. */
 export type FieldKind = "text" | "select" | "relation" | "date" | "boolean" | "number";
-export type FilterOp =
-  | "contains"
-  | "is"
-  | "isNot"
-  | "isEmpty"
-  | "isNotEmpty"
-  | "isAfter"
-  | "isBefore"
-  | "gte"
-  | "lte";
+export type FilterOp = "contains" | "is" | "isAfter" | "isBefore";
 
 export interface FieldDef {
   id: string;
@@ -36,15 +26,18 @@ export interface FieldDef {
   column?: true;
   /** The DM has no filter for it: sort and column only. */
   filter?: false;
+  /** A datetime column: an on-or-before bound ends at 23:59:59 UTC. */
+  datetime?: true;
 }
 
+/** Only what the DM evaluates: no client-side emulation on a page of rows. */
 export const FILTER_OPERANDS: Record<FieldKind, readonly FilterOp[]> = {
-  text: ["contains", "isEmpty", "isNotEmpty"],
-  select: ["is", "isNot", "isEmpty", "isNotEmpty"],
-  relation: ["is", "isNot", "isEmpty", "isNotEmpty"],
-  date: ["isAfter", "isBefore", "isEmpty", "isNotEmpty"],
+  text: ["contains"],
+  select: ["is"],
+  relation: ["is"],
+  date: ["isAfter", "isBefore"],
   boolean: ["is"],
-  number: ["gte", "lte"],
+  number: [],
 };
 
 /** The fields each list can filter and sort, and the table columns it can toggle. */
@@ -58,7 +51,7 @@ export const VIEW_FIELDS: Record<SavedViewObject, FieldDef[]> = {
     { id: "owner", kind: "relation", relation: "owner", column: true },
     { id: "tags", kind: "relation", relation: "tag", column: true },
     { id: "active", kind: "boolean" },
-    { id: "created_at", kind: "date", sortable: true, column: true },
+    { id: "created_at", kind: "date", sortable: true, column: true, datetime: true },
     { id: "updated_at", kind: "date", sortable: true, filter: false },
   ],
   organizations: [
@@ -72,14 +65,14 @@ export const VIEW_FIELDS: Record<SavedViewObject, FieldDef[]> = {
     { id: "title", kind: "text", sortable: true, column: true },
     { id: "stage", kind: "relation", relation: "stage", column: true },
     { id: "status", kind: "select", options: "dealStatus", sortable: true, column: true },
-    { id: "lead_value", kind: "number", sortable: true, column: true },
+    { id: "lead_value", kind: "number", sortable: true, column: true, filter: false },
     { id: "person", kind: "relation", relation: "person", column: true },
     { id: "organization", kind: "relation", relation: "organization", column: true },
     { id: "owner", kind: "relation", relation: "owner", column: true },
     { id: "source", kind: "relation", relation: "source", column: true },
     { id: "expected_close_date", kind: "date", sortable: true, column: true },
     { id: "tags", kind: "relation", relation: "tag", column: true },
-    { id: "created_at", kind: "date", sortable: true, column: true },
+    { id: "created_at", kind: "date", sortable: true, column: true, datetime: true },
   ],
   activities: [
     { id: "title", kind: "text", sortable: true },
@@ -88,9 +81,9 @@ export const VIEW_FIELDS: Record<SavedViewObject, FieldDef[]> = {
     { id: "owner", kind: "relation", relation: "owner" },
     { id: "person", kind: "relation", relation: "person" },
     { id: "organization", kind: "relation", relation: "organization" },
-    { id: "deal", kind: "relation", relation: "deal" },
-    { id: "schedule_from", kind: "date", sortable: true },
-    { id: "created_at", kind: "date", sortable: true },
+    { id: "deal", kind: "relation", relation: "deal", filter: false },
+    { id: "schedule_from", kind: "date", sortable: true, datetime: true },
+    { id: "created_at", kind: "date", sortable: true, filter: false },
   ],
 };
 
@@ -103,41 +96,49 @@ export function resolveColumns(objectType: SavedViewObject, view?: Pick<SavedVie
   return [...picked, ...missing.map<ViewColumn>((f) => ({ id: f.id, visible: false }))];
 }
 
-/** One ANDed filter list → the DM list query parameters. */
+/** One ANDed filter list → the DM list query parameters; `contains` terms join the `search`. */
 export function filtersToParams(objectType: SavedViewObject, filters: ViewFilter[]) {
   const params: Record<string, string | number | boolean> = {};
   for (const filter of filters) {
     const field = VIEW_FIELDS[objectType].find((f) => f.id === filter.field);
     if (!field || field.filter === false) continue;
     const name = field.param ?? field.id;
+    const value = filter.value;
     switch (filter.op) {
       case "is":
-        if (filter.value !== undefined && filter.value !== null && filter.value !== "") {
-          params[name] = filter.value as string | number | boolean;
+        if (value !== undefined && value !== null && value !== "") {
+          params[name] = value as string | number | boolean;
         }
         break;
-      case "isNot":
-        // The DM has no negated filters: the row filter in `applyClientFilters` does it.
-        break;
       case "contains":
-        if (typeof filter.value === "string" && filter.value.trim())
-          params.search = filter.value.trim();
+        if (typeof value === "string" && value.trim()) {
+          // DRF's SearchFilter ANDs whitespace-separated terms.
+          params.search = [params.search, value.trim()].filter(Boolean).join(" ");
+        }
         break;
       case "isAfter":
-        if (typeof filter.value === "string" && filter.value) params[`${name}__gte`] = filter.value;
+        if (typeof value === "string" && value) params[`${name}__gte`] = value;
         break;
       case "isBefore":
-        if (typeof filter.value === "string" && filter.value) params[`${name}__lte`] = filter.value;
-        break;
-      case "gte":
-      case "lte":
-        // Numeric bounds are applied client-side; the DM has no `lead_value` range filter.
+        if (typeof value === "string" && value) {
+          params[`${name}__lte`] = field.datetime ? `${value}T23:59:59Z` : value;
+        }
         break;
       default:
         break;
     }
   }
   return params;
+}
+
+/** Whether a stored filter is one its field still offers (older views may hold more). */
+export function isSupportedFilter(objectType: SavedViewObject, filter: ViewFilter) {
+  const field = VIEW_FIELDS[objectType].find((f) => f.id === filter.field);
+  return (
+    !!field &&
+    field.filter !== false &&
+    (FILTER_OPERANDS[field.kind] as string[]).includes(filter.op)
+  );
 }
 
 /** The `ordering` parameter for the first sort (the DM sorts on one column). */
@@ -148,42 +149,6 @@ export function sortsToOrdering(objectType: SavedViewObject, sorts: ViewSort[]) 
   if (!first) return undefined;
   return first.dir === "desc" ? `-${first.field}` : first.field;
 }
-
-/** Filters the DM cannot express (`isNot`, `isEmpty`, `isNotEmpty`, numeric bounds), applied to a page. */
-export function applyClientFilters<T extends object>(
-  rows: T[],
-  objectType: SavedViewObject,
-  filters: ViewFilter[],
-) {
-  const local = filters.filter((f) =>
-    ["isNot", "isEmpty", "isNotEmpty", "gte", "lte"].includes(f.op),
-  );
-  if (local.length === 0) return rows;
-  return rows.filter((row) =>
-    local.every((filter) => {
-      if (!VIEW_FIELDS[objectType].some((f) => f.id === filter.field)) return true;
-      const raw = (row as Record<string, unknown>)[filter.field];
-      const empty =
-        raw === null || raw === undefined || raw === "" || (Array.isArray(raw) && raw.length === 0);
-      switch (filter.op) {
-        case "isEmpty":
-          return empty;
-        case "isNotEmpty":
-          return !empty;
-        case "isNot":
-          return String(raw ?? "") !== String(filter.value ?? "");
-        case "gte":
-          return Number(raw) >= Number(filter.value);
-        case "lte":
-          return Number(raw) <= Number(filter.value);
-        default:
-          return true;
-      }
-    }),
-  );
-}
-
-export const DATE_FILTERS: readonly DateFilter[] = ["today", "7d", "30d", "90d", "all_time"];
 
 /** The draft a list page edits; `id` is set once it is a saved view. */
 export interface ViewDraft extends Required<Omit<SavedViewInput, "name">> {
@@ -210,15 +175,15 @@ export function draftFrom(view: SavedView): ViewDraft {
     name: view.name,
     type: view.type,
     columns: resolveColumns(view.object_type, view),
-    filters: view.filters,
+    filters: view.filters.filter((f) => isSupportedFilter(view.object_type, f)),
     sorts: view.sorts,
     group_by: view.group_by,
   };
 }
 
-/** Whether the draft differs from what is saved (or from the default when unsaved). */
-export function isDirty(draft: ViewDraft, saved?: SavedView) {
-  const base = saved ? draftFrom(saved) : emptyDraft(draft.object_type);
+/** Whether the draft differs from what is saved (or from `unsavedBase`, the page's own default). */
+export function isDirty(draft: ViewDraft, saved?: SavedView, unsavedBase?: ViewDraft) {
+  const base = saved ? draftFrom(saved) : (unsavedBase ?? emptyDraft(draft.object_type));
   const pick = (d: ViewDraft) => ({
     type: d.type,
     columns: d.columns,

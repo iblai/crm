@@ -85,7 +85,9 @@ export function UserMenu() {
       onLogout={() => handleLogout()}
       onTenantChange={(key: string) => void handleTenantSwitch(key)}
       onTenantUpdate={onTenantUpdate}
-      onHelpClick={(url: string) => window.open(url, "_blank", "noopener")}
+      onHelpClick={(url: string) => {
+        if (/^https?:\/\//.test(url)) window.open(url, "_blank", "noopener");
+      }}
       onAccountDeleted={() => handleLogout()}
       enableMemoryTab={false}
     />

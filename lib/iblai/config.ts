@@ -110,10 +110,6 @@ const config = {
   enableGravatarOnProfilePic: () =>
     getEnv("NEXT_PUBLIC_ENABLE_GRAVATAR_ON_PROFILE_PIC", "true") !== "false",
   defaultCurrency: () => getEnv("NEXT_PUBLIC_DEFAULT_CURRENCY", "USD"),
-
-  // Server-only: IBLAI_API_KEY is a secret and not NEXT_PUBLIC_*, so Next.js
-  // never inlines it into the client bundle — in the browser this returns "".
-  apiKey: () => process.env.IBLAI_API_KEY ?? "",
 };
 
 export default config;

@@ -42,15 +42,15 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -77,18 +77,22 @@ jobs:
       - name: Override Publisher in AppxManifest for signing
         if: inputs.sign && inputs.sign_publisher != ''
         working-directory: src-tauri
+        env:
+          SIGN_PUBLISHER: ${{ inputs.sign_publisher }}
         run: |
           $manifest = Get-Content AppxManifest.xml -Raw
-          $manifest = $manifest -replace 'Publisher="[^"]*"', 'Publisher="${{ inputs.sign_publisher }}"'
+          $manifest = $manifest -replace 'Publisher="[^"]*"', "Publisher=`"$env:SIGN_PUBLISHER`""
           Set-Content -Path AppxManifest.xml -Value $manifest
-          Write-Host "Patched Publisher to: ${{ inputs.sign_publisher }}"
+          Write-Host "Patched Publisher to: $env:SIGN_PUBLISHER"
 
       - name: Override version in AppxManifest
         if: inputs.version != ''
         working-directory: src-tauri
+        env:
+          APP_VERSION: ${{ inputs.version }}
         run: |
           $manifest = Get-Content AppxManifest.xml -Raw
-          $manifest = $manifest -replace '(?<![A-Za-z])Version="[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+"', "Version=`"${{ inputs.version }}.0`""
+          $manifest = $manifest -replace '(?<![A-Za-z])Version="[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+"', "Version=`"$env:APP_VERSION.0`""
           Set-Content -Path AppxManifest.xml -Value $manifest
 
       - name: Build MSIX package (unsigned)

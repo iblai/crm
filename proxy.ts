@@ -22,6 +22,8 @@ export function proxy(request: NextRequest) {
   return applyCsp(request, {
     requestHeaders,
     mode: process.env.NODE_ENV === "development" ? "report-only" : undefined,
+    // Nothing embeds the CRM; a same-site page must not frame it either.
+    frameAncestors: "none",
   });
 }
 

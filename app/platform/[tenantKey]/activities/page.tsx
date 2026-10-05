@@ -18,7 +18,13 @@ import { InfoTip } from "@/components/crm/info-tip";
 import { ActivityDialog } from "@/components/crm/activities/activity-dialog";
 import { useBreadcrumbs } from "@/components/crm/breadcrumbs";
 import { useSession } from "@/hooks/use-session";
-import { groupActivities, RANGE_OPTIONS, rangeParams, type Range } from "@/lib/crm/activities";
+import {
+  groupActivities,
+  isAutoStageNote,
+  RANGE_OPTIONS,
+  rangeParams,
+  type Range,
+} from "@/lib/crm/activities";
 import { useListActivitiesQuery } from "@/lib/crm/api";
 import { useCrmEnums } from "@/lib/crm/i18n";
 import type { Activity, ActivityListParams, ActivityType } from "@/lib/crm/types";
@@ -381,13 +387,15 @@ function RowShell({
   return (
     <div className="group/row relative">
       <ActivityRow activity={activity} showDealLink showPersonLink showOrganizationLink />
-      <button
-        type="button"
-        onClick={() => onEdit(activity)}
-        className="absolute top-2 right-20 rounded-md px-2 py-0.5 text-[11px] font-medium text-[#0058cc] opacity-0 transition-opacity group-hover/row:opacity-100 hover:bg-[#eef6fc]"
-      >
-        {tc("edit")}
-      </button>
+      {isAutoStageNote(activity) ? null : (
+        <button
+          type="button"
+          onClick={() => onEdit(activity)}
+          className="absolute top-2 right-20 rounded-md px-2 py-0.5 text-[11px] font-medium text-[#0058cc] opacity-0 transition-opacity group-hover/row:opacity-100 hover:bg-[#eef6fc]"
+        >
+          {tc("edit")}
+        </button>
+      )}
     </div>
   );
 }

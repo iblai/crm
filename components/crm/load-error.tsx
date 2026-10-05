@@ -8,8 +8,13 @@ import { errorMessage, errorStatus } from "@/lib/crm/api";
 /** A list or panel that failed to load, with the DM's reason — never an empty state. */
 export function LoadError({ error, className }: { error: unknown; className?: string }) {
   const tc = useTranslations("common");
+  const status = errorStatus(error);
   const detail =
-    errorStatus(error) === 403 ? tc("errorForbidden") : errorMessage(error, tc("errorGeneric"));
+    status === 403
+      ? tc("errorForbidden")
+      : status === "FETCH_ERROR"
+        ? tc("errorNetwork")
+        : errorMessage(error, tc("errorGeneric"));
   return (
     <EmptyState
       icon={<AlertTriangle strokeWidth={1.75} />}

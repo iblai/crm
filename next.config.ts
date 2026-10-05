@@ -28,12 +28,36 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
+// The SDK's Account pages load the platform logo from the DM through next/image.
+const apiHost = new URL(process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.iblai.app").hostname;
+const baseDomain = process.env.NEXT_PUBLIC_PLATFORM_BASE_DOMAIN?.replace(/^\./, "");
+const remotePatterns = [
+  { protocol: "https" as const, hostname: apiHost },
+  ...(baseDomain ? [{ protocol: "https" as const, hostname: `*.${baseDomain}` }] : []),
+];
+
 const nextConfig: NextConfig = {
   output: "standalone",
   // The SDK's useVoiceChat never resets its isMounted ref after StrictMode's
   // dev double-mount, wedging voice input at "Processing…". Host workaround
   // (see /iblai-vibe-agent-chat "Known issues"); production runs effects once.
   reactStrictMode: false,
+  images: { remotePatterns },
+  poweredByHeader: false,
+  async headers() {
+    // Transport security (HSTS) is the host's; microphone stays open for voice chat.
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Permissions-Policy", value: "camera=(), geolocation=(), payment=()" },
+        ],
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

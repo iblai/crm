@@ -161,20 +161,20 @@ Node.js 22+ and pnpm 12 (`corepack enable` picks the pinned version up from `pac
 
 ### Scripts
 
-| Command              | What it does                                       |
-| -------------------- | -------------------------------------------------- |
-| `pnpm dev`           | Dev server on port 3000                            |
-| `pnpm build`         | Production build (standalone output)               |
-| `pnpm start`         | Serve the production build                         |
-| `pnpm typecheck`     | TypeScript 7                                       |
-| `pnpm lint`          | oxlint                                             |
-| `pnpm format`        | oxfmt (`pnpm format:check` in CI)                  |
-| `pnpm i18n:check`    | The four message catalogs have the same keys       |
-| `pnpm test`          | Vitest unit tests                                  |
-| `pnpm test:e2e`      | Playwright journeys (needs `e2e/.env.development`) |
-| `pnpm tauri dev`     | Desktop shell in dev mode (needs Rust)             |
-| `pnpm tauri build`   | Desktop installer for the current platform         |
-| `pnpm tauri ios dev` | iOS simulator (needs Xcode)                        |
+| Command              | What it does                                                                   |
+| -------------------- | ------------------------------------------------------------------------------ |
+| `pnpm dev`           | Dev server on port 3000                                                        |
+| `pnpm build`         | Production build (standalone output)                                           |
+| `pnpm start`         | Serve the production build                                                     |
+| `pnpm typecheck`     | TypeScript 7                                                                   |
+| `pnpm lint`          | oxlint, under a warning budget (`--max-warnings`)                              |
+| `pnpm format`        | oxfmt (`pnpm format:check` in CI)                                              |
+| `pnpm i18n:check`    | Same keys in the four catalogs; no “tenant”, no “company”, no ASCII apostrophe |
+| `pnpm test`          | Vitest unit tests (`pnpm test:coverage` in CI: 85 % lines on `lib/`)           |
+| `pnpm test:e2e`      | Playwright journeys (needs `e2e/.env.development`)                             |
+| `pnpm tauri dev`     | Desktop shell in dev mode (needs Rust)                                         |
+| `pnpm tauri build`   | Desktop installer for the current platform                                     |
+| `pnpm tauri ios dev` | iOS simulator (needs Xcode)                                                    |
 
 ---
 
@@ -243,7 +243,6 @@ All app config is `NEXT_PUBLIC_*` and optional against hosted `iblai.app`. Defau
 | `NEXT_PUBLIC_DEFAULT_CURRENCY`     | `USD`                     | Currency preselected on new deals                                            |
 | `NEXT_PUBLIC_ENABLE_RBAC`          | `false`                   | Gate SDK admin surfaces on RBAC policies as well as the admin flag           |
 | `NEXT_PUBLIC_SUPPORT_EMAIL`        | `support@ibl.ai`          | Shown in error states                                                        |
-| `IBLAI_API_KEY`                    | —                         | Server-only Platform API Token for route handlers (never exposed)            |
 
 ---
 
@@ -256,7 +255,7 @@ crm/
 │   ├── platform/[tenantKey]/             # everything inside one organization
 │   │   ├── layout.tsx                    # sidebar + top bar shell (admin gate)
 │   │   ├── page.tsx                      # Home dashboard
-│   │   ├── people/ · organizations/          # lists + record pages (timeline · history)
+│   │   ├── people/ · organizations/      # lists + record pages (timeline · history)
 │   │   ├── deals/                        # kanban · table · deal page
 │   │   ├── activities/ · tags/           # timeline work · labels
 │   │   ├── settings/                     # pipelines · stages · lead sources
@@ -301,7 +300,8 @@ Ten Platform-scoped resources under `/dm/api/crm/`: persons, organizations, pipe
 
 ```bash
 pnpm test            # Vitest — formatting, saved views, tenant resolution, SSO landing, config
-pnpm i18n:check      # en / es / fr / zh catalogs carry the same keys
+pnpm i18n:check      # en / es / fr / zh catalogs carry the same keys and the house vocabulary
+pnpm test:coverage   # the unit tests with the coverage gate CI runs
 pnpm test:e2e        # Playwright journeys (copy e2e/.env.development.example first)
 pnpm test:e2e:ui     # interactive UI mode
 ```

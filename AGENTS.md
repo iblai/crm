@@ -57,7 +57,7 @@ PlatformSidebar + SidebarInset` (`components/crm/app-sidebar.tsx`), loading
 8. **Pages** are client components: `<PageHeader/>` then
    `<div className="flex-1 overflow-auto">` inside the org layout.
 9. **Verify before you say it works:** `pnpm typecheck && pnpm lint && pnpm
-format:check && pnpm i18n:check && pnpm test && pnpm build`; open the page;
+format:check && pnpm i18n:check && pnpm test:coverage && pnpm build`; open the page;
    screenshot it. E2E journeys live in `e2e/journeys/` and sign in through the
    real Auth SPA.
 10. **Commits:** conventional messages; never `--no-verify`.

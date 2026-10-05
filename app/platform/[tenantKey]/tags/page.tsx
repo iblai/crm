@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Plus, Search, Tag as TagIcon, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useLocale, useTranslations } from "next-intl";
@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageHeader } from "@/components/crm/page-header";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { PaginationBar } from "@/components/crm/pagination-bar";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { InlineText } from "@/components/crm/inline-field";
@@ -17,6 +18,7 @@ import { TagChip } from "@/components/crm/tag-chip";
 import { TagColorPicker, nextTagColor } from "@/components/crm/tags/tag-color-picker";
 import { TagDialog } from "@/components/crm/tags/tag-dialog";
 import { useBreadcrumbs } from "@/components/crm/breadcrumbs";
+import { useDebounced } from "@/hooks/use-debounced";
 import { useSession } from "@/hooks/use-session";
 import {
   errorMessage,
@@ -37,19 +39,13 @@ export default function TagsPage() {
   useBreadcrumbs([{ label: tn("tags"), href: href("/tags") }]);
 
   const [search, setSearch] = useState("");
-  const [query, setQuery] = useState("");
-  const [page, setPage] = useState(1);
+  const query = useDebounced(search.trim(), 250);
+  const [paging, setPaging] = useState({ key: query, page: 1 });
+  const page = paging.key === query ? paging.page : 1;
+  const setPage = (next: number) => setPaging({ key: query, page: next });
   const [creating, setCreating] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setQuery(search.trim());
-      setPage(1);
-    }, 250);
-    return () => clearTimeout(timer);
-  }, [search]);
-
-  const { data, isLoading } = useListTagsQuery({
+  const { data, isLoading, error } = useListTagsQuery({
     page,
     page_size: PAGE_SIZE,
     search: query || undefined,
@@ -102,6 +98,8 @@ export default function TagsPage() {
                 <Skeleton key={i} className="h-28 w-full rounded-xl" />
               ))}
             </div>
+          ) : error ? (
+            <LoadError error={error} />
           ) : tags.length === 0 ? (
             <EmptyState
               icon={<TagIcon />}

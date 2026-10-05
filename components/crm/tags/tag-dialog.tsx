@@ -36,15 +36,17 @@ export function TagDialog({
   const tc = useTranslations("common");
   const [create, { isLoading }] = useCreateTagMutation();
   const [name, setName] = useState("");
-  const [color, setColor] = useState(defaultColor);
+  const [picked, setPicked] = useState<string | null>(null);
+  const color = picked ?? defaultColor;
   const [touched, setTouched] = useState(false);
 
+  // Reset on open only; the suggested colour shows until the user picks one.
   useEffect(() => {
     if (!open) return;
     setName("");
-    setColor(defaultColor);
+    setPicked(null);
     setTouched(false);
-  }, [open, defaultColor]);
+  }, [open]);
 
   const nameMissing = !name.trim();
   const colorInvalid = !isValidHex(color);
@@ -98,7 +100,7 @@ export function TagDialog({
 
           <div className="grid gap-2">
             <Label className="text-muted-foreground text-xs">{t("dialog.colorLabel")}</Label>
-            <TagColorSwatches color={color} onChange={setColor} />
+            <TagColorSwatches color={color} onChange={setPicked} />
           </div>
 
           <div className="flex items-center gap-2 rounded-lg bg-[#fafbfc] px-3 py-2.5">

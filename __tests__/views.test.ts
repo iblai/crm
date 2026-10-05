@@ -4,7 +4,6 @@ import en from "../messages/en.json";
 import type { SavedView } from "../lib/crm/types";
 import {
   VIEW_FIELDS,
-  applyClientFilters,
   draftFrom,
   emptyDraft,
   filtersToParams,
@@ -76,39 +75,6 @@ describe("sortsToOrdering", () => {
   });
 });
 
-describe("applyClientFilters", () => {
-  const rows = [
-    { id: 1, lead_value: "500.00", organization: null, status: "open" },
-    { id: 2, lead_value: "1500.00", organization: "org-a", status: "open" },
-    { id: 3, lead_value: "2500.00", organization: "", status: "won" },
-  ];
-
-  it("applies the operands the DM lacks", () => {
-    expect(applyClientFilters(rows, "deals", saved.filters).map((r) => r.id)).toEqual([3]);
-    expect(
-      applyClientFilters(rows, "deals", [{ field: "status", op: "isNot", value: "won" }]).map(
-        (r) => r.id,
-      ),
-    ).toEqual([1, 2]);
-    expect(
-      applyClientFilters(rows, "deals", [{ field: "organization", op: "isNotEmpty" }]).map(
-        (r) => r.id,
-      ),
-    ).toEqual([2]);
-    expect(
-      applyClientFilters(rows, "deals", [{ field: "lead_value", op: "lte", value: 1500 }]).map(
-        (r) => r.id,
-      ),
-    ).toEqual([1, 2]);
-  });
-
-  it("leaves rows alone when every filter is server-side", () => {
-    expect(applyClientFilters(rows, "deals", [{ field: "status", op: "is", value: "open" }])).toBe(
-      rows,
-    );
-  });
-});
-
 describe("resolveColumns", () => {
   it("defaults to every toggleable column, visible", () => {
     const columns = resolveColumns("persons");
@@ -151,7 +117,8 @@ describe("labels", () => {
   it("gives every view field a fields.<object>.<id> message", () => {
     for (const [object, fields] of Object.entries(VIEW_FIELDS)) {
       const labels = en.fields[object as keyof typeof VIEW_FIELDS];
-      for (const field of fields) expect(Object.keys(labels), object).toContain(field.id);
+      for (const field of fields)
+        expect(Object.keys(labels).map((k) => `${object}.${k}`)).toContain(`${object}.${field.id}`);
     }
   });
 });
@@ -166,5 +133,39 @@ describe("sort-only fields", () => {
     ).toEqual({});
     expect(VIEW_FIELDS.persons.find((f) => f.id === "updated_at")?.filter).toBe(false);
     expect(VIEW_FIELDS.persons.find((f) => f.id === "created_at")?.filter).toBeUndefined();
+  });
+});
+
+describe("search terms and date bounds", () => {
+  it("joins every contains filter into one search", () => {
+    expect(
+      filtersToParams("deals", [
+        { field: "title", op: "contains", value: "renewal" },
+        { field: "title", op: "contains", value: " acme " },
+      ]),
+    ).toEqual({ search: "renewal acme" });
+  });
+
+  it("ends an on-or-before bound on a datetime column at the end of the day", () => {
+    expect(
+      filtersToParams("deals", [{ field: "created_at", op: "isBefore", value: "2026-10-01" }]),
+    ).toEqual({ created_at__lte: "2026-10-01T23:59:59Z" });
+    expect(
+      filtersToParams("deals", [
+        { field: "expected_close_date", op: "isBefore", value: "2026-10-01" },
+      ]),
+    ).toEqual({ expected_close_date__lte: "2026-10-01" });
+  });
+});
+
+describe("older saved views", () => {
+  it("drops operators the DM cannot evaluate", () => {
+    expect(draftFrom(saved).filters.map((f) => f.op)).toEqual(["is", "is", "contains", "isAfter"]);
+  });
+
+  it("compares an unsaved draft against the page's own default", () => {
+    const board = { ...emptyDraft("deals"), type: "kanban" as const };
+    expect(isDirty(board)).toBe(true);
+    expect(isDirty(board, undefined, board)).toBe(false);
   });
 });

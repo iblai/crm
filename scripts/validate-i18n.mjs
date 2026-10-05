@@ -3,9 +3,11 @@
  * Validate that every locale catalog (messages/{en,fr,es,zh}.json) exists and
  * contains an identical set of keys. Reports missing/extra keys per locale and
  * flags entries that are byte-identical to English (possible untranslated text),
- * excluding an allowlist of terms that legitimately stay the same.
+ * excluding an allowlist of terms that legitimately stay the same. Fails on the
+ * words the UI never shows ("tenant", "company") and on ASCII apostrophes.
  *
- * Exits non-zero if any locale file is missing or any key is missing.
+ * Exits non-zero if any locale file is missing, any key is missing, or a value
+ * breaks the vocabulary rule.
  */
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -83,7 +85,25 @@ for (const l of LOCALES) {
   }
 }
 
-// 3. Soft check: non-English entries identical to English (possible untranslated).
+// 3. Vocabulary: the words we never show (see AGENTS.md) and ASCII apostrophes.
+const FORBIDDEN = {
+  en: [/\btenant/i, /\bcompan(y|ies)\b/i],
+  es: [/\btenant/i, /\binquilin/i, /\bempresas?\b/i],
+  fr: [/\btenant/i, /\blocataire/i, /\bentreprises?\b/i],
+  zh: [/租户/, /公司/],
+};
+for (const l of LOCALES) {
+  const hits = Object.entries(flat[l]).filter(
+    ([, v]) => typeof v === "string" && (FORBIDDEN[l].some((re) => re.test(v)) || v.includes("'")),
+  );
+  if (hits.length) {
+    failed = true;
+    console.log(`\n[${l}] ${hits.length} entries use forbidden wording or an ASCII apostrophe:`);
+    hits.slice(0, 30).forEach(([k, v]) => console.log(`  ✗ ${k}="${v}"`));
+  }
+}
+
+// 4. Soft check: non-English entries identical to English (possible untranslated).
 for (const l of LOCALES.filter((l) => l !== "en")) {
   const suspicious = [];
   for (const [k, v] of Object.entries(flat[l])) {

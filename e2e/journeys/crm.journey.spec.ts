@@ -184,7 +184,7 @@ test.describe.serial("crm journey", () => {
     await page.keyboard.press("Enter");
     await expect(page.getByText(`${stamp} title`).first()).toBeVisible({ timeout: 20_000 });
     await page.getByRole("tab", { name: /history/i }).click();
-    await expect(page.getByText("job_title").first()).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText("Job title").first()).toBeVisible({ timeout: 20_000 });
   });
 
   test("C10 · ⌘K finds the person through server search", async ({ page }) => {

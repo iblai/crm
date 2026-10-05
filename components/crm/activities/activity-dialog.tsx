@@ -130,7 +130,10 @@ export function ActivityDialog({
     setTouched(false);
   }, [open, activity, userId, defaultPerson, defaultDeal, defaultOrganization]);
 
-  const { data: deals } = useListDealsQuery({ page_size: 100, status: "open" }, { skip: !open });
+  const { data: deals } = useListDealsQuery(
+    { page_size: 100, status: "open", person: draft.person || undefined },
+    { skip: !open },
+  );
 
   const dealOptions = useMemo(
     () => (deals?.results ?? []).map((d) => ({ value: String(d.id), label: d.title })),
@@ -142,7 +145,10 @@ export function ActivityDialog({
 
   const titleMissing = !draft.title.trim();
   const linkMissing = !draft.person && !draft.deal && !draft.organization;
-  const invalid = titleMissing || linkMissing;
+  // The DM refuses a deal whose person is not the chosen person.
+  const pickedDeal = deals?.results.find((d) => String(d.id) === draft.deal);
+  const dealMismatch = !!pickedDeal && !!draft.person && pickedDeal.person !== draft.person;
+  const invalid = titleMissing || linkMissing || dealMismatch;
 
   const submit = async () => {
     setTouched(true);
@@ -258,6 +264,9 @@ export function ActivityDialog({
               size="sm"
               aria-label={t("dialog.deal")}
             />
+            {dealMismatch ? (
+              <p className="text-xs text-rose-600">{t("dialog.dealMismatch")}</p>
+            ) : null}
           </div>
 
           <div className="grid gap-1.5">

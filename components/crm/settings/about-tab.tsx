@@ -22,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAdminMode } from "@/components/crm/admin-mode";
 import { useSession } from "@/hooks/use-session";
 import { isUnnamedTenant, tenantDisplayName } from "@/lib/iblai/tenant";
 import config from "@/lib/iblai/config";
@@ -39,6 +40,7 @@ export function AboutTab() {
   const tc = useTranslations("common");
   const ts = useTranslations("shell");
   const { tenantKey, currentTenant, href } = useSession();
+  const { adminMode } = useAdminMode();
   const apiBase = `${config.dmUrl()}/api/crm/`;
 
   return (
@@ -109,9 +111,11 @@ export function AboutTab() {
             <UserCog className="size-4 text-[#0058cc]" strokeWidth={1.75} />
             {t("rolesTitle")}
           </h3>
-          <Button variant="outline" size="sm" render={<Link href={href("/admin/users")} />}>
-            <ShieldCheck data-icon="inline-start" /> {t("manageRoles")}
-          </Button>
+          {adminMode ? (
+            <Button variant="outline" size="sm" render={<Link href={href("/admin/users")} />}>
+              <ShieldCheck data-icon="inline-start" /> {t("manageRoles")}
+            </Button>
+          ) : null}
         </div>
         <Table>
           <TableHeader>

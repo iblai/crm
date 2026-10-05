@@ -21,6 +21,7 @@ import { FavoriteButton } from "@/components/crm/favorite-button";
 import { HistoryTab } from "@/components/crm/history-tab";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
 import { FieldRow, InlineText } from "@/components/crm/inline-field";
 import { OwnerSelect } from "@/components/crm/owner-select";
@@ -74,10 +75,11 @@ export default function OrganizationDetailPage() {
   const [attachTag] = useAttachOrganizationTagMutation();
   const [detachTag] = useDetachOrganizationTagMutation();
 
-  const { data: people, isLoading: loadingPeople } = useListPersonsQuery(
-    { organization: id, active: true, page_size: 50 },
-    { skip: !id },
-  );
+  const {
+    data: people,
+    isLoading: loadingPeople,
+    error: peopleError,
+  } = useListPersonsQuery({ organization: id, active: true, page_size: 50 }, { skip: !id });
 
   const [addPersonOpen, setAddPersonOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -120,6 +122,14 @@ export default function OrganizationDetailPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="flex min-h-0 flex-1 flex-col p-4 md:p-6">
+        <LoadError error={error} />
+      </div>
+    );
+  }
+
   if (isLoading || !organization) {
     return (
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-auto p-4 md:p-6">
@@ -157,7 +167,7 @@ export default function OrganizationDetailPage() {
               </div>
               <p className="text-muted-foreground mt-1 text-xs">
                 {location ? `${location} · ` : ""}
-                {t("detail.peopleCount", { count: people?.count ?? 0 })}
+                {people ? t("detail.peopleCount", { count: people.count }) : null}
               </p>
             </div>
           </div>
@@ -263,7 +273,9 @@ export default function OrganizationDetailPage() {
               </TabsList>
 
               <TabsContent value="people" className="pt-4">
-                {!loadingPeople && peopleRows.length === 0 ? (
+                {peopleError ? (
+                  <LoadError error={peopleError} />
+                ) : !loadingPeople && peopleRows.length === 0 ? (
                   <EmptyState
                     icon={<Users strokeWidth={1.75} />}
                     title={t("detail.noPeople")}

@@ -18,7 +18,6 @@ import { useDebounced } from "@/hooks/use-debounced";
 import { useListPersonsQuery } from "@/lib/crm/api";
 import type { SavedView } from "@/lib/crm/types";
 import {
-  applyClientFilters,
   draftFrom,
   emptyDraft,
   filtersToParams,
@@ -47,7 +46,6 @@ export default function PeoplePage() {
   const tn = useTranslations("nav");
   const router = useRouter();
 
-  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [draft, setDraft] = useState<ViewDraft>(() => emptyDraft("persons"));
   const [createOpen, setCreateOpen] = useState(false);
@@ -66,23 +64,22 @@ export default function PeoplePage() {
   const serverFilters = useMemo(() => filtersToParams("persons", draft.filters), [draft.filters]);
   const ordering = sortsToOrdering("persons", draft.sorts);
 
-  useEffect(() => {
-    setPage(1);
-  }, [q, serverFilters, ordering]);
+  // A new query starts on page 1 without an effect: the page lives with its key.
+  const pagingKey = JSON.stringify([q, serverFilters, ordering]);
+  const [paging, setPaging] = useState({ key: pagingKey, page: 1 });
+  const page = paging.key === pagingKey ? paging.page : 1;
+  const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
 
   const { data, isLoading, isFetching, error } = useListPersonsQuery({
     active: true,
     ...serverFilters,
-    search: q || serverFilters.search?.toString(),
+    search: [serverFilters.search, q].filter(Boolean).join(" ") || undefined,
     ordering,
     page,
     page_size: PAGE_SIZE,
   });
 
-  const rows = useMemo(
-    () => applyClientFilters(data?.results ?? [], "persons", draft.filters),
-    [data, draft.filters],
-  );
+  const rows = data?.results ?? [];
   const columns = draft.columns
     .filter((c) => c.visible && PERSON_COLUMN[c.id])
     .map((c) => PERSON_COLUMN[c.id]);

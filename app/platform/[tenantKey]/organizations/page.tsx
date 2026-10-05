@@ -18,7 +18,6 @@ import { useDebounced } from "@/hooks/use-debounced";
 import { useListOrganizationsQuery } from "@/lib/crm/api";
 import type { SavedView } from "@/lib/crm/types";
 import {
-  applyClientFilters,
   draftFrom,
   emptyDraft,
   filtersToParams,
@@ -35,7 +34,6 @@ export default function OrganizationsPage() {
   const tn = useTranslations("nav");
   const router = useRouter();
 
-  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [draft, setDraft] = useState<ViewDraft>(() => emptyDraft("organizations"));
   const [createOpen, setCreateOpen] = useState(false);
@@ -56,22 +54,21 @@ export default function OrganizationsPage() {
   );
   const ordering = sortsToOrdering("organizations", draft.sorts);
 
-  useEffect(() => {
-    setPage(1);
-  }, [q, serverFilters, ordering]);
+  // A new query starts on page 1 without an effect: the page lives with its key.
+  const pagingKey = JSON.stringify([q, serverFilters, ordering]);
+  const [paging, setPaging] = useState({ key: pagingKey, page: 1 });
+  const page = paging.key === pagingKey ? paging.page : 1;
+  const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
 
   const { data, isLoading, error } = useListOrganizationsQuery({
     ...serverFilters,
-    search: q || serverFilters.search?.toString(),
+    search: [serverFilters.search, q].filter(Boolean).join(" ") || undefined,
     ordering,
     page,
     page_size: PAGE_SIZE,
   });
 
-  const rows = useMemo(
-    () => applyClientFilters(data?.results ?? [], "organizations", draft.filters),
-    [data, draft.filters],
-  );
+  const rows = data?.results ?? [];
   const hasFilter = Boolean(q || draft.filters.length);
 
   const selectView = (view: SavedView | null) =>

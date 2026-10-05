@@ -67,8 +67,8 @@ export function ViewBar({
   onChange,
   onSelectView,
   stageOptions,
-  pipelineOptions,
   sourceOptions,
+  defaultDraft,
   canKanban = false,
   className,
 }: {
@@ -78,20 +78,21 @@ export function ViewBar({
   /** `null` = back to the default (unsaved) view. */
   onSelectView: (view: SavedView | null) => void;
   stageOptions?: SelectOption[];
-  pipelineOptions?: SelectOption[];
   sourceOptions?: SelectOption[];
+  /** The page's unsaved starting view, when it is not the empty one. */
+  defaultDraft?: ViewDraft;
   canKanban?: boolean;
   className?: string;
 }) {
   const t = useTranslations("views");
   const tc = useTranslations("common");
   const tf = useTranslations("fields");
-  const { data: views } = useListSavedViewsQuery({ object_type: objectType });
+  const { data: views, error: viewsError } = useListSavedViewsQuery({ object_type: objectType });
   const [createView, { isLoading: creating }] = useCreateSavedViewMutation();
   const [updateView, { isLoading: updating }] = useUpdateSavedViewMutation();
   const [deleteView] = useDeleteSavedViewMutation();
   const saved = views?.results.find((v) => v.id === draft.id);
-  const dirty = isDirty(draft, saved);
+  const dirty = isDirty(draft, saved, defaultDraft);
   const fields = VIEW_FIELDS[objectType];
   const fieldLabel = (id: string) => tf(`${objectType}.${id}` as FieldLabelKey);
 
@@ -167,6 +168,11 @@ export function ViewBar({
               <DropdownMenuLabel className="text-muted-foreground text-xs">
                 {t("pickerTitle")}
               </DropdownMenuLabel>
+              {viewsError ? (
+                <p className="text-muted-foreground px-2 py-1 text-xs">
+                  {errorMessage(viewsError, tc("errorGeneric"))}
+                </p>
+              ) : null}
               <DropdownMenuItem onClick={() => onSelectView(null)} className="gap-2">
                 <span className="flex-1 truncate">{t("allRecords")}</span>
                 {!saved ? <Check className="size-4 text-[#0058cc]" /> : null}
@@ -373,7 +379,6 @@ export function ViewBar({
                 filter={filter}
                 label={fieldLabel(field.id)}
                 stageOptions={stageOptions}
-                pipelineOptions={pipelineOptions}
                 sourceOptions={sourceOptions}
                 onChange={(next) => setFilter(index, next)}
                 onRemove={() => removeFilter(index)}
@@ -425,7 +430,6 @@ function FilterChip({
   filter,
   label,
   stageOptions,
-  pipelineOptions,
   sourceOptions,
   onChange,
   onRemove,
@@ -434,7 +438,6 @@ function FilterChip({
   filter: ViewFilter;
   label: string;
   stageOptions?: SelectOption[];
-  pipelineOptions?: SelectOption[];
   sourceOptions?: SelectOption[];
   onChange: (filter: ViewFilter) => void;
   onRemove: () => void;
@@ -466,21 +469,6 @@ function FilterChip({
           value={typeof value === "string" ? value : ""}
           onChange={(event) => onChange({ ...filter, value: event.target.value })}
           className="h-7 w-40 text-xs"
-          aria-label={label}
-        />
-      );
-    } else if (field.kind === "number") {
-      input = (
-        <Input
-          type="number"
-          value={value === undefined || value === null ? "" : String(value)}
-          onChange={(event) =>
-            onChange({
-              ...filter,
-              value: event.target.value === "" ? undefined : Number(event.target.value),
-            })
-          }
-          className="h-7 w-28 text-xs"
           aria-label={label}
         />
       );
@@ -538,22 +526,12 @@ function FilterChip({
           className="w-48"
         />
       );
-    } else if (
-      field.relation === "stage" ||
-      field.relation === "pipeline" ||
-      field.relation === "source"
-    ) {
+    } else if (field.relation === "stage" || field.relation === "source") {
       input = (
         <SimpleSelect
           value={value === undefined || value === null ? "" : String(value)}
           onChange={(v) => onChange({ ...filter, value: v ? Number(v) : undefined })}
-          options={
-            (field.relation === "stage"
-              ? stageOptions
-              : field.relation === "pipeline"
-                ? pipelineOptions
-                : sourceOptions) ?? []
-          }
+          options={(field.relation === "stage" ? stageOptions : sourceOptions) ?? []}
           size="sm"
           className="w-44"
           aria-label={label}

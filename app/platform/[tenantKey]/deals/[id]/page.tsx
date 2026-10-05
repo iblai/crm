@@ -19,6 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DealStatusBadge } from "@/components/crm/badges";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { FieldRow, InlineSelect, InlineText } from "@/components/crm/inline-field";
@@ -42,7 +43,6 @@ import {
   useDeleteDealMutation,
   useDetachDealTagMutation,
   useGetDealQuery,
-  useGetOrganizationQuery,
   useMarkDealLostMutation,
   useMarkDealWonMutation,
   useMoveDealStageMutation,
@@ -106,9 +106,6 @@ export default function DealDetailPage() {
 
   const pipeline = deal ? lookups.pipelineById.get(deal.pipeline) : undefined;
   const stage = deal ? lookups.stageById.get(deal.stage) : undefined;
-  const { data: organization } = useGetOrganizationQuery(deal?.organization ?? "", {
-    skip: !deal?.organization,
-  });
   const firstOpenStage = openStages(pipeline)[0];
 
   const patch = async (body: DealInput) => {
@@ -145,6 +142,14 @@ export default function DealDetailPage() {
             </Button>
           }
         />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex-1 overflow-auto p-6">
+        <LoadError error={error} />
       </div>
     );
   }
@@ -222,7 +227,7 @@ export default function DealDetailPage() {
                       className="inline-flex items-center gap-1 text-[#0058cc] hover:underline"
                     >
                       <Building2 className="size-3" />
-                      {organization?.name ?? t("fields.organization")}
+                      {deal.organization_name ?? t("fields.organization")}
                     </Link>
                   ) : null}
                   <span>{pipeline?.name ?? t("fields.pipeline")}</span>

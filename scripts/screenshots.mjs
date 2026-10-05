@@ -37,7 +37,14 @@ const page = await context.newPage();
 
 await page.goto(host, { waitUntil: "networkidle" });
 await page.waitForURL((u) => /\/platform\/[^/]+/.test(u.pathname), { timeout: 60_000 });
-const org = opt("--org", decodeURIComponent(page.url().match(/\/platform\/([^/?#]+)/)[1]));
+// Name the organization: the captures land in the README, so only a seeded
+// demo organization may ever be photographed — never whichever one the saved
+// session happens to open.
+const org = opt("--org", "");
+if (!org) {
+  console.error("Pass --org <demo-org-key>; the captures are committed to docs/images.");
+  process.exit(1);
+}
 const base = `${host}/platform/${encodeURIComponent(org)}`;
 fs.mkdirSync("docs/images", { recursive: true });
 

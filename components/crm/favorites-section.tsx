@@ -9,7 +9,7 @@ import {
 } from "@iblai/iblai-js/web-containers/next";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
 import { useSession } from "@/hooks/use-session";
-import { useListFavoritesQuery } from "@/lib/crm/api";
+import { errorMessage, useListFavoritesQuery } from "@/lib/crm/api";
 import type { Favorite } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
 
@@ -35,11 +35,19 @@ export function FavoritesSection({
   onAfterNav: () => void;
 }) {
   const t = useTranslations("favorites");
+  const tc = useTranslations("common");
   const router = useRouter();
   const pathname = usePathname() ?? "";
   const { href } = useSession();
-  const { data } = useListFavoritesQuery();
+  const { data, error } = useListFavoritesQuery();
   const favorites = (data?.results ?? []).slice(0, MAX_ROWS);
+  if (error && !collapsed) {
+    return (
+      <p className="text-muted-foreground px-3 py-1 text-xs">
+        {errorMessage(error, tc("errorGeneric"))}
+      </p>
+    );
+  }
   if (favorites.length === 0) return null;
 
   if (collapsed) {

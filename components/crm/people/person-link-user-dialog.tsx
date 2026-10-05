@@ -68,8 +68,9 @@ export function PersonLinkUserDialog({
       onOpenChange(false);
       toast.success(t("linkUser.linked", { name: person.name, id: String(userId) }));
     } catch (err) {
-      // The DM's 403 here means "not a member", not "no permission".
-      if (errorStatus(err) === 403) toast.error(errorMessage(err, t("linkUser.error")));
+      // Two 403s: no UserPlatformLink (not a member) and no write permission.
+      if (errorStatus(err) === 403 && /UserPlatformLink/.test(errorMessage(err, "")))
+        toast.error(t("linkUser.notMember"));
       else toastApiError(err, t("linkUser.error"));
     }
   };

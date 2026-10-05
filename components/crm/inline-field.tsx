@@ -69,9 +69,6 @@ export function InlineText({
   const ref = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (!editing) setDraft(value ?? "");
-  }, [value, editing]);
-  useEffect(() => {
     if (editing) ref.current?.focus();
   }, [editing]);
 
@@ -94,7 +91,10 @@ export function InlineText({
       <button
         type="button"
         disabled={disabled}
-        onClick={() => setEditing(true)}
+        onClick={() => {
+          setDraft(value ?? "");
+          setEditing(true);
+        }}
         title={disabled ? undefined : tc("clickToEdit")}
         className={cn(
           "group/field -mx-1.5 flex w-[calc(100%+0.75rem)] min-w-0 items-start justify-between gap-2 rounded-md px-1.5 py-1 text-left hover:bg-gray-50 disabled:hover:bg-transparent",

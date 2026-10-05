@@ -76,3 +76,8 @@ export function groupActivities(rows: Activity[], now = new Date()): Grouped {
   );
   return out;
 }
+
+/** The note the DM writes itself on a stage move: shown, never edited. */
+export function isAutoStageNote(activity: Pick<Activity, "type" | "title">) {
+  return activity.type === "note" && activity.title === "Stage changed";
+}

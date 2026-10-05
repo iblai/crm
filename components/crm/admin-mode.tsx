@@ -46,8 +46,8 @@ export function useAdminMode() {
 
 /** Settings access: Admin mode, or the CRM Manager role. */
 export function useCanManageCrm() {
-  const { adminMode } = useAdminMode();
+  const { isAdmin, adminMode } = useAdminMode();
   const { tenantKey } = useSession();
   const permissions = useSelector(selectRbacPermissions);
-  return canManageCrm(permissions, tenantKey, adminMode);
+  return canManageCrm(permissions, tenantKey, { isAdmin, adminMode });
 }

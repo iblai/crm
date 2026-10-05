@@ -30,7 +30,7 @@ export function useDashboardData(period: DashboardPeriod, locale: string) {
     page_size: 6,
   });
 
-  const data = overview.data;
+  const data = overview.currentData;
   const dealStats = data?.deals;
   const currency = dealStats?.currency || config.defaultCurrency();
 
@@ -67,7 +67,8 @@ export function useDashboardData(period: DashboardPeriod, locale: string) {
   return {
     overview: data,
     error: overview.error,
-    isLoading: overview.isLoading,
+    isLoading: overview.isLoading || (overview.isFetching && !overview.currentData),
+    errors: { people: people.error, deals: deals.error, upNext: upNext.error },
     isFetching: overview.isFetching,
     currency,
     won,

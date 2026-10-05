@@ -30,7 +30,7 @@ export function FavoriteButton({
 }) {
   const t = useTranslations("favorites");
   const tc = useTranslations("common");
-  const { data } = useListFavoritesQuery(target);
+  const { data, error } = useListFavoritesQuery(target);
   const [add, { isLoading: adding }] = useAddFavoriteMutation();
   const [remove, { isLoading: removing }] = useRemoveFavoriteMutation();
   const existing = data?.results.find((f) => matches(f, target));
@@ -53,7 +53,7 @@ export function FavoriteButton({
             variant="outline"
             size="icon"
             onClick={() => void toggle()}
-            disabled={busy}
+            disabled={busy || !!error}
             aria-pressed={!!existing}
             aria-label={existing ? t("remove") : t("add")}
             className={className}
@@ -65,7 +65,9 @@ export function FavoriteButton({
           className={cn("size-4 text-[#5f5f61]", existing && "fill-current")}
         />
       </TooltipTrigger>
-      <TooltipContent side="bottom">{existing ? t("remove") : t("add")}</TooltipContent>
+      <TooltipContent side="bottom">
+        {error ? errorMessage(error, tc("errorGeneric")) : existing ? t("remove") : t("add")}
+      </TooltipContent>
     </Tooltip>
   );
 }

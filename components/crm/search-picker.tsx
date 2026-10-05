@@ -6,7 +6,6 @@ import { Check, ChevronsUpDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -54,7 +53,11 @@ export function SearchPicker({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const q = useDebounced(query.trim(), 250);
-  const { data, isFetching, error } = useSearchQuery({ q, limit: 10 }, { skip: q.length === 0 });
+  const {
+    currentData: data,
+    isFetching,
+    error,
+  } = useSearchQuery({ q, limit: 10 }, { skip: q.length === 0 });
   const person = useGetPersonQuery(value ?? "", { skip: kind !== "person" || !value });
   const organization = useGetOrganizationQuery(value ?? "", {
     skip: kind !== "organization" || !value,
@@ -93,7 +96,7 @@ export function SearchPicker({
           className={cn("min-w-0 flex-1 truncate text-left", !value && "text-muted-foreground")}
         >
           {value
-            ? (selectedLabel ?? "…")
+            ? (selectedLabel ?? (person.error || organization.error ? tc("errorGeneric") : "…"))
             : (placeholder ?? t(kind === "person" ? "person" : "organization"))}
         </span>
         <ChevronsUpDown className="text-muted-foreground size-3.5" />
@@ -107,15 +110,18 @@ export function SearchPicker({
             placeholder={t("searchPlaceholder")}
           />
           <CommandList>
-            <CommandEmpty>
-              {q.length === 0
-                ? t("typeToSearch")
-                : isFetching
-                  ? t("searching")
-                  : error
-                    ? errorMessage(error, tc("errorGeneric"))
-                    : t("noMatches")}
-            </CommandEmpty>
+            {results.length === 0 ? (
+              // Outside CommandEmpty: cmdk hides that while the clear row is mounted.
+              <p className="text-muted-foreground px-3 py-6 text-center text-sm">
+                {q.length === 0
+                  ? t("typeToSearch")
+                  : isFetching
+                    ? t("searching")
+                    : error
+                      ? errorMessage(error, tc("errorGeneric"))
+                      : t("noMatches")}
+              </p>
+            ) : null}
             {value ? (
               <CommandGroup>
                 <CommandItem

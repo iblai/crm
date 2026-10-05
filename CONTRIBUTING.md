@@ -12,7 +12,7 @@ Thanks for helping build the open-source CRM for the ibl.ai platform.
 
 1. Branch from `main`: `git checkout -b feat/my-feature`
 2. Make the change
-3. `pnpm typecheck && pnpm lint && pnpm format:check && pnpm i18n:check && pnpm test && pnpm build`
+3. `pnpm typecheck && pnpm lint && pnpm format:check && pnpm i18n:check && pnpm test:coverage && pnpm build`
 4. Add or update a Playwright journey in `e2e/journeys/` when user-facing behavior changes
 5. Open a pull request against `main` with a screenshot of the affected screen
 

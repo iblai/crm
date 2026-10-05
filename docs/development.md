@@ -73,13 +73,18 @@ The UI is in English, Spanish, French and Chinese. The active language comes
 from the shared `openedx-language-preference` cookie (set by any ibl.ai app),
 then this app's `NEXT_LOCALE` cookie, then English; the top bar has a selector
 that writes both. Strings live in `messages/{en,es,fr,zh}.json`;
-`pnpm i18n:check` fails when the four files disagree.
+`pnpm i18n:check` fails when the four files disagree, when a value says “tenant” or
+“company”, or when it uses an ASCII apostrophe instead of `’`.
 
 ## Verify a change
 
 ```bash
-pnpm typecheck && pnpm lint && pnpm format:check && pnpm i18n:check && pnpm test && pnpm build
+pnpm typecheck && pnpm lint && pnpm format:check && pnpm i18n:check && pnpm test:coverage && pnpm build
 ```
+
+`pnpm lint` runs under a warning budget (`--max-warnings` in `package.json`): fix a
+warning, lower the number; never raise it. `pnpm test:coverage` holds the pure modules
+under `lib/` at 85 % lines (`vitest.config.ts`).
 
 Then open the page you touched and take a screenshot for the PR.
 `pnpm screenshots` regenerates the README captures in `docs/images/` from the

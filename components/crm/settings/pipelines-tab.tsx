@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { InfoTip } from "@/components/crm/info-tip";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { InlineText } from "@/components/crm/inline-field";
@@ -87,13 +88,31 @@ function terminalOf(stage: Pick<PipelineStage, "is_won" | "is_lost">): Terminal 
 }
 
 /** A stage is never both won and lost — the picker encodes that. */
+type UpdatePipeline = ReturnType<typeof useUpdatePipelineMutation>[0];
+
+/** One default at a time: un-flag `from`, flag `to`, and put `from` back if that fails. */
+async function swapDefault(update: UpdatePipeline, from: Pipeline, to: Pipeline) {
+  await update({ id: from.id, body: { is_default: false } }).unwrap();
+  try {
+    await update({ id: to.id, body: { is_default: true } }).unwrap();
+  } catch (err) {
+    await update({ id: from.id, body: { is_default: true } })
+      .unwrap()
+      .catch(() => undefined);
+    throw err;
+  }
+}
+
+const sameOrder = (a: PipelineStage[], b: PipelineStage[]) =>
+  a.length === b.length && a.every((s, i) => s.id === b[i]?.id);
+
 function terminalBody(value: Terminal) {
   return { is_won: value === "won", is_lost: value === "lost" };
 }
 
 export function PipelinesTab() {
   const t = useTranslations("settings");
-  const { data, isLoading } = useListPipelinesQuery({ page_size: 100 });
+  const { data, isLoading, error } = useListPipelinesQuery({ page_size: 100 });
   const pipelines = useMemo(() => data?.results ?? [], [data]);
   const [pickedId, setSelectedId] = useState<number | null>(null);
   const [creating, setCreating] = useState(false);
@@ -112,6 +131,8 @@ export function PipelinesTab() {
       </div>
     );
   }
+
+  if (error) return <LoadError error={error} />;
 
   if (!pipelines.length) {
     return (
@@ -264,14 +285,9 @@ function PipelineEditor({
                       onClick={async () => {
                         setMakingDefault(true);
                         try {
-                          // One default at a time: un-flag the current one first.
-                          if (currentDefault) {
-                            await update({
-                              id: currentDefault.id,
-                              body: { is_default: false },
-                            }).unwrap();
-                          }
-                          await update({ id: pipeline.id, body: { is_default: true } }).unwrap();
+                          if (currentDefault) await swapDefault(update, currentDefault, pipeline);
+                          else
+                            await update({ id: pipeline.id, body: { is_default: true } }).unwrap();
                           toast.success(t("pipelines.madeDefault", { name: pipeline.name }));
                         } catch (err) {
                           toastSettingsError(err);
@@ -333,7 +349,7 @@ function PipelineEditor({
         </dl>
       </div>
 
-      <StagesEditor pipeline={pipeline} />
+      <StagesEditor key={pipeline.id} pipeline={pipeline} />
 
       <ConfirmDialog
         open={confirm}
@@ -365,17 +381,15 @@ function PipelineEditor({
 function StagesEditor({ pipeline }: { pipeline: Pipeline }) {
   const t = useTranslations("settings");
   const toastSettingsError = useToastSettingsError();
-  const { data, isLoading } = useListStagesQuery({ pipeline: pipeline.id });
+  const { currentData: data, isLoading, error } = useListStagesQuery({ pipeline: pipeline.id });
   const [reorderStages] = useReorderStagesMutation();
   const [adding, setAdding] = useState(false);
-  const [order, setOrder] = useState<PipelineStage[]>([]);
+  // The drag's order until the server shows the same; `null` is the server's.
+  const [optimistic, setOptimistic] = useState<PipelineStage[] | null>(null);
   const [reordering, setReordering] = useState(false);
 
   const stages = useMemo(() => sortStages(data?.results ?? []), [data]);
-
-  useEffect(() => {
-    setOrder(stages);
-  }, [stages]);
+  const order = optimistic && !sameOrder(optimistic, stages) ? optimistic : stages;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -389,13 +403,13 @@ function StagesEditor({ pipeline }: { pipeline: Pipeline }) {
     const to = order.findIndex((s) => s.id === over.id);
     if (from < 0 || to < 0) return;
     const next = arrayMove(order, from, to);
-    setOrder(next);
+    setOptimistic(next);
     setReordering(true);
     try {
       await reorderStages({ pipeline: pipeline.id, order: next.map((s) => s.id) }).unwrap();
       toast.success(t("stages.orderSaved"));
     } catch (err) {
-      setOrder(stages);
+      setOptimistic(null);
       toastSettingsError(err);
     } finally {
       setReordering(false);
@@ -422,6 +436,8 @@ function StagesEditor({ pipeline }: { pipeline: Pipeline }) {
             <Skeleton key={i} className="h-12 w-full rounded-lg" />
           ))}
         </div>
+      ) : error ? (
+        <LoadError error={error} />
       ) : order.length === 0 ? (
         <p className="text-muted-foreground p-8 text-center text-sm">{t("stages.empty")}</p>
       ) : (
@@ -628,23 +644,30 @@ function PipelineDialog({
   const submit = async () => {
     setTouched(true);
     if (invalid) return;
+    let pipeline: Pipeline;
     try {
-      const pipeline = await create({
+      pipeline = await create({
         name: name.trim(),
         code: code.trim(),
-        rotten_days: Math.max(0, Math.round(Number(rottenDays) || 30)),
+        // 0 means never stale; an empty field keeps the 30-day default.
+        rotten_days:
+          rottenDays.trim() === "" ? 30 : Math.max(0, Math.round(Number(rottenDays) || 0)),
         // The DM keeps one default: created plain, then swapped in below.
         is_default: isDefault && !currentDefault,
       }).unwrap();
-      if (isDefault && currentDefault) {
-        await update({ id: currentDefault.id, body: { is_default: false } }).unwrap();
-        await update({ id: pipeline.id, body: { is_default: true } }).unwrap();
-      }
-      toast.success(t("pipelines.created", { name: pipeline.name }));
-      onCreated?.(pipeline.id);
-      onOpenChange(false);
     } catch (err) {
       toastSettingsError(err);
+      return;
+    }
+    toast.success(t("pipelines.created", { name: pipeline.name }));
+    onCreated?.(pipeline.id);
+    onOpenChange(false);
+    if (isDefault && currentDefault) {
+      try {
+        await swapDefault(update, currentDefault, pipeline);
+      } catch (err) {
+        toastSettingsError(err);
+      }
     }
   };
 

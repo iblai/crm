@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ActivityIcon } from "@/components/crm/activity-icon";
 import { InfoTip } from "@/components/crm/info-tip";
+import { LoadError } from "@/components/crm/load-error";
 import { ActivityTypeBadge } from "@/components/crm/badges";
 import { SimpleSelect } from "@/components/crm/simple-select";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
@@ -40,15 +41,16 @@ import {
   formatTime,
   scheduleState,
 } from "@/lib/crm/format";
+import { isAutoStageNote } from "@/lib/crm/activities";
 import { useCrmEnums } from "@/lib/crm/i18n";
 import type { Activity, ActivityType } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
 
 /**
- * The activity timeline of a person or a deal: quick-log composer on top,
- * then open work (scheduled, overdue) and the history (done, notes, the
- * auto-recorded "Stage changed" entries) below. Works for both hosts —
- * pass `person` (UUID) and/or `deal` (id).
+ * The activity timeline of a person, a deal or an organization: quick-log
+ * composer on top, then open work (scheduled, overdue) and the history (done,
+ * notes, the DM's own "Stage changed" entries) below. Pass `person` (UUID),
+ * `deal` (id) or `organization` (UUID).
  */
 export function ActivityTimeline({
   person,
@@ -66,7 +68,7 @@ export function ActivityTimeline({
 }) {
   const t = useTranslations("activities");
   const tc = useTranslations("common");
-  const { data, isLoading } = useListActivitiesQuery(
+  const { data, isLoading, error } = useListActivitiesQuery(
     { person: deal ? undefined : person, deal, organization, page_size: 100 },
     { skip: !person && !deal && !organization },
   );
@@ -102,7 +104,9 @@ export function ActivityTimeline({
         </div>
       ) : null}
 
-      {!isLoading && open.length === 0 && done.length === 0 ? (
+      {error ? <LoadError error={error} /> : null}
+
+      {!isLoading && !error && open.length === 0 && done.length === 0 ? (
         <p className="text-muted-foreground rounded-lg border border-dashed border-gray-200 bg-white p-6 text-center text-sm">
           {t("timeline.empty")}
         </p>
@@ -171,7 +175,7 @@ export function ActivityRow({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const at = activity.schedule_from;
   // The stage-change note the DM writes itself: read-only.
-  const isAutoNote = activity.type === "note" && activity.title === "Stage changed";
+  const isAutoNote = isAutoStageNote(activity);
   const { kind } = scheduleState(at, !!activity.is_done);
   const scheduleText =
     kind === "unscheduled"
@@ -211,7 +215,7 @@ export function ActivityRow({
               activity.is_done && "text-gray-500 line-through decoration-gray-300",
             )}
           >
-            {activity.title}
+            {isAutoNote ? t("timeline.stageChanged") : activity.title}
           </span>
           <ActivityTypeBadge type={activity.type} />
           {activity.is_done ? (

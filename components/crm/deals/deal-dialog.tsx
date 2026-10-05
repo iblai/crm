@@ -193,7 +193,7 @@ export function DealDialog({
               value={personId || null}
               onChange={(id, hit) => {
                 setPersonId(id ?? "");
-                if (hit?.organization && !organizationId) setOrganizationId(hit.organization);
+                if (hit?.organization) setOrganizationId(hit.organization);
               }}
               placeholder={t("dialog.personPlaceholder")}
               invalid={touched && !personId}

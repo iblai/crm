@@ -4,13 +4,15 @@
  * Every request carries the signed-in user's DM session token
  * (`Authorization: Token <dm_token>`), exactly like the OS talks to the Data
  * Manager. The Platform (organization) is inferred from the token — there is
- * no `?platform_key=` — so switching organizations re-authenticates and this
- * slice's cache is reset by the org-scoped `tenantKey` we thread through
- * `providesTags`/`invalidatesTags` and by a full `resetApiState` on switch.
+ * no `?platform_key=`. Switching organizations is a full navigation, which
+ * rebuilds this store; a tab left on another organization's URL is caught in
+ * `baseQuery` before it can send that token anywhere.
  */
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery, type FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import config from "@/lib/iblai/config";
 import { LOCAL_STORAGE_KEYS } from "@/lib/iblai/auth-utils";
+import { readCurrentTenantKey, tenantMismatch } from "@/lib/iblai/tenant";
+import { detailFromBody } from "./errors";
 import type {
   Activity,
   ActivityInput,
@@ -104,29 +106,20 @@ const rawBaseQuery = fetchBaseQuery({
 
 /** Normalize errors to `{ status, detail }` so the UI can toast them. */
 const baseQuery: typeof rawBaseQuery = async (args, api, extra) => {
+  // A stale tab: the URL names one organization, the session holds another's
+  // token. Never send it — follow the session, as a tenant mismatch does.
+  if (
+    typeof window !== "undefined" &&
+    tenantMismatch(window.location.pathname, readCurrentTenantKey())
+  ) {
+    window.location.href = "/";
+    const error: FetchBaseQueryError = { status: "CUSTOM_ERROR", error: "organization changed" };
+    return { error };
+  }
   const result = await rawBaseQuery(args, api, extra);
   if (result.error) {
     const data = result.error.data as unknown;
-    let detail = "Something went wrong";
-    if (typeof data === "string" && data.trim()) detail = data;
-    else if (data && typeof data === "object") {
-      const d = data as Record<string, unknown>;
-      if (typeof d.detail === "string") detail = d.detail;
-      else if (Array.isArray(d.detail)) detail = d.detail.join(" ");
-      else if (typeof d.message === "string") detail = d.message;
-      else if (typeof d.error === "string") detail = d.error;
-      else {
-        // DRF field errors: { field: ["msg"] }
-        const first = Object.entries(d)[0];
-        if (first) {
-          const [field, msgs] = first;
-          const msg = Array.isArray(msgs) ? msgs.join(" ") : String(msgs);
-          detail = `${field}: ${msg}`;
-        }
-      }
-    } else if (result.error.status === "FETCH_ERROR") {
-      detail = "Network error — check your connection.";
-    }
+    const detail = detailFromBody(data);
     const status = result.error.status;
     if (status === 401 && typeof window !== "undefined") {
       // Session expired: the SDK's 401 handler signs the user in again.
@@ -164,7 +157,10 @@ export const crmApi = createApi({
       invalidatesTags: (_r, _e, { id }) => [
         { type: "Person", id },
         { type: "Person", id: LIST },
+        { type: "Deal", id: LIST },
+        { type: "Favorite", id: LIST },
         { type: "History", id: `person-${id}` },
+        "Board",
       ],
     }),
     deletePerson: builder.mutation<void, string>({
@@ -199,6 +195,7 @@ export const crmApi = createApi({
         { type: "Person", id },
         { type: "Person", id: LIST },
         { type: "History", id: `person-${id}` },
+        "Overview",
       ],
     }),
     mergePersons: builder.mutation<PersonMergeResponse, PersonMergeRequest>({
@@ -209,6 +206,8 @@ export const crmApi = createApi({
         { type: "Deal", id: LIST },
         { type: "Activity", id: LIST },
         { type: "Favorite", id: LIST },
+        "Board",
+        "Overview",
       ],
     }),
     attachPersonTag: builder.mutation<TagAttachResponse, { id: string; tag_id: number }>({
@@ -237,7 +236,11 @@ export const crmApi = createApi({
     // --------------------------------------------------------------- Search
     search: builder.query<SearchResponse, { q: string; limit?: number }>({
       query: (params) => ({ url: "/search/", params: cleanParams(params) }),
-      providesTags: ["Person", "Organization", "Deal"],
+      providesTags: [
+        { type: "Person", id: LIST },
+        { type: "Organization", id: LIST },
+        { type: "Deal", id: LIST },
+      ],
     }),
 
     // ------------------------------------------------------------- Overview
@@ -264,7 +267,11 @@ export const crmApi = createApi({
       invalidatesTags: (_r, _e, { id }) => [
         { type: "Organization", id },
         { type: "Organization", id: LIST },
+        { type: "Person", id: LIST },
+        { type: "Deal", id: LIST },
+        { type: "Favorite", id: LIST },
         { type: "History", id: `organization-${id}` },
+        "Board",
       ],
     }),
     deleteOrganization: builder.mutation<void, string>({
@@ -316,7 +323,7 @@ export const crmApi = createApi({
     }),
     createPipeline: builder.mutation<Pipeline, PipelineInput>({
       query: (body) => ({ url: "/pipelines/", method: "POST", body }),
-      invalidatesTags: [{ type: "Pipeline", id: LIST }],
+      invalidatesTags: [{ type: "Pipeline", id: LIST }, "Board", "Overview"],
     }),
     updatePipeline: builder.mutation<Pipeline, { id: number; body: PipelineInput }>({
       query: ({ id, body }) => ({ url: `/pipelines/${id}/`, method: "PATCH", body }),
@@ -329,7 +336,7 @@ export const crmApi = createApi({
     }),
     deletePipeline: builder.mutation<void, number>({
       query: (id) => ({ url: `/pipelines/${id}/`, method: "DELETE" }),
-      invalidatesTags: [{ type: "Pipeline", id: LIST }],
+      invalidatesTags: [{ type: "Pipeline", id: LIST }, "Board", "Overview"],
     }),
     listStages: builder.query<Paginated<PipelineStage>, { pipeline: number; page_size?: number }>({
       query: ({ pipeline, ...params }) => ({
@@ -397,7 +404,7 @@ export const crmApi = createApi({
     listLeadSources: builder.query<Paginated<LeadSource>, LeadSourceListParams | void>({
       query: (params) => ({
         url: "/lead-sources/",
-        params: cleanParams({ page_size: 100, ...(params ?? {}) }),
+        params: cleanParams({ page_size: 100, ...params }),
       }),
       providesTags: (res) => listTags("LeadSource", res?.results),
     }),
@@ -449,6 +456,7 @@ export const crmApi = createApi({
       invalidatesTags: (_r, _e, { id }) => [
         { type: "Deal", id },
         { type: "Deal", id: LIST },
+        { type: "Favorite", id: LIST },
         { type: "History", id: `deal-${id}` },
         "Board",
         "Overview",
@@ -552,7 +560,7 @@ export const crmApi = createApi({
     listTags: builder.query<Paginated<Tag>, TagListParams | void>({
       query: (params) => ({
         url: "/tags/",
-        params: cleanParams({ page_size: 100, ...(params ?? {}) }),
+        params: cleanParams({ page_size: 100, ...params }),
       }),
       providesTags: (res) => listTags("Tag", res?.results),
     }),
@@ -565,28 +573,22 @@ export const crmApi = createApi({
       invalidatesTags: (_r, _e, { id }) => [
         { type: "Tag", id },
         { type: "Tag", id: LIST },
-        { type: "Person", id: LIST },
-        { type: "Organization", id: LIST },
-        { type: "Deal", id: LIST },
+        "Person",
+        "Organization",
+        "Deal",
         "Board",
       ],
     }),
     deleteTag: builder.mutation<void, number>({
       query: (id) => ({ url: `/tags/${id}/`, method: "DELETE" }),
-      invalidatesTags: [
-        { type: "Tag", id: LIST },
-        { type: "Person", id: LIST },
-        { type: "Organization", id: LIST },
-        { type: "Deal", id: LIST },
-        "Board",
-      ],
+      invalidatesTags: [{ type: "Tag", id: LIST }, "Person", "Organization", "Deal", "Board"],
     }),
 
     // ----------------------------------------------------------- Favorites
     listFavorites: builder.query<Paginated<Favorite>, FavoriteInput | void>({
       query: (params) => ({
         url: "/favorites/",
-        params: cleanParams({ page_size: 100, ...(params ?? {}) }),
+        params: cleanParams({ page_size: 100, ...params }),
       }),
       providesTags: (res) => listTags("Favorite", res?.results),
     }),
@@ -603,7 +605,7 @@ export const crmApi = createApi({
     listSavedViews: builder.query<Paginated<SavedView>, { object_type?: SavedViewObject } | void>({
       query: (params) => ({
         url: "/views/",
-        params: cleanParams({ page_size: 100, ...(params ?? {}) }),
+        params: cleanParams({ page_size: 100, ...params }),
       }),
       providesTags: (res) => listTags("SavedView", res?.results),
     }),
@@ -695,13 +697,13 @@ export const {
   useDeleteSavedViewMutation,
 } = crmApi;
 
-/** Read the normalized error message off an RTK Query error. */
-export function errorMessage(err: unknown, fallback = "Something went wrong"): string {
+/** The DM's own words for a failure, or the caller's translated fallback. */
+export function errorMessage(err: unknown, fallback: string): string {
   if (!err || typeof err !== "object") return fallback;
   const e = err as Partial<CrmApiError> & { error?: string; message?: string };
-  if (typeof e.detail === "string") return e.detail;
-  if (typeof e.error === "string") return e.error;
-  if (typeof e.message === "string") return e.message;
+  if (typeof e.detail === "string" && e.detail) return e.detail;
+  if (typeof e.error === "string" && e.error) return e.error;
+  if (typeof e.message === "string" && e.message) return e.message;
   return fallback;
 }
 

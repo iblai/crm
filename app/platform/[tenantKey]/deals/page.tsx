@@ -21,7 +21,6 @@ import { useDebounced } from "@/hooks/use-debounced";
 import { useDealBoardQuery, useListDealsQuery } from "@/lib/crm/api";
 import type { SavedView } from "@/lib/crm/types";
 import {
-  applyClientFilters,
   draftFrom,
   emptyDraft,
   filtersToParams,
@@ -54,9 +53,8 @@ function DealsPageContent() {
   const searchParams = useSearchParams();
 
   const [draft, setDraft] = useState<ViewDraft>(defaultDraft);
-  const [pipelineId, setPipelineId] = useState("");
+  const [pickedPipelineId, setPipelineId] = useState("");
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
   const [newOpen, setNewOpen] = useState(false);
   const [seed, setSeed] = useState<{ person?: string; organization?: string }>({});
   const q = useDebounced(search.trim());
@@ -85,15 +83,20 @@ function DealsPageContent() {
     router.replace(window.location.pathname);
   }, [searchParams, router]);
 
-  // Default to the organization's default pipeline.
-  useEffect(() => {
-    if (!pipelineId && lookups.defaultPipeline) setPipelineId(String(lookups.defaultPipeline.id));
-  }, [lookups.defaultPipeline, pipelineId]);
+  // The organization's default pipeline until the user picks another.
+  const pipelineId = pickedPipelineId || String(lookups.defaultPipeline?.id ?? "");
 
   const pipeline = lookups.pipelineById.get(Number(pipelineId));
   const serverFilters = useMemo(() => filtersToParams("deals", draft.filters), [draft.filters]);
   const ordering = sortsToOrdering("deals", draft.sorts);
   const isBoard = draft.type === "kanban";
+  const unsavedDraft = useMemo(() => defaultDraft(), []);
+
+  // A new query starts on page 1 without an effect: the page lives with its key.
+  const pagingKey = JSON.stringify([pipelineId, q, serverFilters, ordering]);
+  const [paging, setPaging] = useState({ key: pagingKey, page: 1 });
+  const page = paging.key === pagingKey ? paging.page : 1;
+  const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
 
   const {
     data: board,
@@ -103,7 +106,7 @@ function DealsPageContent() {
     {
       ...serverFilters,
       pipeline: Number(pipelineId),
-      search: q || serverFilters.search?.toString(),
+      search: [serverFilters.search, q].filter(Boolean).join(" ") || undefined,
       limit: 100,
     },
     { skip: !isBoard || !pipelineId },
@@ -116,7 +119,7 @@ function DealsPageContent() {
     {
       ...serverFilters,
       pipeline: pipelineId ? Number(pipelineId) : undefined,
-      search: q || serverFilters.search?.toString(),
+      search: [serverFilters.search, q].filter(Boolean).join(" ") || undefined,
       ordering,
       page,
       page_size: PAGE_SIZE,
@@ -124,14 +127,7 @@ function DealsPageContent() {
     { skip: isBoard },
   );
 
-  useEffect(() => {
-    setPage(1);
-  }, [pipelineId, q, serverFilters, ordering]);
-
-  const tableRows = useMemo(
-    () => applyClientFilters(tableDeals?.results ?? [], "deals", draft.filters),
-    [tableDeals, draft.filters],
-  );
+  const tableRows = tableDeals?.results ?? [];
   const visibleColumns = useMemo(
     () => draft.columns.filter((c) => c.visible).map((c) => c.id),
     [draft.columns],
@@ -217,11 +213,8 @@ function DealsPageContent() {
                 value: String(s.id),
                 label: s.name,
               }))}
-              pipelineOptions={lookups.pipelines.map((p) => ({
-                value: String(p.id),
-                label: p.name,
-              }))}
               sourceOptions={lookups.sources.map((s) => ({ value: String(s.id), label: s.name }))}
+              defaultDraft={unsavedDraft}
               canKanban
               className="basis-full"
             />

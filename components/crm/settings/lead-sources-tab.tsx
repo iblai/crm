@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { InfoTip } from "@/components/crm/info-tip";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { InlineText } from "@/components/crm/inline-field";
@@ -43,7 +44,7 @@ import type { LeadSource } from "@/lib/crm/types";
 export function LeadSourcesTab() {
   const t = useTranslations("settings");
   const tc = useTranslations("common");
-  const { data, isLoading } = useListLeadSourcesQuery({ page_size: 100 });
+  const { data, isLoading, error } = useListLeadSourcesQuery({ page_size: 100 });
   const [creating, setCreating] = useState(false);
   const sources = data?.results ?? [];
 
@@ -72,6 +73,8 @@ export function LeadSourcesTab() {
             <Skeleton key={i} className="h-11 w-full rounded-lg" />
           ))}
         </div>
+      ) : error ? (
+        <LoadError error={error} />
       ) : sources.length === 0 ? (
         <EmptyState
           icon={<Radio />}

@@ -32,15 +32,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
@@ -67,23 +67,19 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Tauri CLI
-        shell: bash
-        run: |
-          cargo install cargo-binstall --locked 2>/dev/null || true
-          cargo binstall tauri-cli --no-confirm 2>/dev/null || cargo install tauri-cli --locked
-
       - name: Override version
         if: inputs.version != ''
         shell: bash
         working-directory: src-tauri
+        env:
+          APP_VERSION: ${{ inputs.version }}
         run: |
-          sed -i.bak 's/"version": "[^"]*"/"version": "${{ inputs.version }}"/' tauri.conf.json
+          sed -i.bak "s/\"version\": \"[^\"]*\"/\"version\": \"$APP_VERSION\"/" tauri.conf.json
           rm -f tauri.conf.json.bak
-          echo "Version set to ${{ inputs.version }}"
+          echo "Version set to $APP_VERSION"
 
       - name: Build Tauri app
-        run: cargo tauri build --target ${{ matrix.rust_target }}
+        run: pnpm exec tauri build --target ${{ matrix.rust_target }}
 
       - name: Upload artifacts (macOS)
         if: runner.os == 'macOS'

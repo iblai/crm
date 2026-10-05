@@ -20,6 +20,7 @@ import { InfoTip } from "@/components/crm/info-tip";
 import { DealCard, DraggableDealCard } from "@/components/crm/deals/deal-card";
 import { errorMessage, useMoveDealStageMutation } from "@/lib/crm/api";
 import { formatCompactCurrency } from "@/lib/crm/format";
+import config from "@/lib/iblai/config";
 import type { Deal, DealBoard as DealBoardData, DealBoardStage } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
 
@@ -196,7 +197,7 @@ function BoardColumn({
     id: `stage-${stage.id}`,
     data: { stageId: stage.id },
   });
-  const currency = deals[0]?.currency || "USD";
+  const currency = deals[0]?.currency || config.defaultCurrency();
   const tone = stage.is_won ? "won" : stage.is_lost ? "lost" : "open";
   const hidden = column.has_more ? Math.max(0, column.count - deals.length) : 0;
 

@@ -56,3 +56,13 @@ next-env.d.ts
 
 # local editor / agent state
 .claude/
+CLAUDE.local.md
+
+# signing material and generated mobile projects
+*.p12
+*.p8
+*.pfx
+*.key
+*.keystore
+*.jks
+src-tauri/gen/

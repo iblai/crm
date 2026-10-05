@@ -53,6 +53,7 @@ export function LostDialog({
           <Textarea
             id="lost-reason"
             rows={3}
+            maxLength={255}
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder={t("lost.reasonPlaceholder")}

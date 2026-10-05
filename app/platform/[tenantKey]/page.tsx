@@ -21,6 +21,7 @@ import { PageHeader } from "@/components/crm/page-header";
 import { SimpleSelect } from "@/components/crm/simple-select";
 import { StatCard } from "@/components/crm/stat-card";
 import { Panel } from "@/components/crm/dashboard/panel";
+import { LoadError } from "@/components/crm/load-error";
 import { DealsByStageChart } from "@/components/crm/dashboard/deals-by-stage-chart";
 import { WonLostChart } from "@/components/crm/dashboard/won-lost-chart";
 import { UpNextList } from "@/components/crm/dashboard/up-next-list";
@@ -32,14 +33,12 @@ import {
   type DashboardPeriod,
 } from "@/components/crm/dashboard/use-dashboard-data";
 import { useSession } from "@/hooks/use-session";
-import { errorMessage } from "@/lib/crm/api";
 import { formatCompactCurrency, formatCurrency } from "@/lib/crm/format";
 
 export default function HomePage() {
   const t = useTranslations("dashboard");
   const tp = useTranslations("people");
   const tn = useTranslations("nav");
-  const tc = useTranslations("common");
   const locale = useLocale();
   const { displayName, href } = useSession();
   const [period, setPeriod] = useState<DashboardPeriod>("month");
@@ -115,12 +114,7 @@ export default function HomePage() {
       <div className="flex-1 overflow-auto">
         <div className="mx-auto w-full max-w-7xl space-y-4 p-4 md:p-6">
           {data.error ? (
-            <p
-              role="alert"
-              className="text-destructive rounded-xl border border-red-200 bg-red-50/60 p-4 text-sm"
-            >
-              {errorMessage(data.error, tc("errorGeneric"))}
-            </p>
+            <LoadError error={data.error} />
           ) : data.isEmptyOrg ? (
             <OnboardingCard />
           ) : (
@@ -197,7 +191,11 @@ export default function HomePage() {
                   title={t("panels.byStage.title")}
                   titleText={t("panels.byStage.titleText")}
                   info={t("panels.byStage.info")}
-                  description={deals?.pipeline?.name ?? t("panels.byStage.defaultPipeline")}
+                  description={
+                    deals && deals.pipeline === null
+                      ? t("panels.byStage.noPipeline")
+                      : (deals?.pipeline?.name ?? t("panels.byStage.defaultPipeline"))
+                  }
                   href={href("/deals")}
                   linkLabel={t("panels.byStage.link")}
                 >
@@ -222,14 +220,26 @@ export default function HomePage() {
                   description={t("panels.upNext.description")}
                   href={href("/activities")}
                 >
-                  <UpNextList activities={data.upNext} />
+                  {data.errors.upNext ? (
+                    <LoadError error={data.errors.upNext} />
+                  ) : (
+                    <UpNextList activities={data.upNext} />
+                  )}
                 </Panel>
                 <div className="grid min-w-0 gap-4">
                   <Panel title={t("panels.recentPeople.title")} href={href("/people")}>
-                    <RecentPeopleList people={data.recentPeople} />
+                    {data.errors.people ? (
+                      <LoadError error={data.errors.people} />
+                    ) : (
+                      <RecentPeopleList people={data.recentPeople} />
+                    )}
                   </Panel>
                   <Panel title={t("panels.recentDeals.title")} href={href("/deals")}>
-                    <RecentDealsList deals={data.recentDeals} />
+                    {data.errors.deals ? (
+                      <LoadError error={data.errors.deals} />
+                    ) : (
+                      <RecentDealsList deals={data.recentDeals} />
+                    )}
                   </Panel>
                 </div>
               </div>

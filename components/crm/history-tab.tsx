@@ -33,15 +33,29 @@ function useHistory(props: Props) {
   return deal;
 }
 
-function Diff({ changes }: { changes: NonNullable<HistoryEntry["changes"]> }) {
+type FieldNamespace = "persons" | "organizations" | "deals";
+
+function Diff({
+  changes,
+  ns,
+}: {
+  changes: NonNullable<HistoryEntry["changes"]>;
+  ns: FieldNamespace;
+}) {
   const t = useTranslations("history");
+  const tf = useTranslations("fields");
+  // The DM names columns; show the field label where one exists.
+  const label = (field: string) => {
+    const key = `${ns}.${field}` as never;
+    return tf.has(key) ? tf(key) : field;
+  };
   // The DM renders a null as the string "None".
   const show = (value: string) => (value && value !== "None" ? value : t("empty"));
   return (
     <dl className="mt-1 grid grid-cols-[minmax(0,10rem)_minmax(0,1fr)] gap-x-3 gap-y-0.5 text-xs">
       {Object.entries(changes).map(([field, [before, after]]) => (
         <div key={field} className="contents">
-          <dt className="truncate font-mono text-[11px] text-gray-500">{field}</dt>
+          <dt className="truncate text-[11px] text-gray-500">{label(field)}</dt>
           <dd className="min-w-0 text-gray-700">
             <span className="text-gray-400 line-through">{show(before)}</span>{" "}
             <span aria-hidden>→</span>{" "}
@@ -53,11 +67,13 @@ function Diff({ changes }: { changes: NonNullable<HistoryEntry["changes"]> }) {
   );
 }
 
-/** Twenty's record history: every create, field change and delete, newest first. */
+/** The record's audit entries, newest first: creation and field changes. */
 export function HistoryTab(props: Props) {
   const t = useTranslations("history");
   const locale = useLocale();
   const { data, isLoading, error } = useHistory(props);
+  const ns: FieldNamespace =
+    props.kind === "person" ? "persons" : props.kind === "organization" ? "organizations" : "deals";
 
   if (isLoading) {
     return (
@@ -93,7 +109,9 @@ export function HistoryTab(props: Props) {
               {formatRelative(entry.timestamp, locale)}
             </time>
           </div>
-          {entry.action === "update" && entry.changes ? <Diff changes={entry.changes} /> : null}
+          {entry.action === "update" && entry.changes ? (
+            <Diff changes={entry.changes} ns={ns} />
+          ) : null}
         </li>
       ))}
     </ol>

@@ -24,6 +24,7 @@ import { LifecycleBadge } from "@/components/crm/badges";
 import { useBreadcrumbs } from "@/components/crm/breadcrumbs";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
 import { FieldRow, InlineSelect, InlineText } from "@/components/crm/inline-field";
 import { OwnerSelect } from "@/components/crm/owner-select";
@@ -41,7 +42,6 @@ import {
   useDeletePersonMutation,
   useDetachPersonTagMutation,
   useGetPersonQuery,
-  useGetOrganizationQuery,
   useUpdatePersonMutation,
 } from "@/lib/crm/api";
 import { formatDateTime, formatRelative } from "@/lib/crm/format";
@@ -89,10 +89,7 @@ export default function PersonDetailPage() {
     { label: person?.name ?? t("detail.breadcrumb") },
   ]);
 
-  const { data: org } = useGetOrganizationQuery(person?.organization ?? "", {
-    skip: !person?.organization,
-  });
-  const orgName = org?.name;
+  const orgName = person?.organization_name ?? undefined;
 
   const save = async (body: PersonInput) => {
     try {
@@ -115,6 +112,14 @@ export default function PersonDetailPage() {
             </Button>
           }
         />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-0 flex-1 flex-col p-4 md:p-6">
+        <LoadError error={error} />
       </div>
     );
   }
@@ -254,7 +259,7 @@ export default function PersonDetailPage() {
                   placeholder={t("detail.addEmail")}
                   render={(v) => (
                     <a
-                      href={`mailto:${v}`}
+                      href={`mailto:${encodeURIComponent(v)}`}
                       onClick={(e) => e.stopPropagation()}
                       className="text-[#0058cc] hover:underline"
                     >

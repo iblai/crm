@@ -77,7 +77,7 @@ export function formatRelative(value?: string | null, locale?: string, now: Date
   const seconds = Math.round((d.getTime() - now.getTime()) / 1000);
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   for (const [unit, size] of RELATIVE_UNITS) {
-    if (Math.abs(seconds) >= size) return rtf.format(Math.round(seconds / size), unit);
+    if (Math.abs(seconds) >= size) return rtf.format(Math.trunc(seconds / size), unit);
   }
   return rtf.format(0, "second");
 }

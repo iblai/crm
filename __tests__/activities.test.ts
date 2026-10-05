@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { groupActivities, rangeParams } from "../lib/crm/activities";
+import { groupActivities, rangeParams, isAutoStageNote } from "../lib/crm/activities";
 import type { Activity } from "../lib/crm/types";
 
 // Wednesday 2026-10-07 15:00 local.
@@ -57,5 +57,13 @@ describe("groupActivities", () => {
     expect(ids(g.upcoming)).toEqual([7, 1]);
     expect(ids(g.unscheduled).sort()).toEqual([5, 8]);
     expect(ids(g.done)).toEqual([6]);
+  });
+});
+
+describe("isAutoStageNote", () => {
+  it("recognises the DM's own stage-change note and nothing else", () => {
+    expect(isAutoStageNote({ type: "note", title: "Stage changed" })).toBe(true);
+    expect(isAutoStageNote({ type: "note", title: "Stage changed?" })).toBe(false);
+    expect(isAutoStageNote({ type: "task", title: "Stage changed" })).toBe(false);
   });
 });

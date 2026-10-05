@@ -16,7 +16,7 @@ export default function ErrorPage() {
   const t = useTranslations("errors");
   const tc = useTranslations("common");
   const { code } = useParams<{ code: string }>();
-  const key = MESSAGES[code];
+  const key = Object.hasOwn(MESSAGES, code) ? MESSAGES[code] : undefined;
   const message = key
     ? { title: t(`${key}.title`), body: t(`${key}.body`) }
     : { title: tc("errorGeneric"), body: t("fallbackBody") };
@@ -31,7 +31,7 @@ export default function ErrorPage() {
           className="mx-auto h-8 w-auto"
         />
         <p className="text-muted-foreground mt-6 text-xs font-semibold tracking-wider uppercase">
-          {t("code", { code })}
+          {t("code", { code: key ? code : "—" })}
         </p>
         <h1 className="mt-2 text-xl font-semibold text-gray-900">{message.title}</h1>
         <p className="text-muted-foreground mt-2 text-sm">{message.body}</p>

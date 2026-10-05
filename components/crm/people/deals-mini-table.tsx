@@ -8,6 +8,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { DealStatusBadge } from "@/components/crm/badges";
 import { useSession } from "@/hooks/use-session";
 import { useListDealsQuery, useListPipelinesQuery } from "@/lib/crm/api";
@@ -35,7 +36,7 @@ export function DealsMiniTable({
   const locale = useLocale();
   const router = useRouter();
   const { href } = useSession();
-  const { data, isLoading } = useListDealsQuery(
+  const { data, isLoading, error } = useListDealsQuery(
     { person, organization, page_size: 50 },
     { skip: !person && !organization },
   );
@@ -64,6 +65,8 @@ export function DealsMiniTable({
       </div>
     );
   }
+
+  if (error) return <LoadError error={error} />;
 
   if (!deals.length) {
     return (

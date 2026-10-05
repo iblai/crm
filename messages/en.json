@@ -45,7 +45,8 @@
       "titlePlaceholder": "Intro call with the team…",
       "titleRequired": "A title is required.",
       "type": "Type",
-      "typeAbout": "About the type field"
+      "typeAbout": "About the type field",
+      "dealMismatch": "This deal belongs to another person."
     },
     "list": {
       "allHint": "All — open and done together",
@@ -106,7 +107,8 @@
       "openAbout": "About open activities",
       "openHint": "Not done yet — tick the circle to complete one",
       "viewPerson": "View person",
-      "viewOrganization": "View organization"
+      "viewOrganization": "View organization",
+      "stageChanged": "Stage changed"
     },
     "toast": {
       "created": "Activity created",
@@ -183,7 +185,8 @@
     "user": "User",
     "yes": "Yes",
     "errorLoadTitle": "Couldn’t load this",
-    "errorProtectedByDeals": "{count, plural, one {# deal still references} other {# deals still reference}} this record."
+    "errorProtectedByDeals": "{count, plural, one {# deal still references} other {# deals still reference}} this record.",
+    "errorNetwork": "No connection to the server."
   },
   "organizations": {
     "actions": {
@@ -291,7 +294,8 @@
         "link": "Open board",
         "title": "Deals by stage",
         "titleText": "deals by stage",
-        "tooltip": "{count, plural, one {# deal} other {# deals}} · {value}"
+        "tooltip": "{count, plural, one {# deal} other {# deals}} · {value}",
+        "noPipeline": "No default pipeline — set one in Settings."
       },
       "recentDeals": {
         "empty": "No deals yet.",
@@ -342,7 +346,7 @@
       },
       "people": {
         "hint": "contacts on record",
-        "info": "Every contact in this organization.",
+        "info": "Every active contact in this organization.",
         "label": "People",
         "labelText": "people"
       },
@@ -593,7 +597,13 @@
       "stage": "Stage",
       "status": "Status",
       "tags": "Tags",
-      "title": "Title"
+      "title": "Title",
+      "description": "Description",
+      "currency": "Currency",
+      "lost_reason": "Lost reason",
+      "closed_at": "Closed",
+      "pipeline": "Pipeline",
+      "metadata": "Custom fields"
     },
     "filterByTag": "Filter by tag",
     "organizations": {
@@ -601,7 +611,9 @@
       "name": "Name",
       "owner": "Owner",
       "tags": "Tags",
-      "updated_at": "Updated"
+      "updated_at": "Updated",
+      "address": "Address",
+      "metadata": "Custom fields"
     },
     "owner": {
       "me": "Me",
@@ -623,7 +635,12 @@
       "owner": "Owner",
       "primary_email": "Email",
       "tags": "Tags",
-      "updated_at": "Updated"
+      "updated_at": "Updated",
+      "emails": "Other emails",
+      "contact_numbers": "Phone numbers",
+      "unique_id": "External id",
+      "platform_user": "Linked user",
+      "metadata": "Custom fields"
     },
     "saveError": "Could not save this change",
     "select": "Select…",
@@ -713,7 +730,7 @@
       "commaSeparated": "Comma-separated.",
       "delete": "Delete person",
       "deleteError": "Could not delete this person",
-      "deleteHint": "A person with deals cannot be deleted; move or delete their deals first. Their activities and tag assignments go with them.",
+      "deleteHint": "A person with deals cannot be deleted; merge the person or delete their deals first. Their activities and tag assignments go with them.",
       "deleteTitle": "Delete {name}?",
       "externalId": "External id",
       "externalIdHint": "Id from another system, unique per organization.",
@@ -731,7 +748,7 @@
       "needsEmail": "Add a primary email first",
       "noDeals": "No deal is open with {name} yet.",
       "notFound": "This person no longer exists",
-      "notFoundHint": "The record may have been deleted or merged into another person.",
+      "notFoundHint": "The record may have been deleted by someone on your team.",
       "openOrganization": "Open organization",
       "openOrganizationNamed": "Open {name}",
       "otherEmails": "Other emails",
@@ -776,7 +793,8 @@
       "manualPlaceholder": "e.g. 4821",
       "submit": "Link user",
       "title": "Link to a platform user",
-      "alreadyLinked": "This person is already linked to another user."
+      "alreadyLinked": "This person is already linked to another user.",
+      "notMember": "Not a member of this organization yet — invite them instead."
     },
     "list": {
       "addFirst": "Add your first person",
@@ -786,14 +804,14 @@
       "loading": "Loading people",
       "noMatchFilters": "No people match these filters",
       "noMatchFiltersHint": "Try a different lifecycle stage, owner or tag.",
-      "noMatchSearch": "Nothing on this page matches “{query}”",
-      "noMatchSearchHint": "Search only looks at the people loaded on this page. Try another page or clear the search.",
+      "noMatchSearch": "No one matches “{query}”",
+      "noMatchSearchHint": "Search looks at every person’s name, email, title and external id. Try another spelling or clear the search.",
       "paginationLabel": "people",
       "searchLabel": "Search people",
-      "searchPlaceholder": "Search this page by name, email, title…"
+      "searchPlaceholder": "Search by name, email, title…"
     },
     "merge": {
-      "confirm": "Merge and delete duplicates",
+      "confirm": "Merge duplicates",
       "confirmBody": "{count, plural, one {# duplicate} other {# duplicates}} will be folded into {name} and marked inactive. This cannot be undone.",
       "confirmTitle": "Merge these records?",
       "description": "Pick the duplicate records. Their deals, activities and tags move onto {name}, and the duplicates are marked inactive.",
@@ -997,14 +1015,9 @@
     "no": "No",
     "op": {
       "contains": "contains",
-      "gte": "is at least",
       "is": "is",
-      "isAfter": "is after",
-      "isBefore": "is before",
-      "isEmpty": "is empty",
-      "isNot": "is not",
-      "isNotEmpty": "is not empty",
-      "lte": "is at most"
+      "isAfter": "is on or after",
+      "isBefore": "is on or before"
     },
     "operand": "Condition",
     "pickerTitle": "Views",
