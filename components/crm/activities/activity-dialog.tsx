@@ -29,6 +29,7 @@ import {
   errorMessage,
   errorStatus,
   useCreateActivityMutation,
+  useGetDealQuery,
   useListDealsQuery,
   useUpdateActivityMutation,
 } from "@/lib/crm/api";
@@ -130,15 +131,23 @@ export function ActivityDialog({
     setTouched(false);
   }, [open, activity, userId, defaultPerson, defaultDeal, defaultOrganization]);
 
-  const { data: deals } = useListDealsQuery(
+  const { currentData: deals } = useListDealsQuery(
     { page_size: 100, status: "open", person: draft.person || undefined },
     { skip: !open },
   );
 
-  const dealOptions = useMemo(
-    () => (deals?.results ?? []).map((d) => ({ value: String(d.id), label: d.title })),
-    [deals],
-  );
+  // The picked deal itself: the open list above holds one person's deals only.
+  const { currentData: pickedDeal } = useGetDealQuery(Number(draft.deal), {
+    skip: !open || !draft.deal,
+  });
+
+  const dealOptions = useMemo(() => {
+    const options = (deals?.results ?? []).map((d) => ({ value: String(d.id), label: d.title }));
+    if (pickedDeal && !options.some((o) => o.value === String(pickedDeal.id))) {
+      options.unshift({ value: String(pickedDeal.id), label: pickedDeal.title });
+    }
+    return options;
+  }, [deals, pickedDeal]);
 
   const set = <K extends keyof DraftState>(key: K, value: DraftState[K]) =>
     setDraft((d) => ({ ...d, [key]: value }));
@@ -146,7 +155,6 @@ export function ActivityDialog({
   const titleMissing = !draft.title.trim();
   const linkMissing = !draft.person && !draft.deal && !draft.organization;
   // The DM refuses a deal whose person is not the chosen person.
-  const pickedDeal = deals?.results.find((d) => String(d.id) === draft.deal);
   const dealMismatch = !!pickedDeal && !!draft.person && pickedDeal.person !== draft.person;
   const invalid = titleMissing || linkMissing || dealMismatch;
 
@@ -243,7 +251,12 @@ export function ActivityDialog({
             <SearchPicker
               kind="person"
               value={draft.person || null}
-              onChange={(id) => set("person", id ?? "")}
+              onChange={(id) => {
+                const person = id ?? "";
+                // A deal of someone else cannot stay picked.
+                const keep = !person || !pickedDeal || pickedDeal.person === person;
+                setDraft((d) => ({ ...d, person, deal: keep ? d.deal : "" }));
+              }}
               placeholder={t("dialog.noPerson")}
               size="sm"
               className="h-8"

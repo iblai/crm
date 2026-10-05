@@ -20,22 +20,27 @@ export function LanguageMenu({ className }: { className?: string }) {
   const tc = useTranslations("common");
   const { username } = useSession();
   const { updateProfile } = useUserProfileUpdate(username);
-  const { data: userMetadata } = useGetUserMetadataQuery(
+  const { data: userMetadata, isLoading: metadataLoading } = useGetUserMetadataQuery(
     { params: { username } },
     { skip: !username },
   );
   const choose = async (value: string) => {
-    const next = syncLanguageCookies(value);
-    router.refresh();
-    if (!username) return;
-    // The profile is the language of record (the OS re-applies it on load).
-    const current = (userMetadata as { public_metadata?: Record<string, unknown> } | undefined)
-      ?.public_metadata;
+    // The profile is the language of record; cookies only when there is none.
+    if (!username || !userMetadata) {
+      syncLanguageCookies(value);
+      router.refresh();
+      return;
+    }
+    const current = (userMetadata as { public_metadata?: Record<string, unknown> }).public_metadata;
     try {
-      await updateProfile({ public_metadata: { ...current, language: next } });
+      await updateProfile({ public_metadata: { ...current, language: value } });
     } catch (err) {
       toast.error(errorMessage(err, tc("errorGeneric")));
+      return;
     }
+    // Saved; this tab follows at once and the sync finds nothing left to do.
+    syncLanguageCookies(value);
+    router.refresh();
   };
   return (
     <Tooltip>
@@ -46,6 +51,7 @@ export function LanguageMenu({ className }: { className?: string }) {
             <span className="sr-only">{t("label")}</span>
             <select
               value={locale}
+              disabled={metadataLoading}
               onChange={(event) => void choose(event.target.value)}
               className="h-8 cursor-pointer rounded-md border border-transparent bg-transparent pr-1 text-xs text-[#4a5568] hover:bg-[#f0f4fa] focus-visible:border-[#0058cc] focus-visible:outline-none"
             >

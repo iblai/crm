@@ -193,3 +193,11 @@ export function isDirty(draft: ViewDraft, saved?: SavedView, unsavedBase?: ViewD
   });
   return JSON.stringify(pick(draft)) !== JSON.stringify(pick(base));
 }
+
+/** The operator a new filter on `field` gets, or null once the field is fully filtered. */
+export function nextFilterOp(field: FieldDef, filters: ViewFilter[]): FilterOp | null {
+  if (field.filter === false) return null;
+  const used = new Set(filters.filter((f) => f.field === field.id).map((f) => f.op));
+  // "contains" terms AND through `search`; any other operator is one per field.
+  return FILTER_OPERANDS[field.kind].find((op) => op === "contains" || !used.has(op)) ?? null;
+}

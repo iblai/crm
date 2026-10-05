@@ -96,15 +96,11 @@ async function swapDefault(update: UpdatePipeline, from: Pipeline, to: Pipeline)
   try {
     await update({ id: to.id, body: { is_default: true } }).unwrap();
   } catch (err) {
-    await update({ id: from.id, body: { is_default: true } })
-      .unwrap()
-      .catch(() => undefined);
+    // A failed rollback leaves no default; that error speaks instead.
+    await update({ id: from.id, body: { is_default: true } }).unwrap();
     throw err;
   }
 }
-
-const sameOrder = (a: PipelineStage[], b: PipelineStage[]) =>
-  a.length === b.length && a.every((s, i) => s.id === b[i]?.id);
 
 function terminalBody(value: Terminal) {
   return { is_won: value === "won", is_lost: value === "lost" };
@@ -381,15 +377,23 @@ function PipelineEditor({
 function StagesEditor({ pipeline }: { pipeline: Pipeline }) {
   const t = useTranslations("settings");
   const toastSettingsError = useToastSettingsError();
-  const { currentData: data, isLoading, error } = useListStagesQuery({ pipeline: pipeline.id });
+  const {
+    currentData: data,
+    isLoading,
+    isFetching,
+    error,
+  } = useListStagesQuery({ pipeline: pipeline.id });
   const [reorderStages] = useReorderStagesMutation();
   const [adding, setAdding] = useState(false);
-  // The drag's order until the server shows the same; `null` is the server's.
-  const [optimistic, setOptimistic] = useState<PipelineStage[] | null>(null);
+  // The drag's order, kept only for the server list it was made from.
+  const [optimistic, setOptimistic] = useState<{
+    base: PipelineStage[];
+    next: PipelineStage[];
+  } | null>(null);
   const [reordering, setReordering] = useState(false);
 
   const stages = useMemo(() => sortStages(data?.results ?? []), [data]);
-  const order = optimistic && !sameOrder(optimistic, stages) ? optimistic : stages;
+  const order = optimistic?.base === stages ? optimistic.next : stages;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -398,12 +402,13 @@ function StagesEditor({ pipeline }: { pipeline: Pipeline }) {
 
   const onDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-    if (!over || active.id === over.id) return;
+    // A drag during a save or its refetch would race the server order.
+    if (!over || active.id === over.id || reordering || isFetching) return;
     const from = order.findIndex((s) => s.id === active.id);
     const to = order.findIndex((s) => s.id === over.id);
     if (from < 0 || to < 0) return;
     const next = arrayMove(order, from, to);
-    setOptimistic(next);
+    setOptimistic({ base: stages, next });
     setReordering(true);
     try {
       await reorderStages({ pipeline: pipeline.id, order: next.map((s) => s.id) }).unwrap();

@@ -10,8 +10,8 @@
 - Organizations get a timeline (activities attach to an organization), favorites star people / organizations / deals into the sidebar, saved views on People, Organizations and Deals (filters and sorts; columns on People and Deals; table or board on Deals), a History tab with field-level changes on people, organizations and deals, and one-call stage reordering in Settings.
 - Message keys are type-checked against `messages/en.json` (`global.d.ts`), so a missing translation fails `pnpm typecheck`.
 - Deal cards and tables read `person_name` / `organization_name` from the DM and the people table `organization_name` (no first-100 lookups); the star asks `/favorites/?person=` instead of scanning; Settings opens to CRM Managers by role; lists, the board, history and pickers show the DM's error instead of an empty state; the default pipeline can be changed (one default at a time); saved-view filters only offer what the DM filters; copy follows what the DM does on delete, merge and link.
-- CI: `pnpm lint` under a warning budget, `pnpm test:coverage` with an 85 % line gate on the pure `lib/` modules, the i18n check refusing “tenant” / “company” wording and ASCII apostrophes, GitHub actions on their Node 24 majors.
-- Requires ibl-dm-pro 4.415.0 (`ibl-dm-crm-app` 1.3.0).
+- CI: `pnpm lint` under a warning budget, `pnpm test:coverage` with an 85 % line gate on the pure `lib/` modules, the i18n check refusing “tenant” / “company” wording and ASCII apostrophes, `checkout`, `setup-node` and `pnpm/action-setup` on their Node 24 majors, every action pinned to a commit; release builds run without caches.
+- Requires ibl-dm-pro 4.416.0 (`ibl-dm-crm-app` 1.3.0).
 
 ## 0.1.0 — 2026-09-21
 

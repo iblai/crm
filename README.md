@@ -195,8 +195,10 @@ ibl.ai/crm is a front end for the ibl.ai platform. The platform provides sign-in
 
    ```bash
    docker build -t iblai-crm .
-   docker run -p 3000:3000 --env-file .env.local iblai-crm
+   docker run -p 3000:3000 iblai-crm
    ```
+
+   `NEXT_PUBLIC_*` values are inlined at build time and `.env*` files stay out of the image, so a self-hosted platform passes its URLs as build arguments: `--build-arg NEXT_PUBLIC_API_BASE_URL=https://api.example.com --build-arg NEXT_PUBLIC_AUTH_URL=https://login.example.com --build-arg NEXT_PUBLIC_PLATFORM_BASE_DOMAIN=example.com` (omit them for hosted `iblai.app`). The Dockerfile declares these three and `NEXT_PUBLIC_MAIN_TENANT_KEY`; any other `NEXT_PUBLIC_*` setting needs an `ARG` of its own there.
 
    The build emits a self-contained server under `.next/standalone/` (Next.js [standalone output](https://nextjs.org/docs/app/api-reference/config/next-config-js/output)).
 
@@ -204,7 +206,7 @@ ibl.ai/crm is a front end for the ibl.ai platform. The platform provides sign-in
 
 ### Option B: Self-hosted platform
 
-Set the service URLs in `.env.local` (see [Configuration](#configuration)). If you need the full backend, reach out at [ibl.ai/contact](https://ibl.ai/contact) for an enterprise license and deploy it with [iblai/iblai-infra-cli](https://github.com/iblai/iblai-infra-cli).
+Set the service URLs in `.env.local` for `pnpm dev` and `pnpm build`, or as Docker build arguments (above); see [Configuration](#configuration). If you need the full backend, reach out at [ibl.ai/contact](https://ibl.ai/contact) for an enterprise license and deploy it with [iblai/iblai-infra-cli](https://github.com/iblai/iblai-infra-cli).
 
 ### Every surface, on your own backend
 
@@ -292,7 +294,7 @@ Sign-in is the platform's hosted round trip (`login.<domain>/login?app=mentor&re
 
 ### The CRM API
 
-Ten Platform-scoped resources under `/dm/api/crm/`: persons, organizations, pipelines (with nested stages and `stages/reorder/`), lead-sources, deals (`move-stage/`, `won/`, `lost/`, the `board/`), activities (`done/`), tags (attach / detach on persons, organizations, deals), favorites and saved views — plus `search/`, `overview/` and `…/{id}/history/`, and `?search=` / `?ordering=` / `?date_filter=` on every list. Every organization is seeded with a default pipeline, six stages and four lead sources. The full contract lives in the [`iblai-api-crm`](https://github.com/iblai/vibe/tree/main/skills/organizations/iblai-api-crm) and [`iblai-vibe-crm-overview`](https://github.com/iblai/vibe/tree/main/skills/organizations/iblai-vibe-crm-overview) skills of [iblai/vibe](https://github.com/iblai/vibe). This release needs ibl-dm-pro 4.415.0 (`ibl-dm-crm-app` 1.3.0).
+Ten Platform-scoped resources under `/dm/api/crm/`: persons, organizations, pipelines (with nested stages and `stages/reorder/`), lead-sources, deals (`move-stage/`, `won/`, `lost/`, the `board/`), activities (`done/`), tags (attach / detach on persons, organizations, deals), favorites and saved views — plus `search/`, `overview/` and `…/{id}/history/`, and `?search=` / `?ordering=` / `?date_filter=` on every list. Every organization is seeded with a default pipeline, six stages and four lead sources. The full contract lives in the [`iblai-api-crm`](https://github.com/iblai/vibe/tree/main/skills/organizations/iblai-api-crm) and [`iblai-vibe-crm-overview`](https://github.com/iblai/vibe/tree/main/skills/organizations/iblai-vibe-crm-overview) skills of [iblai/vibe](https://github.com/iblai/vibe). This release needs ibl-dm-pro 4.416.0 (`ibl-dm-crm-app` 1.3.0).
 
 ---
 

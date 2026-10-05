@@ -88,7 +88,7 @@ under `lib/` at 85 % lines (`vitest.config.ts`).
 
 Then open the page you touched and take a screenshot for the PR.
 `pnpm screenshots` regenerates the README captures in `docs/images/` from the
-Playwright session (`pnpm exec playwright test --project=setup-chromium` once,
+Playwright session (`pnpm exec playwright test --config e2e/playwright.config.ts --project=setup-chromium` once,
 with your credentials in `e2e/.env.development`).
 
 ## Native shell

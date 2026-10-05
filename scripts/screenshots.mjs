@@ -3,8 +3,8 @@
  * Capture the README screenshots (docs/images/*.png) from a signed-in session.
  *
  * 1. Put your credentials in e2e/.env.development (copy the example).
- * 2. Run the auth setup once:  pnpm exec playwright test --project=setup-chromium
- * 3. pnpm screenshots [--org <org-key>] [--host http://localhost:3000]
+ * 2. Run the auth setup once:  pnpm exec playwright test --config e2e/playwright.config.ts --project=setup-chromium
+ * 3. pnpm screenshots --org <demo-org-key> [--host http://localhost:3000]
  *
  * Uses the storage state saved by e2e/auth.setup.ts, so no credentials pass
  * through this script.
@@ -22,8 +22,17 @@ const host = opt("--host", process.env.APP_HOST || "http://localhost:3000");
 const stateFile = opt("--state", "playwright/.auth/user-setup-chromium.json");
 if (!fs.existsSync(stateFile)) {
   console.error(
-    `No saved session at ${stateFile}. Run: pnpm exec playwright test --project=setup-chromium`,
+    `No saved session at ${stateFile}. Run: pnpm exec playwright test --config e2e/playwright.config.ts --project=setup-chromium`,
   );
+  process.exit(1);
+}
+
+// Name the organization: the captures land in the README, so only a seeded
+// demo organization may ever be photographed — never whichever one the saved
+// session happens to open.
+const org = opt("--org", "");
+if (!org) {
+  console.error("Pass --org <demo-org-key>; the captures are committed to docs/images.");
   process.exit(1);
 }
 
@@ -37,14 +46,6 @@ const page = await context.newPage();
 
 await page.goto(host, { waitUntil: "networkidle" });
 await page.waitForURL((u) => /\/platform\/[^/]+/.test(u.pathname), { timeout: 60_000 });
-// Name the organization: the captures land in the README, so only a seeded
-// demo organization may ever be photographed — never whichever one the saved
-// session happens to open.
-const org = opt("--org", "");
-if (!org) {
-  console.error("Pass --org <demo-org-key>; the captures are committed to docs/images.");
-  process.exit(1);
-}
 const base = `${host}/platform/${encodeURIComponent(org)}`;
 fs.mkdirSync("docs/images", { recursive: true });
 

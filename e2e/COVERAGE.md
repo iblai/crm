@@ -13,4 +13,4 @@ it in sync when user-facing behavior changes.
 Run: `pnpm test:e2e` (all browsers), `pnpm test:e2e:ui`, `pnpm test:e2e:headed`.
 Credentials go in `e2e/.env.development` (copy the example).
 
-S5 and C6–C10 need a DM with the CRM 1.3.0 endpoints (DM 4.415.0).
+S5 and C6–C10 need a DM with the CRM 1.3.0 endpoints (DM 4.416.0).

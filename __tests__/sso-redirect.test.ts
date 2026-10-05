@@ -18,6 +18,7 @@ describe("resolveSsoRedirectPath", () => {
     expect(resolveSsoRedirectPath("@evil.example", {}, "")).toBe("/");
     expect(resolveSsoRedirectPath("//evil.example", {}, "")).toBe("/");
     expect(resolveSsoRedirectPath("https://evil.example/", {}, "")).toBe("/");
+    expect(resolveSsoRedirectPath("/\t/evil.example", {}, "")).toBe("/");
   });
 
   it("refuses the same when it arrives as the explicit path too", () => {

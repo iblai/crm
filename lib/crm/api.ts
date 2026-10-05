@@ -6,7 +6,8 @@
  * Manager. The Platform (organization) is inferred from the token — there is
  * no `?platform_key=`. Switching organizations is a full navigation, which
  * rebuilds this store; a tab left on another organization's URL is caught in
- * `baseQuery` before it can send that token anywhere.
+ * `baseQuery` before this slice sends that token anywhere (the SDK's own
+ * requests are not covered).
  */
 import { createApi, fetchBaseQuery, type FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import config from "@/lib/iblai/config";
@@ -113,7 +114,8 @@ const baseQuery: typeof rawBaseQuery = async (args, api, extra) => {
     tenantMismatch(window.location.pathname, readCurrentTenantKey())
   ) {
     window.location.href = "/";
-    const error: FetchBaseQueryError = { status: "CUSTOM_ERROR", error: "organization changed" };
+    // No detail: the caller's translated fallback shows while the navigation lands.
+    const error: FetchBaseQueryError = { status: "CUSTOM_ERROR", error: "" };
     return { error };
   }
   const result = await rawBaseQuery(args, api, extra);

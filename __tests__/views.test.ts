@@ -8,6 +8,7 @@ import {
   emptyDraft,
   filtersToParams,
   isDirty,
+  nextFilterOp,
   resolveColumns,
   sortsToOrdering,
 } from "../lib/crm/views";
@@ -167,5 +168,26 @@ describe("older saved views", () => {
     const board = { ...emptyDraft("deals"), type: "kanban" as const };
     expect(isDirty(board)).toBe(true);
     expect(isDirty(board, undefined, board)).toBe(false);
+  });
+});
+
+describe("nextFilterOp", () => {
+  const field = (id: string) => VIEW_FIELDS.persons.find((f) => f.id === id)!;
+
+  it("adds another contains term but one is per field", () => {
+    expect(nextFilterOp(field("name"), [{ field: "name", op: "contains", value: "a" }])).toBe(
+      "contains",
+    );
+    expect(nextFilterOp(field("tags"), [])).toBe("is");
+    expect(nextFilterOp(field("tags"), [{ field: "tags", op: "is", value: "1" }])).toBeNull();
+  });
+
+  it("offers a date's after, then before, then nothing; never a sort-only field", () => {
+    const after = { field: "created_at", op: "isAfter" as const, value: "2026-01-01" };
+    const before = { field: "created_at", op: "isBefore" as const, value: "2026-02-01" };
+    expect(nextFilterOp(field("created_at"), [])).toBe("isAfter");
+    expect(nextFilterOp(field("created_at"), [after])).toBe("isBefore");
+    expect(nextFilterOp(field("created_at"), [after, before])).toBeNull();
+    expect(nextFilterOp(field("updated_at"), [])).toBeNull();
   });
 });

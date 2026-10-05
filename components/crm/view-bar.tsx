@@ -44,6 +44,7 @@ import { useCrmEnums } from "@/lib/crm/i18n";
 import type { SavedView, SavedViewObject, ViewFilter, ViewSort } from "@/lib/crm/types";
 import {
   FILTER_OPERANDS,
+  nextFilterOp,
   VIEW_FIELDS,
   isDirty,
   type FieldDef,
@@ -248,21 +249,17 @@ export function ViewBar({
                   {t("addFilter")}
                 </DropdownMenuLabel>
                 {fields
-                  .filter((field) => field.filter !== false)
-                  .map((field) => (
+                  .flatMap((field) => {
+                    const op = nextFilterOp(field, draft.filters);
+                    return op ? [{ field, op }] : [];
+                  })
+                  .map(({ field, op }) => (
                     <DropdownMenuItem
                       key={field.id}
                       onClick={() =>
                         onChange({
                           ...draft,
-                          filters: [
-                            ...draft.filters,
-                            {
-                              field: field.id,
-                              op: FILTER_OPERANDS[field.kind][0],
-                              value: undefined,
-                            },
-                          ],
+                          filters: [...draft.filters, { field: field.id, op, value: undefined }],
                         })
                       }
                     >

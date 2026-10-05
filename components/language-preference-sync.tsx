@@ -26,7 +26,11 @@ export function LanguagePreferenceSync() {
   useEffect(() => {
     if (!stored) return;
     const target = resolveLocale(stored);
-    if (target === activeLocale || lastSyncedRef.current === target) return;
+    if (target === activeLocale) {
+      lastSyncedRef.current = target;
+      return;
+    }
+    if (lastSyncedRef.current === target) return;
     lastSyncedRef.current = target;
     syncLanguageCookies(target);
     router.refresh();

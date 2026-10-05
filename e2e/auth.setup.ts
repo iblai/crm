@@ -1,5 +1,4 @@
 import { test as setup, expect } from "@playwright/test";
-import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
@@ -54,7 +53,7 @@ setup("authenticate", async ({ page }) => {
 
   // Save storage state keyed by project name (e.g., setup-chromium, setup-firefox, setup-webkit)
   const projectName = setup.info().project.name; // e.g. "setup-chromium"
-  const authDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../playwright/.auth");
+  const authDir = path.resolve(__dirname, "../playwright/.auth");
   if (!fs.existsSync(authDir)) fs.mkdirSync(authDir, { recursive: true });
   await page.context().storageState({ path: `${authDir}/user-${projectName}.json` });
 });

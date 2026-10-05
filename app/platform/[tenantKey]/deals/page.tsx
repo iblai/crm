@@ -90,7 +90,8 @@ function DealsPageContent() {
   const serverFilters = useMemo(() => filtersToParams("deals", draft.filters), [draft.filters]);
   const ordering = sortsToOrdering("deals", draft.sorts);
   const isBoard = draft.type === "kanban";
-  const unsavedDraft = useMemo(() => defaultDraft(), []);
+  // The layout is the unsaved view's remembered preference, not a change to save.
+  const unsavedDraft = useMemo(() => ({ ...defaultDraft(), type: draft.type }), [draft.type]);
 
   // A new query starts on page 1 without an effect: the page lives with its key.
   const pagingKey = JSON.stringify([pipelineId, q, serverFilters, ordering]);
@@ -133,7 +134,8 @@ function DealsPageContent() {
     [draft.columns],
   );
 
-  const selectView = (view: SavedView | null) => setDraft(view ? draftFrom(view) : defaultDraft());
+  const selectView = (view: SavedView | null) =>
+    setDraft(view ? draftFrom(view) : { ...defaultDraft(), type: draft.type });
 
   const boardCount = board?.stages.reduce((sum, s) => sum + s.count, 0) ?? null;
   const count = isBoard ? boardCount : (tableDeals?.count ?? null);
