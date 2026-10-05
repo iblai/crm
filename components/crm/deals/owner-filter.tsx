@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { SimpleSelect } from "@/components/crm/simple-select";
-import { memberLabel, useMembers } from "@/hooks/use-members";
+import { useMemberLabel, useMembers } from "@/hooks/use-members";
 import { useSession } from "@/hooks/use-session";
 
 /**
@@ -19,16 +20,22 @@ export function OwnerFilter({
   onChange: (owner: number | null) => void;
   className?: string;
 }) {
+  const t = useTranslations("deals");
+  const tc = useTranslations("common");
   const { tenantKey, userId, displayName } = useSession();
   const { members } = useMembers(tenantKey);
+  const memberLabel = useMemberLabel();
 
   const options = useMemo(() => {
     const opts = members.map((m) => ({ value: String(m.id), label: memberLabel(m) }));
     if (userId && !members.some((m) => m.id === userId)) {
-      opts.unshift({ value: String(userId), label: `${displayName || "Me"} (me)` });
+      opts.unshift({
+        value: String(userId),
+        label: t("owner.self", { name: displayName || t("owner.me") }),
+      });
     }
     return opts;
-  }, [members, userId, displayName]);
+  }, [members, memberLabel, userId, displayName, t]);
 
   return (
     <SimpleSelect
@@ -36,11 +43,11 @@ export function OwnerFilter({
       onChange={(v) => onChange(v ? Number(v) : null)}
       options={options}
       allowEmpty
-      emptyLabel="Anyone"
-      placeholder="Anyone"
+      emptyLabel={t("owner.anyone")}
+      placeholder={t("owner.anyone")}
       size="sm"
       className={className}
-      aria-label="Owner"
+      aria-label={tc("owner")}
     />
   );
 }

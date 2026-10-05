@@ -22,7 +22,8 @@ test.describe("shell journey", () => {
       ["Activities", "activities", "Activities"],
       ["Tags", "tags", "Tags"],
     ] as const) {
-      await page.getByRole("link", { name: label, exact: true }).first().click();
+      // Sidebar rows are buttons (the SDK shell navigates on click).
+      await page.getByRole("button", { name: label, exact: true }).first().click();
       await page.waitForURL(
         (url) => url.pathname.endsWith(`/platform/${encodeURIComponent(org)}/${path}`),
         {
@@ -45,17 +46,30 @@ test.describe("shell journey", () => {
     await page.keyboard.press("Escape");
   });
 
-  test("S3 · the organization switcher lists the session's organizations", async ({ page }) => {
+  test("S5 · the home period select asks the overview for that window", async ({ page }) => {
     await gotoHome(page);
+    await page.getByRole("combobox", { name: /period/i }).click();
+    const request = page.waitForRequest(
+      (req) => req.url().includes("/overview/") && req.url().includes("date_filter=7d"),
+      { timeout: 20_000 },
+    );
+    await page.getByRole("option", { name: /last 7 days/i }).click();
+    await request;
+  });
+
+  test("S3 · the profile menu names the current organization and switches", async ({ page }) => {
+    const org = await gotoHome(page);
     const count = await page.evaluate(
       () => JSON.parse(localStorage.getItem("tenants") ?? "[]").length,
     );
-    await page.getByRole("button", { name: /switch organization/i }).click();
-    await expect(page.getByText("Organizations", { exact: true }).first()).toBeVisible({
-      timeout: 10_000,
-    });
+    // The SDK profile dropdown is the last control in the top bar.
+    await page.locator("header").getByRole("button").last().click();
+    // It prints the platform key (showPlatformName) — assert inside the open menu,
+    // not anywhere on the page, so a sidebar label cannot satisfy this.
+    const menu = page.locator('[role="menu"], [role="dialog"], [data-state="open"]').last();
+    await expect(menu.getByText(new RegExp(org, "i")).first()).toBeVisible({ timeout: 10_000 });
     if (count > 1) {
-      await expect(page.getByRole("menuitem").filter({ hasText: /./ }).nth(1)).toBeVisible();
+      await expect(menu.getByRole("menuitem").filter({ hasText: /./ }).nth(1)).toBeVisible();
     }
     await page.keyboard.press("Escape");
   });
@@ -71,10 +85,12 @@ test.describe("shell journey", () => {
       }
     }, org);
     if (isAdmin) {
-      await expect(page.getByRole("link", { name: "Settings" })).toBeVisible({ timeout: 10_000 });
+      await expect(page.getByRole("button", { name: "Settings", exact: true })).toBeVisible({
+        timeout: 10_000,
+      });
       await page.getByRole("switch", { name: /admin mode/i }).click();
     }
-    await expect(page.getByRole("link", { name: "Settings" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Settings", exact: true })).toHaveCount(0);
     await page.goto(`${appHost}/platform/${encodeURIComponent(org)}/settings`);
     await page.waitForURL(
       (url) =>

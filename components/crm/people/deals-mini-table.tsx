@@ -4,9 +4,11 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Handshake, Plus } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { DealStatusBadge } from "@/components/crm/badges";
 import { useSession } from "@/hooks/use-session";
 import { useListDealsQuery, useListPipelinesQuery } from "@/lib/crm/api";
@@ -30,9 +32,11 @@ export function DealsMiniTable({
   organization?: string;
   emptyDescription?: string;
 }) {
+  const t = useTranslations("people");
+  const locale = useLocale();
   const router = useRouter();
   const { href } = useSession();
-  const { data, isLoading } = useListDealsQuery(
+  const { data, isLoading, error } = useListDealsQuery(
     { person, organization, page_size: 50 },
     { skip: !person && !organization },
   );
@@ -62,17 +66,17 @@ export function DealsMiniTable({
     );
   }
 
+  if (error) return <LoadError error={error} />;
+
   if (!deals.length) {
     return (
       <EmptyState
         icon={<Handshake strokeWidth={1.75} />}
-        title="No deals yet"
-        description={
-          emptyDescription ?? "Open a deal to start tracking this relationship's pipeline."
-        }
+        title={t("dealsTable.empty")}
+        description={emptyDescription ?? t("dealsTable.emptyHint")}
         action={
           <Button className="ibl-button-primary" size="sm" onClick={() => router.push(newDealHref)}>
-            <Plus data-icon="inline-start" strokeWidth={1.75} /> New deal
+            <Plus data-icon="inline-start" strokeWidth={1.75} /> {t("dealsTable.newDeal")}
           </Button>
         }
       />
@@ -83,10 +87,10 @@ export function DealsMiniTable({
     <div className="overflow-hidden rounded-xl border border-[var(--border-color,#e5e7eb)] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
       <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-4 py-2">
         <span className="text-muted-foreground text-xs font-medium">
-          {data?.count ?? deals.length} deal{(data?.count ?? deals.length) === 1 ? "" : "s"}
+          {t("dealsTable.count", { count: data?.count ?? deals.length })}
         </span>
         <Button variant="outline" size="sm" onClick={() => router.push(newDealHref)}>
-          <Plus data-icon="inline-start" strokeWidth={1.75} /> New deal
+          <Plus data-icon="inline-start" strokeWidth={1.75} /> {t("dealsTable.newDeal")}
         </Button>
       </div>
       <div className="overflow-x-auto">
@@ -94,19 +98,19 @@ export function DealsMiniTable({
           <thead>
             <tr>
               <th scope="col" className={`${th} border-b border-gray-100`}>
-                Deal
+                {t("dealsTable.deal")}
               </th>
               <th scope="col" className={`${th} border-b border-gray-100`}>
-                Status
+                {t("dealsTable.status")}
               </th>
               <th scope="col" className={`${th} border-b border-gray-100`}>
-                Value
+                {t("dealsTable.value")}
               </th>
               <th scope="col" className={`${th} border-b border-gray-100`}>
-                Stage
+                {t("dealsTable.stage")}
               </th>
               <th scope="col" className={`${th} border-b border-gray-100`}>
-                Expected close
+                {t("dealsTable.expectedClose")}
               </th>
             </tr>
           </thead>
@@ -134,13 +138,14 @@ export function DealsMiniTable({
                   <DealStatusBadge status={d.status} />
                 </td>
                 <td className={`${td} text-gray-700 tabular-nums`}>
-                  {formatCurrency(d.lead_value, d.currency)}
+                  {formatCurrency(d.lead_value, d.currency, locale)}
                 </td>
                 <td className={`${td} text-gray-700`}>
-                  {stageNames.get(d.stage) ?? `Stage #${d.stage}`}
+                  {stageNames.get(d.stage) ??
+                    t("dealsTable.stageFallback", { id: String(d.stage) })}
                 </td>
                 <td className={`${td} text-muted-foreground`}>
-                  {d.expected_close_date ? formatDate(d.expected_close_date) : "—"}
+                  {d.expected_close_date ? formatDate(d.expected_close_date, locale) : "—"}
                 </td>
               </tr>
             ))}

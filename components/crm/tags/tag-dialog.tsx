@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@iblai/iblai-js/web-containers";
 import { TagChip } from "@/components/crm/tag-chip";
 import { TagColorSwatches, isValidHex } from "@/components/crm/tags/tag-color-picker";
 import { errorMessage, errorStatus, useCreateTagMutation } from "@/lib/crm/api";
@@ -31,17 +32,21 @@ export function TagDialog({
   defaultColor?: string;
   onCreated?: (tag: Tag) => void;
 }) {
+  const t = useTranslations("tags");
+  const tc = useTranslations("common");
   const [create, { isLoading }] = useCreateTagMutation();
   const [name, setName] = useState("");
-  const [color, setColor] = useState(defaultColor);
+  const [picked, setPicked] = useState<string | null>(null);
+  const color = picked ?? defaultColor;
   const [touched, setTouched] = useState(false);
 
+  // Reset on open only; the suggested colour shows until the user picks one.
   useEffect(() => {
     if (!open) return;
     setName("");
-    setColor(defaultColor);
+    setPicked(null);
     setTouched(false);
-  }, [open, defaultColor]);
+  }, [open]);
 
   const nameMissing = !name.trim();
   const colorInvalid = !isValidHex(color);
@@ -51,12 +56,12 @@ export function TagDialog({
     if (nameMissing || colorInvalid) return;
     try {
       const tag = await create({ name: name.trim(), color }).unwrap();
-      toast.success(`Tag “${tag.name}” created`);
+      toast.success(t("dialog.created", { name: tag.name }));
       onCreated?.(tag);
       onOpenChange(false);
     } catch (err) {
       toast.error(
-        errorStatus(err) === 403 ? "You don't have permission to do that" : errorMessage(err),
+        errorStatus(err) === 403 ? tc("errorForbidden") : errorMessage(err, tc("errorGeneric")),
       );
     }
   };
@@ -65,16 +70,14 @@ export function TagDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="gap-0 p-0 sm:max-w-md">
         <DialogHeader className="p-4 pb-3">
-          <DialogTitle>New tag</DialogTitle>
-          <DialogDescription>
-            Tags are shared across people, organizations and deals.
-          </DialogDescription>
+          <DialogTitle>{t("newTag")}</DialogTitle>
+          <DialogDescription>{t("dialog.description")}</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 px-4 pb-4">
           <div className="grid gap-1.5">
             <Label htmlFor="tag-name" className="text-muted-foreground text-xs">
-              Name
+              {tc("name")}
             </Label>
             <Input
               id="tag-name"
@@ -86,33 +89,33 @@ export function TagDialog({
                   void submit();
                 }
               }}
-              placeholder="Enterprise, Newsletter, VIP…"
+              placeholder={t("dialog.namePlaceholder")}
               className="h-8 text-sm"
               aria-invalid={touched && nameMissing}
             />
             {touched && nameMissing ? (
-              <p className="text-[11px] text-rose-600">A name is required.</p>
+              <p className="text-[11px] text-rose-600">{t("dialog.nameRequired")}</p>
             ) : null}
           </div>
 
           <div className="grid gap-2">
-            <Label className="text-muted-foreground text-xs">Color</Label>
-            <TagColorSwatches color={color} onChange={setColor} />
+            <Label className="text-muted-foreground text-xs">{t("dialog.colorLabel")}</Label>
+            <TagColorSwatches color={color} onChange={setPicked} />
           </div>
 
           <div className="flex items-center gap-2 rounded-lg bg-[#fafbfc] px-3 py-2.5">
-            <span className="text-muted-foreground text-[11px]">Preview</span>
-            <TagChip tag={{ name: name.trim() || "Tag name", color }} />
+            <span className="text-muted-foreground text-[11px]">{t("dialog.preview")}</span>
+            <TagChip tag={{ name: name.trim() || t("dialog.previewPlaceholder"), color }} />
           </div>
         </div>
 
         <DialogFooter className="mx-0 mb-0 rounded-b-xl">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-            Cancel
+            {tc("cancel")}
           </Button>
           <Button className="ibl-button-primary" onClick={() => void submit()} disabled={isLoading}>
-            {isLoading ? <Spinner data-icon="inline-start" /> : null}
-            Create tag
+            {isLoading ? <Spinner size="sm" className="size-4 text-current" /> : null}
+            {t("dialog.submit")}
           </Button>
         </DialogFooter>
       </DialogContent>

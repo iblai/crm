@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { LoadingScreen } from "@/components/loading-screen";
 import { resolveSsoRedirectPath } from "@/lib/iblai/sso-redirect";
 
@@ -14,6 +15,7 @@ export const dynamic = "force-dynamic";
  * route. Same storage contract as /sso-login-complete.
  */
 function MobileSsoLoginContent() {
+  const t = useTranslations("auth");
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -35,7 +37,7 @@ function MobileSsoLoginContent() {
     window.location.href = `${window.location.origin}${target}`;
   }, [searchParams]);
 
-  return <LoadingScreen message="Completing sign-in…" />;
+  return <LoadingScreen message={t("completingSignIn")} />;
 }
 
 export default function MobileSsoLoginPage() {

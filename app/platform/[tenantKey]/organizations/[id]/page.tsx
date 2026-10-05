@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Building2, MoreHorizontal, Plus, Trash2, Users } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,14 +15,18 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ActivityTimeline } from "@/components/crm/activity-timeline";
 import { useBreadcrumbs } from "@/components/crm/breadcrumbs";
+import { FavoriteButton } from "@/components/crm/favorite-button";
+import { HistoryTab } from "@/components/crm/history-tab";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
 import { FieldRow, InlineText } from "@/components/crm/inline-field";
 import { OwnerSelect } from "@/components/crm/owner-select";
 import { TagPicker } from "@/components/crm/tag-picker";
-import { toastApiError } from "@/components/crm/people/crm-error";
+import { useToastApiError } from "@/components/crm/people/crm-error";
 import { DealsMiniTable } from "@/components/crm/people/deals-mini-table";
 import { PeopleTable } from "@/components/crm/people/people-table";
 import { PersonDialog } from "@/components/crm/people/person-dialog";
@@ -42,16 +47,23 @@ import type { Address, OrganizationInput } from "@/lib/crm/types";
 const CARD =
   "rounded-xl border border-[var(--border-color,#e5e7eb)] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]";
 
-const ADDRESS_FIELDS: { key: keyof Address & string; label: string; placeholder: string }[] = [
-  { key: "street", label: "Street", placeholder: "Add a street" },
-  { key: "city", label: "City", placeholder: "Add a city" },
-  { key: "state", label: "State / region", placeholder: "Add a state" },
-  { key: "postal_code", label: "Postal code", placeholder: "Add a postal code" },
-  { key: "country", label: "Country", placeholder: "Add a country" },
-];
+/** API address key → its `organizations.address.*` message key. */
+const ADDRESS_FIELDS = [
+  { key: "street", msg: "street" },
+  { key: "city", msg: "city" },
+  { key: "state", msg: "state" },
+  { key: "postal_code", msg: "postalCode" },
+  { key: "country", msg: "country" },
+] as const satisfies readonly { key: keyof Address & string; msg: string }[];
 
-/** Organization "show page": the company, its address, its people and deals. */
+/** Organization "show page": the record, its address, its people and deals. */
 export default function OrganizationDetailPage() {
+  const t = useTranslations("organizations");
+  const tc = useTranslations("common");
+  const tf = useTranslations("fields");
+  const tn = useTranslations("nav");
+  const locale = useLocale();
+  const toastApiError = useToastApiError();
   const params = useParams<{ id: string }>();
   const id = params?.id ? decodeURIComponent(params.id) : "";
   const router = useRouter();
@@ -63,24 +75,25 @@ export default function OrganizationDetailPage() {
   const [attachTag] = useAttachOrganizationTagMutation();
   const [detachTag] = useDetachOrganizationTagMutation();
 
-  const { data: people, isLoading: loadingPeople } = useListPersonsQuery(
-    { organization: id, page_size: 50 },
-    { skip: !id },
-  );
+  const {
+    data: people,
+    isLoading: loadingPeople,
+    error: peopleError,
+  } = useListPersonsQuery({ organization: id, active: true, page_size: 50 }, { skip: !id });
 
   const [addPersonOpen, setAddPersonOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useBreadcrumbs([
-    { label: "Organizations", href: href("/organizations") },
-    { label: organization?.name ?? "Organization" },
+    { label: tn("organizations"), href: href("/organizations") },
+    { label: organization?.name ?? t("detail.breadcrumb") },
   ]);
 
   const save = async (body: OrganizationInput) => {
     try {
       await updateOrganization({ id, body }).unwrap();
     } catch (err) {
-      toastApiError(err, "Could not save this change");
+      toastApiError(err, tf("saveError"));
     }
   };
 
@@ -97,14 +110,22 @@ export default function OrganizationDetailPage() {
       <div className="flex min-h-0 flex-1 flex-col p-4 md:p-6">
         <EmptyState
           icon={<Building2 strokeWidth={1.75} />}
-          title="This organization no longer exists"
-          description="It may have been deleted by someone else on your team."
+          title={t("detail.notFound")}
+          description={t("detail.notFoundHint")}
           action={
             <Button variant="outline" onClick={() => router.push(href("/organizations"))}>
-              <ArrowLeft data-icon="inline-start" strokeWidth={1.75} /> Back to Organizations
+              <ArrowLeft data-icon="inline-start" strokeWidth={1.75} /> {t("detail.back")}
             </Button>
           }
         />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-0 flex-1 flex-col p-4 md:p-6">
+        <LoadError error={error} />
       </div>
     );
   }
@@ -141,12 +162,12 @@ export default function OrganizationDetailPage() {
                 <InlineText
                   value={organization.name}
                   onSave={(v) => (v.trim() ? save({ name: v.trim() }) : undefined)}
-                  placeholder="Unnamed organization"
+                  placeholder={t("detail.unnamed")}
                 />
               </div>
               <p className="text-muted-foreground mt-1 text-xs">
                 {location ? `${location} · ` : ""}
-                {people?.count ?? 0} {(people?.count ?? 0) === 1 ? "person" : "people"}
+                {people ? t("detail.peopleCount", { count: people.count }) : null}
               </p>
             </div>
           </div>
@@ -158,28 +179,29 @@ export default function OrganizationDetailPage() {
                   <Button className="ibl-button-primary" onClick={() => setAddPersonOpen(true)} />
                 }
               >
-                <Plus data-icon="inline-start" strokeWidth={1.75} /> Add person
+                <Plus data-icon="inline-start" strokeWidth={1.75} /> {t("detail.addPerson")}
               </TooltipTrigger>
-              <TooltipContent side="bottom">
-                Create a contact already attached to this organization
-              </TooltipContent>
+              <TooltipContent side="bottom">{t("detail.addPersonHint")}</TooltipContent>
             </Tooltip>
+            <FavoriteButton target={{ organization: organization.id }} />
             <DropdownMenu>
               <Tooltip>
                 <TooltipTrigger
                   render={
                     <DropdownMenuTrigger
-                      render={<Button variant="outline" size="icon" aria-label="More actions" />}
+                      render={
+                        <Button variant="outline" size="icon" aria-label={tc("moreActions")} />
+                      }
                     />
                   }
                 >
                   <MoreHorizontal strokeWidth={1.75} />
                 </TooltipTrigger>
-                <TooltipContent side="bottom">Delete this organization</TooltipContent>
+                <TooltipContent side="bottom">{t("detail.moreHint")}</TooltipContent>
               </Tooltip>
               <DropdownMenuContent align="end" className="w-52">
                 <DropdownMenuItem variant="destructive" onClick={() => setConfirmDelete(true)}>
-                  <Trash2 strokeWidth={1.75} /> Delete organization
+                  <Trash2 strokeWidth={1.75} /> {t("detail.delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -190,11 +212,11 @@ export default function OrganizationDetailPage() {
         <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start">
           <section className={`${CARD} p-4`}>
             <h2 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
-              Details
+              {tc("details")}
             </h2>
             <dl className="divide-y divide-gray-100">
               {ADDRESS_FIELDS.map((field) => (
-                <FieldRow key={field.key} label={field.label}>
+                <FieldRow key={field.key} label={t(`address.${field.msg}`)}>
                   <InlineText
                     value={
                       typeof organization.address?.[field.key] === "string"
@@ -202,11 +224,11 @@ export default function OrganizationDetailPage() {
                         : ""
                     }
                     onSave={(v) => saveAddressField(field.key, v)}
-                    placeholder={field.placeholder}
+                    placeholder={t(`address.add.${field.msg}`)}
                   />
                 </FieldRow>
               ))}
-              <FieldRow label="Owner" hint="The teammate responsible for this organization.">
+              <FieldRow label={tc("owner")} hint={t("detail.ownerHint")}>
                 <OwnerSelect
                   value={organization.owner}
                   onChange={(owner) => void save({ owner })}
@@ -214,7 +236,7 @@ export default function OrganizationDetailPage() {
                   className="h-8 border-transparent bg-transparent shadow-none hover:bg-gray-50"
                 />
               </FieldRow>
-              <FieldRow label="Tags" hint="Shared labels; manage them under Tags.">
+              <FieldRow label={tc("tags")} hint={tf("tagsHint")}>
                 <TagPicker
                   tags={organization.tags ?? []}
                   onAttach={(tag_id) => attachTag({ id: organization.id, tag_id }).unwrap()}
@@ -222,20 +244,20 @@ export default function OrganizationDetailPage() {
                   compact
                 />
               </FieldRow>
-              <FieldRow label="Created">
+              <FieldRow label={tc("created")}>
                 <span
                   className="text-muted-foreground"
-                  title={formatDateTime(organization.created_at)}
+                  title={formatDateTime(organization.created_at, locale)}
                 >
-                  {formatRelative(organization.created_at)}
+                  {formatRelative(organization.created_at, locale)}
                 </span>
               </FieldRow>
-              <FieldRow label="Updated">
+              <FieldRow label={tc("updated")}>
                 <span
                   className="text-muted-foreground"
-                  title={formatDateTime(organization.updated_at)}
+                  title={formatDateTime(organization.updated_at, locale)}
                 >
-                  {formatRelative(organization.updated_at)}
+                  {formatRelative(organization.updated_at, locale)}
                 </span>
               </FieldRow>
             </dl>
@@ -244,19 +266,23 @@ export default function OrganizationDetailPage() {
           <section className="min-w-0">
             <Tabs defaultValue="people">
               <TabsList variant="line">
-                <TabsTrigger value="people">People</TabsTrigger>
-                <TabsTrigger value="deals">Deals</TabsTrigger>
+                <TabsTrigger value="people">{tn("people")}</TabsTrigger>
+                <TabsTrigger value="deals">{tn("deals")}</TabsTrigger>
+                <TabsTrigger value="timeline">{tc("timeline")}</TabsTrigger>
+                <TabsTrigger value="history">{tc("history")}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="people" className="pt-4">
-                {!loadingPeople && peopleRows.length === 0 ? (
+                {peopleError ? (
+                  <LoadError error={peopleError} />
+                ) : !loadingPeople && peopleRows.length === 0 ? (
                   <EmptyState
                     icon={<Users strokeWidth={1.75} />}
-                    title="No people here yet"
-                    description={`Add the contacts you work with at ${organization.name}.`}
+                    title={t("detail.noPeople")}
+                    description={t("detail.noPeopleHint", { name: organization.name })}
                     action={
                       <Button className="ibl-button-primary" onClick={() => setAddPersonOpen(true)}>
-                        <Plus data-icon="inline-start" strokeWidth={1.75} /> Add person
+                        <Plus data-icon="inline-start" strokeWidth={1.75} /> {t("detail.addPerson")}
                       </Button>
                     }
                   />
@@ -264,11 +290,10 @@ export default function OrganizationDetailPage() {
                   <div className={`${CARD} overflow-hidden`}>
                     <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-4 py-2">
                       <span className="text-muted-foreground text-xs font-medium">
-                        {people?.count ?? peopleRows.length}{" "}
-                        {(people?.count ?? peopleRows.length) === 1 ? "person" : "people"}
+                        {t("detail.peopleCount", { count: people?.count ?? peopleRows.length })}
                       </span>
                       <Button variant="outline" size="sm" onClick={() => setAddPersonOpen(true)}>
-                        <Plus data-icon="inline-start" strokeWidth={1.75} /> Add person
+                        <Plus data-icon="inline-start" strokeWidth={1.75} /> {t("detail.addPerson")}
                       </Button>
                     </div>
                     <div className="overflow-x-auto">
@@ -286,8 +311,16 @@ export default function OrganizationDetailPage() {
               <TabsContent value="deals" className="pt-4">
                 <DealsMiniTable
                   organization={organization.id}
-                  emptyDescription={`No deal is open with ${organization.name} yet.`}
+                  emptyDescription={t("detail.noDeals", { name: organization.name })}
                 />
+              </TabsContent>
+
+              <TabsContent value="timeline" className="pt-4">
+                <ActivityTimeline organization={organization.id} />
+              </TabsContent>
+
+              <TabsContent value="history" className="pt-4">
+                <HistoryTab kind="organization" id={organization.id} />
               </TabsContent>
             </Tabs>
           </section>
@@ -303,19 +336,19 @@ export default function OrganizationDetailPage() {
       <ConfirmDialog
         open={confirmDelete}
         onOpenChange={setConfirmDelete}
-        title={`Delete ${organization.name}?`}
-        description="The organization is removed. Its people and deals stay in the CRM — they simply lose their company."
-        confirmLabel="Delete organization"
+        title={t("detail.deleteTitle", { name: organization.name })}
+        description={t("detail.deleteHint")}
+        confirmLabel={t("detail.delete")}
         destructive
         loading={deleting}
         onConfirm={async () => {
           try {
             await deleteOrganization(organization.id).unwrap();
             setConfirmDelete(false);
-            toast.success(`${organization.name} deleted`);
+            toast.success(tc("deletedToast", { name: organization.name }));
             router.push(href("/organizations"));
           } catch (err) {
-            toastApiError(err, "Could not delete this organization");
+            toastApiError(err, t("detail.deleteError"));
           }
         }}
       />

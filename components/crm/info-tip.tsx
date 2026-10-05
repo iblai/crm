@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { CircleHelp } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -12,7 +13,7 @@ import { cn } from "@/lib/utils";
  */
 export function InfoTip({
   children,
-  label = "What is this?",
+  label,
   side = "top",
   className,
 }: {
@@ -22,10 +23,11 @@ export function InfoTip({
   side?: "top" | "bottom" | "left" | "right";
   className?: string;
 }) {
+  const t = useTranslations("fields");
   return (
     <Tooltip>
       <TooltipTrigger
-        aria-label={label}
+        aria-label={label ?? t("whatIsThis")}
         className={cn(
           "text-muted-foreground/60 hover:text-muted-foreground inline-flex shrink-0 cursor-help items-center align-middle transition-colors",
           className,

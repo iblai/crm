@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Radio, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Table,
   TableBody,
@@ -15,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@iblai/iblai-js/web-containers";
 import {
   Dialog,
   DialogContent,
@@ -26,10 +27,11 @@ import {
 } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { InfoTip } from "@/components/crm/info-tip";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { InlineText } from "@/components/crm/inline-field";
-import { slugify, toastSettingsError } from "@/components/crm/settings/utils";
+import { slugify, useToastSettingsError } from "@/components/crm/settings/utils";
 import {
   useCreateLeadSourceMutation,
   useDeleteLeadSourceMutation,
@@ -40,7 +42,9 @@ import { formatDate } from "@/lib/crm/format";
 import type { LeadSource } from "@/lib/crm/types";
 
 export function LeadSourcesTab() {
-  const { data, isLoading } = useListLeadSourcesQuery({ page_size: 100 });
+  const t = useTranslations("settings");
+  const tc = useTranslations("common");
+  const { data, isLoading, error } = useListLeadSourcesQuery({ page_size: 100 });
   const [creating, setCreating] = useState(false);
   const sources = data?.results ?? [];
 
@@ -48,10 +52,8 @@ export function LeadSourcesTab() {
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-muted-foreground flex items-center gap-1 text-sm">
-          Where deals come from — referrals, inbound, events, partners.
-          <InfoTip label="About lead sources">
-            Where deals come from — set on each deal, then filtered on the board
-          </InfoTip>
+          {t("sources.intro")}
+          <InfoTip label={t("sources.aboutLabel")}>{t("sources.aboutTip")}</InfoTip>
         </p>
         <Tooltip>
           <TooltipTrigger
@@ -59,9 +61,9 @@ export function LeadSourcesTab() {
               <Button size="sm" className="ibl-button-primary" onClick={() => setCreating(true)} />
             }
           >
-            <Plus data-icon="inline-start" /> New lead source
+            <Plus data-icon="inline-start" /> {t("sources.new")}
           </TooltipTrigger>
-          <TooltipContent side="bottom">Add a channel you can then pick on any deal</TooltipContent>
+          <TooltipContent side="bottom">{t("sources.newHint")}</TooltipContent>
         </Tooltip>
       </div>
 
@@ -71,14 +73,16 @@ export function LeadSourcesTab() {
             <Skeleton key={i} className="h-11 w-full rounded-lg" />
           ))}
         </div>
+      ) : error ? (
+        <LoadError error={error} />
       ) : sources.length === 0 ? (
         <EmptyState
           icon={<Radio />}
-          title="No lead sources yet"
-          description="Add the channels your deals arrive through so the dashboard can break revenue down by source."
+          title={t("sources.emptyTitle")}
+          description={t("sources.emptyDescription")}
           action={
             <Button className="ibl-button-primary" onClick={() => setCreating(true)}>
-              <Plus data-icon="inline-start" /> New lead source
+              <Plus data-icon="inline-start" /> {t("sources.new")}
             </Button>
           }
         />
@@ -87,9 +91,9 @@ export function LeadSourcesTab() {
           <Table>
             <TableHeader>
               <TableRow className="bg-[#fafbfc]">
-                <TableHead className="text-muted-foreground text-xs">Name</TableHead>
-                <TableHead className="text-muted-foreground text-xs">Code</TableHead>
-                <TableHead className="text-muted-foreground text-xs">Created</TableHead>
+                <TableHead className="text-muted-foreground text-xs">{tc("name")}</TableHead>
+                <TableHead className="text-muted-foreground text-xs">{t("code")}</TableHead>
+                <TableHead className="text-muted-foreground text-xs">{tc("created")}</TableHead>
                 <TableHead className="w-12" />
               </TableRow>
             </TableHeader>
@@ -108,6 +112,10 @@ export function LeadSourcesTab() {
 }
 
 function LeadSourceRow({ source }: { source: LeadSource }) {
+  const t = useTranslations("settings");
+  const tc = useTranslations("common");
+  const locale = useLocale();
+  const toastSettingsError = useToastSettingsError();
   const [update] = useUpdateLeadSourceMutation();
   const [remove, { isLoading: removing }] = useDeleteLeadSourceMutation();
   const [confirm, setConfirm] = useState(false);
@@ -117,7 +125,7 @@ function LeadSourceRow({ source }: { source: LeadSource }) {
       <TableCell className="min-w-48 py-1.5 text-sm font-medium text-gray-900">
         <InlineText
           value={source.name}
-          placeholder="Lead source"
+          placeholder={t("sources.namePlaceholder")}
           onSave={async (v) => {
             if (!v.trim()) return;
             try {
@@ -134,7 +142,7 @@ function LeadSourceRow({ source }: { source: LeadSource }) {
         </span>
       </TableCell>
       <TableCell className="text-muted-foreground py-1.5 text-xs">
-        {formatDate(source.created_at)}
+        {formatDate(source.created_at, locale)}
       </TableCell>
       <TableCell className="py-1.5 text-right">
         <Tooltip>
@@ -145,27 +153,27 @@ function LeadSourceRow({ source }: { source: LeadSource }) {
                 size="icon-sm"
                 className="text-gray-400 hover:text-rose-600"
                 onClick={() => setConfirm(true)}
-                aria-label={`Delete lead source ${source.name}`}
+                aria-label={t("sources.deleteLabel", { name: source.name })}
               />
             }
           >
             <Trash2 />
           </TooltipTrigger>
-          <TooltipContent side="left">Deals keep their data but lose this source</TooltipContent>
+          <TooltipContent side="left">{t("sources.deleteHint")}</TooltipContent>
         </Tooltip>
         <ConfirmDialog
           open={confirm}
           onOpenChange={setConfirm}
-          title={`Delete “${source.name}”?`}
-          description="Deals that point at this source lose it. The deals themselves are kept."
-          confirmLabel="Delete"
+          title={t("deleteTitle", { name: source.name })}
+          description={t("sources.deleteDescription")}
+          confirmLabel={tc("delete")}
           destructive
           loading={removing}
           onConfirm={async () => {
             try {
               await remove(source.id).unwrap();
               setConfirm(false);
-              toast.success("Lead source deleted");
+              toast.success(t("sources.deleted"));
             } catch (err) {
               toastSettingsError(err);
             }
@@ -183,6 +191,9 @@ function LeadSourceDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations("settings");
+  const tc = useTranslations("common");
+  const toastSettingsError = useToastSettingsError();
   const [create, { isLoading }] = useCreateLeadSourceMutation();
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
@@ -204,7 +215,7 @@ function LeadSourceDialog({
     if (invalid) return;
     try {
       const created = await create({ name: name.trim(), code: code.trim() }).unwrap();
-      toast.success(`Lead source “${created.name}” created`);
+      toast.success(t("sources.created", { name: created.name }));
       onOpenChange(false);
     } catch (err) {
       toastSettingsError(err);
@@ -215,14 +226,14 @@ function LeadSourceDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="gap-0 p-0 sm:max-w-md">
         <DialogHeader className="p-4 pb-3">
-          <DialogTitle>New lead source</DialogTitle>
-          <DialogDescription>Where this kind of deal comes from.</DialogDescription>
+          <DialogTitle>{t("sources.new")}</DialogTitle>
+          <DialogDescription>{t("sources.dialogDescription")}</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-3.5 px-4 pb-4">
           <div className="grid gap-1.5">
             <Label htmlFor="source-name" className="text-muted-foreground text-xs">
-              Name
+              {tc("name")}
             </Label>
             <Input
               id="source-name"
@@ -237,14 +248,14 @@ function LeadSourceDialog({
                   void submit();
                 }
               }}
-              placeholder="Partner referral"
+              placeholder={t("sources.nameExample")}
               className="h-8 text-sm"
               aria-invalid={touched && !name.trim()}
             />
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="source-code" className="text-muted-foreground text-xs">
-              Code
+              {t("code")}
             </Label>
             <Input
               id="source-code"
@@ -253,7 +264,7 @@ function LeadSourceDialog({
                 setCodeTouched(true);
                 setCode(slugify(e.target.value));
               }}
-              placeholder="partner-referral"
+              placeholder={t("sources.codeExample")}
               className="h-8 font-mono text-sm"
               aria-invalid={touched && !code.trim()}
             />
@@ -262,11 +273,11 @@ function LeadSourceDialog({
 
         <DialogFooter className="mx-0 mb-0 rounded-b-xl">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-            Cancel
+            {tc("cancel")}
           </Button>
           <Button className="ibl-button-primary" onClick={() => void submit()} disabled={isLoading}>
-            {isLoading ? <Spinner data-icon="inline-start" /> : null}
-            Create
+            {isLoading ? <Spinner size="sm" className="size-4 text-current" /> : null}
+            {tc("create")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ShieldCheck, UserPlus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Account } from "@iblai/iblai-js/web-containers/next";
 import { InviteUserDialog, InvitedUsersDialog } from "@iblai/iblai-js/web-containers";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import config from "@/lib/iblai/config";
  * assigned here on the Roles and Policies tabs.
  */
 export default function AdminUsersPage() {
+  const t = useTranslations("admin.users");
   const router = useRouter();
   const { tenantKey, tenants, username, email, isAdmin, href } = useSession();
   const [showInvite, setShowInvite] = useState(false);
@@ -25,15 +27,15 @@ export default function AdminUsersPage() {
     <>
       <PageHeader
         icon={<ShieldCheck />}
-        title="Users & roles"
-        description="Members, groups, roles and policies of this organization — including the CRM Viewer, User, Manager and Inviter roles"
+        title={t("title")}
+        description={t("description")}
         actions={
           <>
             <Button variant="outline" size="sm" onClick={() => setShowPending(true)}>
-              Pending invites
+              {t("pendingInvites")}
             </Button>
             <Button size="sm" className="ibl-button-primary" onClick={() => setShowInvite(true)}>
-              <UserPlus data-icon="inline-start" /> Invite user
+              <UserPlus data-icon="inline-start" /> {t("invite")}
             </Button>
           </>
         }

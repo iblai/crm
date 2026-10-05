@@ -24,6 +24,7 @@ export type TenantEntry = {
   name?: string;
   platform_name?: string;
   show_paywall?: boolean;
+  enable_monetization?: boolean | null;
   [k: string]: unknown;
 };
 
@@ -149,6 +150,16 @@ export function tenantHref(tenantKey: string, path = ""): string {
 export function tenantKeyFromPath(pathname: string): string | null {
   const m = pathname.match(/^\/platform\/([^/]+)/);
   return m ? decodeURIComponent(m[1]) : null;
+}
+
+/**
+ * The URL names one organization and the stored session another — a tab left
+ * open across a switch in another tab. Its token belongs to the session's org,
+ * so any request from here would read or write the wrong organization.
+ */
+export function tenantMismatch(pathname: string, sessionKey: string): boolean {
+  const fromPath = tenantKeyFromPath(pathname);
+  return !!fromPath && !!sessionKey && fromPath !== sessionKey;
 }
 
 /**

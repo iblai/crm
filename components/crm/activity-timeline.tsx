@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { Check, CalendarClock, Circle, MapPin, MoreHorizontal, Plus, Trash2 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ActivityIcon } from "@/components/crm/activity-icon";
 import { InfoTip } from "@/components/crm/info-tip";
+import { LoadError } from "@/components/crm/load-error";
 import { ActivityTypeBadge } from "@/components/crm/badges";
 import { SimpleSelect } from "@/components/crm/simple-select";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
@@ -32,30 +34,43 @@ import {
   useMarkActivityDoneMutation,
   useUpdateActivityMutation,
 } from "@/lib/crm/api";
-import { formatDateTime, formatRelative, scheduleLabel } from "@/lib/crm/format";
-import { ACTIVITY_TYPES, type Activity, type ActivityType } from "@/lib/crm/types";
+import {
+  formatDate,
+  formatDateTime,
+  formatRelative,
+  formatTime,
+  scheduleState,
+} from "@/lib/crm/format";
+import { isAutoStageNote } from "@/lib/crm/activities";
+import { useCrmEnums } from "@/lib/crm/i18n";
+import type { Activity, ActivityType } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
 
 /**
- * The activity timeline of a person or a deal: quick-log composer on top,
- * then open work (scheduled, overdue) and the history (done, notes, the
- * auto-recorded "Stage changed" entries) below. Works for both hosts —
- * pass `person` (UUID) and/or `deal` (id).
+ * The activity timeline of a person, a deal or an organization: quick-log
+ * composer on top, then open work (scheduled, overdue) and the history (done,
+ * notes, the DM's own "Stage changed" entries) below. Pass `person` (UUID),
+ * `deal` (id) or `organization` (UUID).
  */
 export function ActivityTimeline({
   person,
   deal,
+  organization,
   showDealLinks = true,
   className,
 }: {
   person?: string;
   deal?: number;
+  /** An organization's own timeline — activities attached to it directly. */
+  organization?: string;
   showDealLinks?: boolean;
   className?: string;
 }) {
-  const { data, isLoading } = useListActivitiesQuery(
-    { person: deal ? undefined : person, deal, page_size: 100 },
-    { skip: !person && !deal },
+  const t = useTranslations("activities");
+  const tc = useTranslations("common");
+  const { data, isLoading, error } = useListActivitiesQuery(
+    { person: deal ? undefined : person, deal, organization, page_size: 100 },
+    { skip: !person && !deal && !organization },
   );
 
   const { open, done } = useMemo(() => {
@@ -79,7 +94,7 @@ export function ActivityTimeline({
 
   return (
     <div className={cn("flex flex-col gap-5", className)}>
-      <ActivityComposer person={person} deal={deal} />
+      <ActivityComposer person={person} deal={deal} organization={organization} />
 
       {isLoading ? (
         <div className="space-y-3">
@@ -89,23 +104,28 @@ export function ActivityTimeline({
         </div>
       ) : null}
 
-      {!isLoading && open.length === 0 && done.length === 0 ? (
+      {error ? <LoadError error={error} /> : null}
+
+      {!isLoading && !error && open.length === 0 && done.length === 0 ? (
         <p className="text-muted-foreground rounded-lg border border-dashed border-gray-200 bg-white p-6 text-center text-sm">
-          No activity yet. Log a call, schedule a meeting, or leave a note above.
+          {t("timeline.empty")}
         </p>
       ) : null}
 
       {open.length ? (
         <section>
           <h3 className="text-muted-foreground mb-2 flex items-center gap-1 text-xs font-semibold tracking-wide uppercase">
-            Open · {open.length}
-            <InfoTip label="About open activities">
-              Not done yet — tick the circle to complete one
-            </InfoTip>
+            {tc("open")} · {open.length}
+            <InfoTip label={t("timeline.openAbout")}>{t("timeline.openHint")}</InfoTip>
           </h3>
           <ul className="space-y-2">
             {open.map((a) => (
-              <ActivityRow key={a.id} activity={a} showDealLink={showDealLinks && !deal} />
+              <ActivityRow
+                key={a.id}
+                activity={a}
+                showDealLink={showDealLinks && !deal}
+                showOrganizationLink={!organization}
+              />
             ))}
           </ul>
         </section>
@@ -114,14 +134,17 @@ export function ActivityTimeline({
       {done.length ? (
         <section>
           <h3 className="text-muted-foreground mb-2 flex items-center gap-1 text-xs font-semibold tracking-wide uppercase">
-            History · {done.length}
-            <InfoTip label="About the history">
-              Everything already done, newest first — notes land here too
-            </InfoTip>
+            {tc("history")} · {done.length}
+            <InfoTip label={t("timeline.historyAbout")}>{t("timeline.historyHint")}</InfoTip>
           </h3>
           <ul className="relative space-y-2 before:absolute before:top-3 before:bottom-3 before:left-[15px] before:w-px before:bg-gray-200">
             {done.map((a) => (
-              <ActivityRow key={a.id} activity={a} showDealLink={showDealLinks && !deal} />
+              <ActivityRow
+                key={a.id}
+                activity={a}
+                showDealLink={showDealLinks && !deal}
+                showOrganizationLink={!organization}
+              />
             ))}
           </ul>
         </section>
@@ -135,24 +158,44 @@ export function ActivityRow({
   activity,
   showDealLink,
   showPersonLink,
+  showOrganizationLink,
 }: {
   activity: Activity;
   showDealLink?: boolean;
   showPersonLink?: boolean;
+  showOrganizationLink?: boolean;
 }) {
+  const t = useTranslations("activities");
+  const tc = useTranslations("common");
+  const locale = useLocale();
   const { href } = useSession();
   const [markDone, { isLoading: marking }] = useMarkActivityDoneMutation();
   const [update] = useUpdateActivityMutation();
   const [remove, { isLoading: removing }] = useDeleteActivityMutation();
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const schedule = scheduleLabel(activity.schedule_from, !!activity.is_done);
+  const at = activity.schedule_from;
+  // The stage-change note the DM writes itself: read-only.
+  const isAutoNote = isAutoStageNote(activity);
+  const { kind } = scheduleState(at, !!activity.is_done);
+  const scheduleText =
+    kind === "unscheduled"
+      ? tc("unscheduled")
+      : kind === "today"
+        ? t("schedule.today", { time: formatTime(at, locale) })
+        : kind === "tomorrow"
+          ? t("schedule.tomorrow", { time: formatTime(at, locale) })
+          : kind === "overdue"
+            ? t("schedule.overdue", {
+                date: formatDate(at, locale, { month: "short", day: "numeric" }),
+              })
+            : formatDate(at, locale);
 
   const toggleDone = async () => {
     try {
       if (activity.is_done) await update({ id: activity.id, body: { is_done: false } }).unwrap();
       else await markDone(activity.id).unwrap();
     } catch (err) {
-      toast.error(errorMessage(err));
+      toast.error(errorMessage(err, tc("errorGeneric")));
     }
   };
 
@@ -172,24 +215,26 @@ export function ActivityRow({
               activity.is_done && "text-gray-500 line-through decoration-gray-300",
             )}
           >
-            {activity.title}
+            {isAutoNote ? t("timeline.stageChanged") : activity.title}
           </span>
           <ActivityTypeBadge type={activity.type} />
           {activity.is_done ? (
             <span className="text-muted-foreground text-[11px]">
-              done {formatRelative(activity.done_at ?? activity.updated_at)}
+              {t("timeline.doneAgo", {
+                when: formatRelative(activity.done_at ?? activity.updated_at, locale),
+              })}
             </span>
           ) : (
             <span
               className={cn(
                 "inline-flex items-center gap-1 text-[11px] font-medium",
-                schedule.tone === "overdue" && "text-rose-600",
-                schedule.tone === "today" && "text-[#0058cc]",
-                schedule.tone === "soon" && "text-amber-600",
-                schedule.tone === "muted" && "text-muted-foreground",
+                kind === "overdue" && "text-rose-600",
+                kind === "today" && "text-[#0058cc]",
+                kind === "tomorrow" && "text-amber-600",
+                (kind === "unscheduled" || kind === "date") && "text-muted-foreground",
               )}
             >
-              <CalendarClock className="size-3" /> {schedule.label}
+              <CalendarClock className="size-3" /> {scheduleText}
             </span>
           )}
         </div>
@@ -205,12 +250,12 @@ export function ActivityRow({
           <span>
             <OwnerName ownerId={activity.owner} />
           </span>
-          <span title={formatDateTime(activity.created_at)}>
-            logged {formatRelative(activity.created_at)}
+          <span title={formatDateTime(activity.created_at, locale)}>
+            {t("timeline.loggedAgo", { when: formatRelative(activity.created_at, locale) })}
           </span>
           {showDealLink && activity.deal ? (
             <Link href={href(`/deals/${activity.deal}`)} className="text-[#0058cc] hover:underline">
-              Deal #{activity.deal}
+              {t("timeline.dealLink", { id: activity.deal })}
             </Link>
           ) : null}
           {showPersonLink && activity.person ? (
@@ -218,66 +263,82 @@ export function ActivityRow({
               href={href(`/people/${activity.person}`)}
               className="text-[#0058cc] hover:underline"
             >
-              View person
+              {t("timeline.viewPerson")}
+            </Link>
+          ) : null}
+          {showOrganizationLink && activity.organization ? (
+            <Link
+              href={href(`/organizations/${activity.organization}`)}
+              className="text-[#0058cc] hover:underline"
+            >
+              {t("timeline.viewOrganization")}
             </Link>
           ) : null}
         </div>
       </div>
-      <div className="flex shrink-0 items-start gap-1">
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => void toggleDone()}
-                disabled={marking}
-                aria-label={activity.is_done ? "Mark as not done" : "Mark as done"}
-                className={
-                  activity.is_done ? "text-emerald-600" : "text-gray-400 hover:text-emerald-600"
-                }
-              />
-            }
-          >
-            {activity.is_done ? <Check /> : <Circle />}
-          </TooltipTrigger>
-          <TooltipContent>{activity.is_done ? "Mark not done" : "Mark done"}</TooltipContent>
-        </Tooltip>
-        <DropdownMenu>
+      {isAutoNote ? null : (
+        <div className="flex shrink-0 items-start gap-1">
           <Tooltip>
             <TooltipTrigger
               render={
-                <DropdownMenuTrigger
-                  render={<Button variant="ghost" size="icon-sm" aria-label="More actions" />}
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => void toggleDone()}
+                  disabled={marking}
+                  aria-label={
+                    activity.is_done ? t("timeline.markNotDoneLabel") : t("timeline.markDoneLabel")
+                  }
+                  className={
+                    activity.is_done ? "text-emerald-600" : "text-gray-400 hover:text-emerald-600"
+                  }
                 />
               }
             >
-              <MoreHorizontal />
+              {activity.is_done ? <Check /> : <Circle />}
             </TooltipTrigger>
-            <TooltipContent>More actions for this activity</TooltipContent>
+            <TooltipContent>
+              {activity.is_done ? t("timeline.markNotDone") : t("timeline.markDone")}
+            </TooltipContent>
           </Tooltip>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem variant="destructive" onClick={() => setConfirmDelete(true)}>
-              <Trash2 /> Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <DropdownMenuTrigger
+                    render={
+                      <Button variant="ghost" size="icon-sm" aria-label={tc("moreActions")} />
+                    }
+                  />
+                }
+              >
+                <MoreHorizontal />
+              </TooltipTrigger>
+              <TooltipContent>{t("timeline.moreHint")}</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem variant="destructive" onClick={() => setConfirmDelete(true)}>
+                <Trash2 /> {tc("delete")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
       <ConfirmDialog
         open={confirmDelete}
         onOpenChange={setConfirmDelete}
-        title="Delete this activity?"
-        description={`“${activity.title}” will be removed from the timeline.`}
-        confirmLabel="Delete"
+        title={t("confirm.deleteTitle")}
+        description={t("confirm.deleteDescription", { title: activity.title })}
+        confirmLabel={tc("delete")}
         destructive
         loading={removing}
         onConfirm={async () => {
           try {
             await remove(activity.id).unwrap();
             setConfirmDelete(false);
-            toast.success("Activity deleted");
+            toast.success(t("toast.deleted"));
           } catch (err) {
-            toast.error(errorMessage(err));
+            toast.error(errorMessage(err, tc("errorGeneric")));
           }
         }}
       />
@@ -289,14 +350,19 @@ export function ActivityRow({
 export function ActivityComposer({
   person,
   deal,
+  organization,
   onCreated,
   defaultType = "note",
 }: {
   person?: string;
   deal?: number;
+  organization?: string;
   onCreated?: (activity: Activity) => void;
   defaultType?: ActivityType;
 }) {
+  const t = useTranslations("activities");
+  const tc = useTranslations("common");
+  const { activityTypeOptions } = useCrmEnums();
   const { userId } = useSession();
   const [create, { isLoading }] = useCreateActivityMutation();
   const [type, setType] = useState<ActivityType>(defaultType);
@@ -317,6 +383,7 @@ export function ActivityComposer({
         comment: comment.trim() || undefined,
         person: person ?? undefined,
         deal: deal ?? undefined,
+        organization: organization ?? undefined,
         owner: userId ?? undefined,
         schedule_from: scheduled,
         location: location.trim() || undefined,
@@ -330,9 +397,9 @@ export function ActivityComposer({
       setReminder(false);
       setExpanded(false);
       onCreated?.(created);
-      toast.success(type === "note" ? "Note added" : "Activity logged");
+      toast.success(type === "note" ? t("toast.noteAdded") : t("toast.logged"));
     } catch (err) {
-      toast.error(errorMessage(err));
+      toast.error(errorMessage(err, tc("errorGeneric")));
     }
   };
 
@@ -344,15 +411,13 @@ export function ActivityComposer({
             <SimpleSelect
               value={type}
               onChange={(v) => setType(v as ActivityType)}
-              options={ACTIVITY_TYPES}
+              options={activityTypeOptions}
               size="sm"
               className="w-32"
-              aria-label="Activity type"
+              aria-label={t("typeLabel")}
             />
           </TooltipTrigger>
-          <TooltipContent side="bottom">
-            Notes are logged as done; calls, meetings and tasks can be scheduled
-          </TooltipContent>
+          <TooltipContent side="bottom">{t("typeHint")}</TooltipContent>
         </Tooltip>
         <Input
           value={title}
@@ -364,9 +429,9 @@ export function ActivityComposer({
               void submit();
             }
           }}
-          placeholder={type === "note" ? "Write a note…" : `Log a ${type}…`}
+          placeholder={t("composer.placeholder", { type })}
           className="h-8 min-w-40 flex-1 text-sm"
-          aria-label="Activity title"
+          aria-label={t("composer.titleLabel")}
         />
         <Button
           size="sm"
@@ -374,7 +439,7 @@ export function ActivityComposer({
           disabled={!title.trim() || isLoading}
           onClick={() => void submit()}
         >
-          <Plus data-icon="inline-start" /> Add
+          <Plus data-icon="inline-start" /> {t("composer.add")}
         </Button>
       </div>
       {expanded ? (
@@ -383,10 +448,10 @@ export function ActivityComposer({
             <Textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Details, outcome, next steps…"
+              placeholder={t("composer.detailsPlaceholder")}
               rows={2}
               className="text-sm"
-              aria-label="Details"
+              aria-label={tc("details")}
             />
           </div>
           <div className="grid gap-1.5">
@@ -394,10 +459,8 @@ export function ActivityComposer({
               htmlFor="activity-schedule"
               className="text-muted-foreground flex items-center gap-1 text-xs"
             >
-              When
-              <InfoTip label="About the when field">
-                Leave empty to log it now; set a time to schedule it
-              </InfoTip>
+              {t("composer.when")}
+              <InfoTip label={t("composer.whenAbout")}>{t("composer.whenHint")}</InfoTip>
             </Label>
             <Input
               id="activity-schedule"
@@ -410,23 +473,19 @@ export function ActivityComposer({
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="activity-location" className="text-muted-foreground text-xs">
-              Location / link
+              {t("location")}
             </Label>
             <Input
               id="activity-location"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="Zoom, office, phone…"
+              placeholder={t("locationPlaceholder")}
               className="h-8 text-sm"
             />
           </div>
           <label
             className="text-muted-foreground flex items-center gap-2 text-xs sm:col-span-2"
-            title={
-              scheduleFrom
-                ? "A reminder is sent to the owner at the scheduled time"
-                : "Set a time under “When” first"
-            }
+            title={scheduleFrom ? t("composer.reminderHint") : t("composer.reminderNeedsWhen")}
           >
             <input
               type="checkbox"
@@ -435,9 +494,9 @@ export function ActivityComposer({
               onChange={(e) => setReminder(e.target.checked)}
               className="size-3.5 accent-[#0058cc]"
             />
-            Remind the owner at the scheduled time
+            {t("composer.remind")}
             {!scheduleFrom ? (
-              <span className="text-muted-foreground/70">— needs a time</span>
+              <span className="text-muted-foreground/70">{t("composer.needsTime")}</span>
             ) : null}
           </label>
         </div>

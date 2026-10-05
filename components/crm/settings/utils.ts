@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { errorMessage, errorStatus } from "@/lib/crm/api";
 
@@ -17,11 +18,11 @@ export function slugify(value: string, max = 50): string {
  * Only CRM Managers (org admins) may change pipelines, stages and lead
  * sources — say so plainly instead of leaking the API's 403 body.
  */
-export function settingsError(err: unknown, fallback = "Something went wrong"): string {
-  if (errorStatus(err) === 403) return "You don't have permission to do that";
-  return errorMessage(err, fallback);
-}
-
-export function toastSettingsError(err: unknown, fallback?: string) {
-  toast.error(settingsError(err, fallback));
+export function useToastSettingsError() {
+  const tc = useTranslations("common");
+  return (err: unknown) => {
+    toast.error(
+      errorStatus(err) === 403 ? tc("errorForbidden") : errorMessage(err, tc("errorGeneric")),
+    );
+  };
 }

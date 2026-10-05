@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
-import { toastApiError } from "@/components/crm/people/crm-error";
+import { useToastApiError } from "@/components/crm/people/crm-error";
 import { errorStatus, useInvitePersonMutation } from "@/lib/crm/api";
 import type { Person } from "@/lib/crm/types";
 
@@ -21,6 +22,8 @@ export function PersonInviteDialog({
   onOpenChange: (open: boolean) => void;
   person: Person;
 }) {
+  const t = useTranslations("people");
+  const toastApiError = useToastApiError();
   const [invite, { isLoading }] = useInvitePersonMutation();
   const [asAdmin, setAsAdmin] = useState(false);
 
@@ -32,18 +35,20 @@ export function PersonInviteDialog({
     try {
       const res = await invite({ id: person.id, body: { is_admin: asAdmin } }).unwrap();
       onOpenChange(false);
-      toast.success(`Invitation sent to ${res.invitation_email || person.primary_email}`);
+      toast.success(
+        t("invite.sent", { email: res.invitation_email || person.primary_email || "" }),
+      );
     } catch (err) {
       const status = errorStatus(err);
       if (status === 409) {
-        toast.error("An invitation already exists for this person");
+        toast.error(t("invite.exists"));
         return;
       }
       if (status === 422) {
-        toast.error("This person is already linked to a platform user");
+        toast.error(t("invite.alreadyLinked"));
         return;
       }
-      toastApiError(err, "Could not send the invitation");
+      toastApiError(err, t("invite.error"));
     }
   };
 
@@ -51,13 +56,14 @@ export function PersonInviteDialog({
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={`Invite ${person.name} to the platform?`}
+      title={t("invite.title", { name: person.name })}
       description={
         <>
           <span className="block">
-            We&rsquo;ll email an invitation to{" "}
-            <span className="font-medium text-gray-900">{person.primary_email}</span>. When they
-            accept, their account is linked to this record.
+            {t.rich("invite.body", {
+              email: person.primary_email ?? "",
+              b: (chunks) => <span className="font-medium text-gray-900">{chunks}</span>,
+            })}
           </span>
           <label
             htmlFor="invite-as-admin"
@@ -69,11 +75,11 @@ export function PersonInviteDialog({
               onCheckedChange={(checked) => setAsAdmin(checked)}
               disabled={isLoading}
             />
-            Invite as admin
+            {t("invite.asAdmin")}
           </label>
         </>
       }
-      confirmLabel="Send invitation"
+      confirmLabel={t("invite.submit")}
       loading={isLoading}
       onConfirm={confirm}
     />

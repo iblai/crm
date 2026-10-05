@@ -1,173 +1,83 @@
 "use client";
 
 import { useMemo } from "react";
-import { useDealLookups } from "@/components/crm/deals/use-lookups";
-import { useListActivitiesQuery, useListAllDealsQuery } from "@/lib/crm/api";
-import { dealValue, sortStages, toDate, weightedValue } from "@/lib/crm/format";
-import type { Deal } from "@/lib/crm/types";
+import {
+  useListActivitiesQuery,
+  useListDealsQuery,
+  useListPersonsQuery,
+  useOverviewQuery,
+} from "@/lib/crm/api";
 import config from "@/lib/iblai/config";
 
-function startOfDay(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+/** `month` reads the overview's this-month figures; the others send a `date_filter`. */
+export const DASHBOARD_PERIODS = ["month", "today", "7d", "30d", "90d"] as const;
+export type DashboardPeriod = (typeof DASHBOARD_PERIODS)[number];
+
+/** `YYYY-MM` → the local first of that month (`new Date("2026-10")` is UTC midnight). */
+function monthStart(month: string) {
+  const [year, m] = month.split("-").map(Number);
+  return new Date(year, m - 1, 1);
 }
 
-/** Today's window and "now", read outside the render body. */
-function todayWindow() {
-  const today = startOfDay(new Date());
-  return {
-    today,
-    tomorrow: new Date(today.getTime() + 24 * 60 * 60 * 1000),
-    now: Date.now(),
-  };
-}
-
-/** The currency most of the money is in — the dashboard totals one currency. */
-function dominantCurrency(deals: Deal[]) {
-  const tally = new Map<string, number>();
-  for (const d of deals) {
-    const c = d.currency || config.defaultCurrency();
-    tally.set(c, (tally.get(c) ?? 0) + 1);
-  }
-  let best = config.defaultCurrency();
-  let bestN = 0;
-  for (const [c, n] of tally) if (n > bestN) [best, bestN] = [c, n];
-  return best;
-}
-
-/**
- * Everything the home dashboard shows, derived from three cached queries:
- * every deal, the first page of people, and the open activities.
- */
-export function useDashboardData() {
-  const lookups = useDealLookups();
-  const { data: deals, isLoading: dealsLoading } = useListAllDealsQuery();
-  const { data: activities, isLoading: activitiesLoading } = useListActivitiesQuery({
+/** Everything the home dashboard shows: `/overview/` plus three five-row lists. */
+export function useDashboardData(period: DashboardPeriod, locale: string) {
+  const overview = useOverviewQuery(period === "month" ? {} : { date_filter: period });
+  const people = useListPersonsQuery({ active: true, ordering: "-created_at", page_size: 5 });
+  const deals = useListDealsQuery({ ordering: "-created_at", page_size: 5 });
+  const upNext = useListActivitiesQuery({
     is_done: false,
-    page_size: 100,
+    ordering: "schedule_from",
+    page_size: 6,
   });
 
-  const rows = useMemo(() => deals ?? [], [deals]);
-  const openDeals = useMemo(() => rows.filter((d) => d.status === "open"), [rows]);
+  const data = overview.currentData;
+  const dealStats = data?.deals;
+  const currency = dealStats?.currency || config.defaultCurrency();
 
-  const stats = useMemo(() => {
-    const currency = dominantCurrency(rows.length ? rows : []);
-    const pipelineValue = openDeals.reduce((sum, d) => sum + dealValue(d), 0);
-    const weighted = openDeals.reduce(
-      (sum, d) => sum + weightedValue(d, lookups.stageById.get(d.stage)),
-      0,
-    );
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const wonThisMonth = rows.filter((d) => {
-      if (d.status !== "won") return false;
-      const closed = toDate(d.closed_at);
-      return !!closed && closed >= monthStart;
-    });
-    return {
-      currency,
-      openCount: openDeals.length,
-      pipelineValue,
-      weighted,
-      wonCount: wonThisMonth.length,
-      wonValue: wonThisMonth.reduce((sum, d) => sum + dealValue(d), 0),
-    };
-  }, [rows, openDeals, lookups.stageById]);
-
-  const upcoming = useMemo(() => {
-    const open = (activities?.results ?? []).filter((a) => !a.is_done);
-    const withSchedule = open
-      .filter((a) => !!a.schedule_from)
-      .sort(
-        (a, b) =>
-          new Date(a.schedule_from as string).getTime() -
-          new Date(b.schedule_from as string).getTime(),
-      );
-    const { today, tomorrow, now } = todayWindow();
-    const dueToday = withSchedule.filter((a) => {
-      const d = toDate(a.schedule_from);
-      return !!d && d >= today && d < tomorrow;
-    }).length;
-    const overdue = withSchedule.filter((a) => {
-      const d = toDate(a.schedule_from);
-      return !!d && d.getTime() < now;
-    }).length;
-    return { list: withSchedule.concat(open.filter((a) => !a.schedule_from)), dueToday, overdue };
-  }, [activities]);
-
-  const recentPeople = useMemo(
+  const stageBreakdown = useMemo(
     () =>
-      [...lookups.persons]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 5),
-    [lookups.persons],
+      (dealStats?.by_stage ?? [])
+        .filter((s) => !s.stage.is_won && !s.stage.is_lost)
+        .map((s) => ({ name: s.stage.name, count: s.count, value: Number(s.total_value) })),
+    [dealStats],
   );
-
-  const recentDeals = useMemo(
-    () =>
-      [...rows]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 5),
-    [rows],
-  );
-
-  const stageBreakdown = useMemo(() => {
-    const pipeline = lookups.defaultPipeline;
-    const stages = sortStages(pipeline?.stages ?? []).filter((s) => !s.is_won && !s.is_lost);
-    return stages.map((stage) => {
-      const inStage = openDeals.filter((d) => d.stage === stage.id);
-      return {
-        name: stage.name,
-        count: inStage.length,
-        value: inStage.reduce((sum, d) => sum + dealValue(d), 0),
-      };
-    });
-  }, [lookups.defaultPipeline, openDeals]);
 
   const wonLostByMonth = useMemo(() => {
-    const now = new Date();
-    const buckets: { key: string; label: string; won: number; lost: number; wonValue: number; lostValue: number }[] =
-      [];
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      buckets.push({
-        key: `${d.getFullYear()}-${d.getMonth()}`,
-        label: d.toLocaleDateString(undefined, { month: "short" }),
-        won: 0,
-        lost: 0,
-        wonValue: 0,
-        lostValue: 0,
-      });
-    }
-    const index = new Map(buckets.map((b) => [b.key, b]));
-    for (const deal of rows) {
-      if (deal.status === "open") continue;
-      const closed = toDate(deal.closed_at);
-      if (!closed) continue;
-      const bucket = index.get(`${closed.getFullYear()}-${closed.getMonth()}`);
-      if (!bucket) continue;
-      if (deal.status === "won") {
-        bucket.won += 1;
-        bucket.wonValue += dealValue(deal);
-      } else {
-        bucket.lost += 1;
-        bucket.lostValue += dealValue(deal);
-      }
-    }
-    return buckets;
-  }, [rows]);
+    const label = new Intl.DateTimeFormat(locale, { month: "short" });
+    return (dealStats?.won_lost_by_month ?? []).map((m) => ({
+      key: m.month,
+      label: label.format(monthStart(m.month)),
+      won: m.won_count,
+      lost: m.lost_count,
+      wonValue: Number(m.won_value),
+      lostValue: Number(m.lost_value),
+    }));
+  }, [dealStats, locale]);
+
+  const won =
+    period === "month"
+      ? dealStats && {
+          count: dealStats.won_this_month_count,
+          value: Number(dealStats.won_this_month_value),
+        }
+      : data?.period_deals_won !== undefined
+        ? { count: data.period_deals_won, value: Number(data.period_deals_won_value ?? 0) }
+        : undefined;
 
   return {
-    lookups,
-    deals: rows,
-    openDeals,
-    stats,
-    upcoming,
-    recentPeople,
-    recentDeals,
+    overview: data,
+    error: overview.error,
+    isLoading: overview.isLoading || (overview.isFetching && !overview.currentData),
+    errors: { people: people.error, deals: deals.error, upNext: upNext.error },
+    isFetching: overview.isFetching,
+    currency,
+    won,
     stageBreakdown,
     wonLostByMonth,
-    peopleCount: lookups.personCount,
-    isLoading: dealsLoading || activitiesLoading || lookups.isLoading,
-    isEmptyOrg: !dealsLoading && !lookups.isLoading && rows.length === 0 && lookups.personCount === 0,
+    recentPeople: people.data?.results ?? [],
+    recentDeals: deals.data?.results ?? [],
+    upNext: upNext.data?.results ?? [],
+    isEmptyOrg:
+      data?.persons?.count === 0 && data.organizations?.count === 0 && data.deals?.open_count === 0,
   };
 }

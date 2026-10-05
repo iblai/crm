@@ -5,4 +5,12 @@ src-tauri/target
 src-tauri/gen
 .git
 playwright
+e2e/playwright
 test-results
+playwright-report
+coverage
+.env*
+iblai.env*
+e2e/.env*
+CLAUDE.local.md
+.claude

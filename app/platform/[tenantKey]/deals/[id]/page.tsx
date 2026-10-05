@@ -12,18 +12,24 @@ import {
   Trash2,
   User,
 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DealStatusBadge } from "@/components/crm/badges";
 import { EmptyState } from "@/components/crm/empty-state";
+import { LoadError } from "@/components/crm/load-error";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { FieldRow, InlineSelect, InlineText } from "@/components/crm/inline-field";
 import { OwnerSelect } from "@/components/crm/owner-select";
 import { TagPicker } from "@/components/crm/tag-picker";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
+import { FavoriteButton } from "@/components/crm/favorite-button";
+import { HistoryTab } from "@/components/crm/history-tab";
+import { SearchPicker } from "@/components/crm/search-picker";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useBreadcrumbs } from "@/components/crm/breadcrumbs";
 import { isOverdue } from "@/components/crm/deals/deal-card";
 import { StageStepper } from "@/components/crm/deals/stage-stepper";
@@ -62,6 +68,10 @@ const CURRENCIES = [
 ];
 
 export default function DealDetailPage() {
+  const t = useTranslations("deals");
+  const tc = useTranslations("common");
+  const tn = useTranslations("nav");
+  const locale = useLocale();
   const params = useParams<{ id: string }>();
   const dealId = Number(params?.id);
   const router = useRouter();
@@ -89,17 +99,13 @@ export default function DealDetailPage() {
 
   useBreadcrumbs(
     useMemo(
-      () => [{ label: "Deals", href: href("/deals") }, { label: deal?.title ?? "Deal" }],
-      [href, deal?.title],
+      () => [{ label: tn("deals"), href: href("/deals") }, { label: deal?.title ?? t("deal") }],
+      [href, deal?.title, t, tn],
     ),
   );
 
   const pipeline = deal ? lookups.pipelineById.get(deal.pipeline) : undefined;
   const stage = deal ? lookups.stageById.get(deal.stage) : undefined;
-  const person = deal ? lookups.personById.get(deal.person) : undefined;
-  const organization = deal?.organization
-    ? lookups.organizationById.get(deal.organization)
-    : undefined;
   const firstOpenStage = openStages(pipeline)[0];
 
   const patch = async (body: DealInput) => {
@@ -107,7 +113,7 @@ export default function DealDetailPage() {
     try {
       await updateDeal({ id: deal.id, body }).unwrap();
     } catch (err) {
-      toast.error(errorMessage(err));
+      toast.error(errorMessage(err, tc("errorGeneric")));
     }
   };
 
@@ -117,7 +123,7 @@ export default function DealDetailPage() {
       await moveStage({ id: deal.id, stage_id: stageId }).unwrap();
       toast.success(message);
     } catch (err) {
-      toast.error(errorMessage(err, "Could not move the deal"));
+      toast.error(errorMessage(err, t("toast.moveFailed")));
     } finally {
       setPendingStage(null);
     }
@@ -128,14 +134,22 @@ export default function DealDetailPage() {
       <div className="flex-1 overflow-auto p-6">
         <EmptyState
           icon={<Handshake />}
-          title="Deal not found"
-          description="This deal may have been deleted, or it belongs to another organization."
+          title={t("detail.notFoundTitle")}
+          description={t("detail.notFoundDescription")}
           action={
             <Button variant="outline" onClick={() => router.push(href("/deals"))}>
-              Back to deals
+              {t("detail.backToDeals")}
             </Button>
           }
         />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex-1 overflow-auto p-6">
+        <LoadError error={error} />
       </div>
     );
   }
@@ -167,7 +181,7 @@ export default function DealDetailPage() {
       setPendingStage(target);
       return;
     }
-    void doMove(target.id, `Moved to ${target.name}`);
+    void doMove(target.id, t("toast.moved", { stage: target.name }));
   };
 
   return (
@@ -191,13 +205,13 @@ export default function DealDetailPage() {
                     <InlineText
                       value={deal.title}
                       onSave={(v) => patch({ title: v.trim() || deal.title })}
-                      placeholder="Untitled deal"
+                      placeholder={t("detail.untitled")}
                     />
                   </div>
                   <DealStatusBadge status={deal.status} />
                 </div>
                 <p className="mt-1 text-2xl font-semibold tracking-tight text-gray-900 tabular-nums">
-                  {formatCurrency(deal.lead_value, deal.currency)}
+                  {formatCurrency(deal.lead_value, deal.currency, locale)}
                 </p>
                 <div className="text-muted-foreground mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
                   <Link
@@ -205,7 +219,7 @@ export default function DealDetailPage() {
                     className="inline-flex items-center gap-1 text-[#0058cc] hover:underline"
                   >
                     <User className="size-3" />
-                    {person?.name ?? "Unknown person"}
+                    {deal.person_name}
                   </Link>
                   {deal.organization ? (
                     <Link
@@ -213,14 +227,15 @@ export default function DealDetailPage() {
                       className="inline-flex items-center gap-1 text-[#0058cc] hover:underline"
                     >
                       <Building2 className="size-3" />
-                      {organization?.name ?? "Organization"}
+                      {deal.organization_name ?? t("fields.organization")}
                     </Link>
                   ) : null}
-                  <span>{pipeline?.name ?? "Pipeline"}</span>
+                  <span>{pipeline?.name ?? t("fields.pipeline")}</span>
                   {deal.expected_close_date ? (
                     <span className={cn(overdue && "font-medium text-rose-600")}>
-                      {overdue ? "Overdue · " : "Closes "}
-                      {formatDate(deal.expected_close_date)}
+                      {t(overdue ? "closeDate.overdue" : "closeDate.closes", {
+                        date: formatDate(deal.expected_close_date, locale),
+                      })}
                     </span>
                   ) : null}
                 </div>
@@ -228,6 +243,7 @@ export default function DealDetailPage() {
             </div>
 
             <div className="flex shrink-0 flex-wrap items-center gap-2">
+              <FavoriteButton target={{ deal: deal.id }} />
               {closed ? (
                 <Tooltip>
                   <TooltipTrigger
@@ -240,11 +256,12 @@ export default function DealDetailPage() {
                       />
                     }
                   >
-                    <RotateCcw data-icon="inline-start" /> Reopen
+                    <RotateCcw data-icon="inline-start" /> {t("actions.reopen")}
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
-                    Put the deal back in {firstOpenStage?.name ?? "the first stage"} and clear its
-                    close date
+                    {t("detail.reopenHint", {
+                      stage: firstOpenStage?.name ?? t("detail.firstStage"),
+                    })}
                   </TooltipContent>
                 </Tooltip>
               ) : (
@@ -260,11 +277,9 @@ export default function DealDetailPage() {
                         />
                       }
                     >
-                      <CircleCheckBig data-icon="inline-start" /> Mark won
+                      <CircleCheckBig data-icon="inline-start" /> {t("actions.markWon")}
                     </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      Close the deal as won at its current value
-                    </TooltipContent>
+                    <TooltipContent side="bottom">{t("detail.markWonHint")}</TooltipContent>
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger
@@ -281,11 +296,9 @@ export default function DealDetailPage() {
                         />
                       }
                     >
-                      <CircleX data-icon="inline-start" /> Mark lost
+                      <CircleX data-icon="inline-start" /> {t("actions.markLost")}
                     </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      Close the deal as lost — you are asked for a reason
-                    </TooltipContent>
+                    <TooltipContent side="bottom">{t("detail.markLostHint")}</TooltipContent>
                   </Tooltip>
                 </>
               )}
@@ -295,7 +308,7 @@ export default function DealDetailPage() {
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label="Delete deal"
+                      aria-label={t("detail.deleteLabel")}
                       className="text-gray-400 hover:text-rose-600"
                       onClick={() => setConfirmDelete(true)}
                     />
@@ -303,9 +316,7 @@ export default function DealDetailPage() {
                 >
                   <Trash2 />
                 </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  Delete this deal and its activity — this cannot be undone
-                </TooltipContent>
+                <TooltipContent side="bottom">{t("detail.deleteHint")}</TooltipContent>
               </Tooltip>
             </div>
           </div>
@@ -325,59 +336,59 @@ export default function DealDetailPage() {
         <div className="grid gap-4 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
           <aside className="rounded-xl border border-[var(--border-color,#e5e7eb)] bg-white p-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
             <h2 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
-              Details
+              {tc("details")}
             </h2>
             <dl className="divide-y divide-gray-100">
-              <FieldRow label="Person">
+              <FieldRow label={t("fields.person")}>
                 <Link
                   href={href(`/people/${deal.person}`)}
                   className="inline-flex min-w-0 items-center gap-1.5 text-[#0058cc] hover:underline"
                 >
-                  <EntityAvatar name={person?.name ?? "?"} seed={deal.person} size="xs" />
-                  <span className="truncate">{person?.name ?? "Unknown person"}</span>
+                  <EntityAvatar name={deal.person_name} seed={deal.person} size="xs" />
+                  <span className="truncate">{deal.person_name}</span>
                 </Link>
               </FieldRow>
 
-              <FieldRow label="Organization">
+              <FieldRow label={t("fields.organization")}>
                 <div className="space-y-1">
-                  <InlineSelect
-                    value={deal.organization ?? ""}
-                    options={lookups.organizations.map((o) => ({ value: o.id, label: o.name }))}
-                    onSave={(v) => patch({ organization: v || null })}
-                    allowEmpty
-                    emptyLabel="No organization"
-                    placeholder="No organization"
+                  <SearchPicker
+                    kind="organization"
+                    value={deal.organization}
+                    onChange={(id) => void patch({ organization: id })}
+                    placeholder={t("fields.noOrganization")}
+                    size="sm"
+                    className="h-8 border-transparent bg-transparent shadow-none hover:bg-gray-50"
                   />
                   {deal.organization ? (
                     <Link
                       href={href(`/organizations/${deal.organization}`)}
                       className="ml-1.5 text-xs text-[#0058cc] hover:underline"
                     >
-                      Open organization
+                      {t("detail.openOrganization")}
                     </Link>
                   ) : null}
                 </div>
               </FieldRow>
 
-              <FieldRow label="Pipeline">
+              <FieldRow label={t("fields.pipeline")}>
                 <span className="text-gray-700">{pipeline?.name ?? `#${deal.pipeline}`}</span>
               </FieldRow>
 
-              <FieldRow label="Stage" hint="Move the deal with the stage pills above.">
+              <FieldRow label={t("fields.stage")} hint={t("detail.stageHint")}>
                 <span className="text-gray-700">{stage?.name ?? `#${deal.stage}`}</span>
               </FieldRow>
 
-              <FieldRow label="Value">
+              <FieldRow label={t("fields.value")}>
                 <InlineText
                   value={deal.lead_value ?? ""}
                   type="number"
                   onSave={(v) => patch({ lead_value: v.trim() ? String(Number(v)) : "0" })}
-                  placeholder="No value"
-                  render={(v) => formatCurrency(v, deal.currency)}
+                  placeholder={t("detail.noValue")}
+                  render={(v) => formatCurrency(v, deal.currency, locale)}
                 />
               </FieldRow>
 
-              <FieldRow label="Currency">
+              <FieldRow label={t("fields.currency")}>
                 <InlineSelect
                   value={deal.currency ?? "USD"}
                   options={CURRENCIES.map((c) => ({ value: c, label: c }))}
@@ -385,18 +396,18 @@ export default function DealDetailPage() {
                 />
               </FieldRow>
 
-              <FieldRow label="Source" hint="Where this deal came from; managed in Settings.">
+              <FieldRow label={t("fields.source")} hint={t("detail.sourceHint")}>
                 <InlineSelect
                   value={deal.source ? String(deal.source) : ""}
                   options={lookups.sources.map((s) => ({ value: String(s.id), label: s.name }))}
                   onSave={(v) => patch({ source: v ? Number(v) : null })}
                   allowEmpty
-                  emptyLabel="No source"
-                  placeholder="No source"
+                  emptyLabel={t("fields.noSource")}
+                  placeholder={t("fields.noSource")}
                 />
               </FieldRow>
 
-              <FieldRow label="Owner">
+              <FieldRow label={tc("owner")}>
                 <OwnerSelect
                   value={deal.owner}
                   onChange={(o) => void patch({ owner: o })}
@@ -405,36 +416,33 @@ export default function DealDetailPage() {
                 />
               </FieldRow>
 
-              <FieldRow
-                label="Expected close"
-                hint="Turns red once the date passes while the deal is open."
-              >
+              <FieldRow label={t("fields.expectedClose")} hint={t("detail.expectedCloseHint")}>
                 <InlineText
                   value={deal.expected_close_date ?? ""}
                   type="date"
                   onSave={(v) => patch({ expected_close_date: v || null })}
-                  placeholder="No date"
+                  placeholder={t("detail.noDate")}
                   render={(v) => (
                     <span className={cn(overdue && "font-medium text-rose-600")}>
-                      {formatDate(v)}
+                      {formatDate(v, locale)}
                     </span>
                   )}
                 />
               </FieldRow>
 
               {closed ? (
-                <FieldRow label="Closed at">
-                  <span className="text-gray-700">{formatDateTime(deal.closed_at)}</span>
+                <FieldRow label={t("fields.closedAt")}>
+                  <span className="text-gray-700">{formatDateTime(deal.closed_at, locale)}</span>
                 </FieldRow>
               ) : null}
 
               {deal.status === "lost" ? (
-                <FieldRow label="Lost reason">
+                <FieldRow label={t("fields.lostReason")}>
                   <span className="text-rose-700">{deal.lost_reason || "—"}</span>
                 </FieldRow>
               ) : null}
 
-              <FieldRow label="Tags" hint="Shared labels; manage them under Tags.">
+              <FieldRow label={tc("tags")} hint={t("detail.tagsHint")}>
                 <TagPicker
                   tags={deal.tags ?? []}
                   onAttach={(tagId) => attachTag({ id: deal.id, tag_id: tagId }).unwrap()}
@@ -443,34 +451,42 @@ export default function DealDetailPage() {
                 />
               </FieldRow>
 
-              <FieldRow label="Description">
+              <FieldRow label={tc("description")}>
                 <InlineText
                   value={deal.description ?? ""}
                   multiline
                   onSave={(v) => patch({ description: v })}
-                  placeholder="Add a description"
+                  placeholder={t("detail.descriptionPlaceholder")}
                 />
               </FieldRow>
 
-              <FieldRow label="Created">
-                <span className="text-gray-600" title={formatDateTime(deal.created_at)}>
-                  {formatRelative(deal.created_at)}
+              <FieldRow label={tc("created")}>
+                <span className="text-gray-600" title={formatDateTime(deal.created_at, locale)}>
+                  {formatRelative(deal.created_at, locale)}
                 </span>
               </FieldRow>
 
-              <FieldRow label="Updated">
-                <span className="text-gray-600" title={formatDateTime(deal.updated_at)}>
-                  {formatRelative(deal.updated_at)}
+              <FieldRow label={tc("updated")}>
+                <span className="text-gray-600" title={formatDateTime(deal.updated_at, locale)}>
+                  {formatRelative(deal.updated_at, locale)}
                 </span>
               </FieldRow>
             </dl>
           </aside>
 
           <section className="min-w-0">
-            <h2 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
-              Activity
-            </h2>
-            <ActivityTimeline deal={deal.id} />
+            <Tabs defaultValue="timeline">
+              <TabsList variant="line">
+                <TabsTrigger value="timeline">{t("detail.activity")}</TabsTrigger>
+                <TabsTrigger value="history">{tc("history")}</TabsTrigger>
+              </TabsList>
+              <TabsContent value="timeline" className="pt-4">
+                <ActivityTimeline deal={deal.id} />
+              </TabsContent>
+              <TabsContent value="history" className="pt-4">
+                <HistoryTab kind="deal" id={deal.id} />
+              </TabsContent>
+            </Tabs>
           </section>
         </div>
       </div>
@@ -481,23 +497,26 @@ export default function DealDetailPage() {
         onOpenChange={(o) => !o && setPendingStage(null)}
         title={
           closed && pendingStage && !pendingStage.is_won && !pendingStage.is_lost
-            ? "Reopen this deal?"
-            : `Move to ${pendingStage?.name ?? "stage"}?`
+            ? t("confirm.reopenTitle")
+            : t("confirm.moveTitle", { stage: pendingStage?.name ?? t("confirm.stage") })
         }
         description={
           closed && pendingStage && !pendingStage.is_won && !pendingStage.is_lost
-            ? `The deal reopens in “${pendingStage.name}” and its close date is cleared.`
-            : `“${deal.title}” moves to ${pendingStage?.name ?? "this stage"}${
-                pendingStage?.is_won ? " and closes as won" : ""
-              }.`
+            ? t("confirm.reopenDescription", { stage: pendingStage.name })
+            : t(pendingStage?.is_won ? "confirm.moveWonDescription" : "confirm.moveDescription", {
+                title: deal.title,
+                stage: pendingStage?.name ?? t("confirm.thisStage"),
+              })
         }
-        confirmLabel="Move"
+        confirmLabel={t("confirm.move")}
         loading={moving}
         onConfirm={() =>
           pendingStage
             ? doMove(
                 pendingStage.id,
-                closed && !pendingStage.is_won ? "Deal reopened" : `Moved to ${pendingStage.name}`,
+                closed && !pendingStage.is_won
+                  ? t("toast.reopened")
+                  : t("toast.moved", { stage: pendingStage.name }),
               )
             : undefined
         }
@@ -506,17 +525,20 @@ export default function DealDetailPage() {
       <ConfirmDialog
         open={confirmWon}
         onOpenChange={setConfirmWon}
-        title="Mark this deal won?"
-        description={`“${deal.title}” closes as won at ${formatCurrency(deal.lead_value, deal.currency)}.`}
-        confirmLabel="Mark won"
+        title={t("confirm.wonTitle")}
+        description={t("confirm.wonDescription", {
+          title: deal.title,
+          value: formatCurrency(deal.lead_value, deal.currency, locale),
+        })}
+        confirmLabel={t("actions.markWon")}
         loading={winning}
         onConfirm={async () => {
           try {
             await markWon({ id: deal.id }).unwrap();
             setConfirmWon(false);
-            toast.success("Deal won 🎉");
+            toast.success(t("toast.won"));
           } catch (err) {
-            toast.error(errorMessage(err));
+            toast.error(errorMessage(err, tc("errorGeneric")));
           }
         }}
       />
@@ -534,9 +556,9 @@ export default function DealDetailPage() {
             }).unwrap();
             setLostOpen(false);
             setLostStage(null);
-            toast.success("Deal marked lost");
+            toast.success(t("toast.lost"));
           } catch (err) {
-            toast.error(errorMessage(err));
+            toast.error(errorMessage(err, tc("errorGeneric")));
           }
         }}
       />
@@ -544,18 +566,18 @@ export default function DealDetailPage() {
       <ConfirmDialog
         open={confirmDelete}
         onOpenChange={setConfirmDelete}
-        title="Delete this deal?"
-        description={`“${deal.title}” and its activity will be permanently removed.`}
-        confirmLabel="Delete"
+        title={t("confirm.deleteTitle")}
+        description={t("confirm.deleteDescription", { title: deal.title })}
+        confirmLabel={tc("delete")}
         destructive
         loading={removing}
         onConfirm={async () => {
           try {
             await removeDeal(deal.id).unwrap();
-            toast.success("Deal deleted");
+            toast.success(t("toast.deleted"));
             router.push(href("/deals"));
           } catch (err) {
-            toast.error(errorMessage(err));
+            toast.error(errorMessage(err, tc("errorGeneric")));
           }
         }}
       />

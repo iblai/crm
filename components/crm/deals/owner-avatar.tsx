@@ -1,18 +1,21 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { memberLabel, useMembers } from "@/hooks/use-members";
+import { useMemberLabel, useMembers } from "@/hooks/use-members";
 import { useSession } from "@/hooks/use-session";
 
 /** Resolve an owner id to a display name through the member directory. */
 export function useOwnerLabel() {
+  const t = useTranslations("deals");
   const { tenantKey, userId, displayName } = useSession();
   const { byId } = useMembers(tenantKey);
+  const memberLabel = useMemberLabel();
   return (ownerId?: number | null) => {
-    if (!ownerId) return "Unassigned";
+    if (!ownerId) return t("owner.unassigned");
     const member = byId.get(ownerId);
-    if (!member && ownerId === userId) return displayName || "Me";
+    if (!member && ownerId === userId) return displayName || t("owner.me");
     return memberLabel(member, ownerId);
   };
 }
@@ -25,6 +28,7 @@ export function OwnerAvatar({
   ownerId?: number | null;
   size?: "xs" | "sm" | "md";
 }) {
+  const t = useTranslations("deals");
   const label = useOwnerLabel()(ownerId);
   if (!ownerId) {
     return (
@@ -36,7 +40,7 @@ export function OwnerAvatar({
         >
           ?
         </TooltipTrigger>
-        <TooltipContent>Unassigned</TooltipContent>
+        <TooltipContent>{t("owner.unassigned")}</TooltipContent>
       </Tooltip>
     );
   }

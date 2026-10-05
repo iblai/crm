@@ -1,0 +1,1035 @@
+{
+  "activities": {
+    "composer": {
+      "add": "添加",
+      "detailsPlaceholder": "详情、结果、后续步骤…",
+      "needsTime": "— 需要设置时间",
+      "placeholder": "{type, select, note {写一条备注…} call {记录一次电话…} meeting {记录一次会议…} email {记录一封邮件…} task {记录一项任务…} lunch {记录一次午餐…} deadline {记录一个截止日期…} other {记录一项活动…}}",
+      "remind": "在安排的时间提醒负责人",
+      "reminderHint": "将在安排的时间向负责人发送提醒",
+      "reminderNeedsWhen": "请先在“时间”中设置时间",
+      "titleLabel": "活动标题",
+      "when": "时间",
+      "whenAbout": "关于“时间”字段",
+      "whenHint": "留空则立即记录；设置时间则安排日程"
+    },
+    "confirm": {
+      "deleteDescription": "“{title}”将从时间线中移除。",
+      "deleteTitle": "删除此活动？"
+    },
+    "dialog": {
+      "alreadyDone": "已完成",
+      "organization": "组织",
+      "create": "创建活动",
+      "deal": "商机",
+      "description": "电话、会议、任务和备注属于某个联系人、商机或组织。",
+      "detailsPlaceholder": "议程、结果、后续步骤…",
+      "editTitle": "编辑活动",
+      "ends": "结束",
+      "linkHint": "选择联系人、商机或组织。",
+      "linkRequired": "请将活动关联到联系人、组织或商机。",
+      "noOrganization": "无组织",
+      "noDeal": "无商机",
+      "noPerson": "无联系人",
+      "ownerAbout": "关于“负责人”字段",
+      "ownerHint": "决定此活动出现在谁的“我的”列表中",
+      "person": "联系人",
+      "remind": "提醒负责人",
+      "remindOff": "设置开始时间以启用提醒。",
+      "remindOn": "将在开始时间发送提醒。",
+      "saveChanges": "保存更改",
+      "starts": "开始",
+      "startsAbout": "关于开始时间",
+      "startsHint": "未安排的工作可留空；提醒需要设置时间",
+      "titleLabel": "标题",
+      "titlePlaceholder": "与团队的介绍电话…",
+      "titleRequired": "标题为必填项。",
+      "type": "类型",
+      "typeAbout": "关于“类型”字段",
+      "dealMismatch": "该商机属于另一位联系人。"
+    },
+    "list": {
+      "allHint": "全部：进行中和已完成的一起显示",
+      "allTypes": "全部类型",
+      "description": "所有商机和联系人的电话、会议、任务和备注",
+      "doneHint": "已完成：已经做完的",
+      "emptyEveryone": "没有符合这些筛选条件的活动。请扩大日期范围，或在联系人或商机页面记录电话或任务。",
+      "emptyMine": "没有符合这些筛选条件的您的活动。试试“所有人”、扩大日期范围，或在联系人或商机页面记录电话或任务。",
+      "emptyTitle": "这里没有安排",
+      "everyone": "所有人",
+      "everyoneHint": "所有人：团队中任何人负责的活动",
+      "mine": "我的",
+      "mineHint": "我的：由您负责的活动",
+      "newHint": "记录电话或备注，或安排任务或会议",
+      "openHint": "进行中：尚待完成",
+      "paginationLabel": "活动",
+      "rangeLabel": "日期范围",
+      "refreshing": "刷新中…",
+      "scopeLabel": "负责人范围",
+      "statusLabel": "状态"
+    },
+    "location": "地点 / 链接",
+    "locationPlaceholder": "Zoom、办公室、电话…",
+    "newActivity": "新建活动",
+    "range": {
+      "all": "全部日期",
+      "next7": "未来 7 天",
+      "week": "本周"
+    },
+    "schedule": {
+      "overdue": "已逾期 · {date}",
+      "today": "今天 · {time}",
+      "tomorrow": "明天 · {time}"
+    },
+    "sections": {
+      "overdueAbout": "关于已逾期",
+      "overdueInfo": "安排在今天之前且尚未完成。",
+      "todayAbout": "关于今天",
+      "todayInfo": "安排在今天且仍未完成。",
+      "unscheduledAbout": "关于未安排",
+      "unscheduledInfo": "尚无日期的未完成工作，最新的在前。",
+      "upcoming": "即将到来",
+      "upcomingAbout": "关于即将到来",
+      "upcomingInfo": "安排在今天之后。"
+    },
+    "timeline": {
+      "dealLink": "商机 #{id}",
+      "doneAgo": "{when}完成",
+      "empty": "暂无活动。可在上方记录电话、安排会议或留下备注。",
+      "historyAbout": "关于历史记录",
+      "historyHint": "所有已完成的事项，最新的在前；备注也会出现在这里",
+      "loggedAgo": "{when}记录",
+      "markDone": "标记完成",
+      "markDoneLabel": "标记为已完成",
+      "markNotDone": "标记未完成",
+      "markNotDoneLabel": "标记为未完成",
+      "moreHint": "此活动的更多操作",
+      "openAbout": "关于进行中的活动",
+      "openHint": "尚未完成：勾选圆圈即可完成",
+      "viewPerson": "查看联系人",
+      "viewOrganization": "查看组织",
+      "stageChanged": "阶段已变更"
+    },
+    "toast": {
+      "created": "活动已创建",
+      "deleted": "活动已删除",
+      "logged": "活动已记录",
+      "noteAdded": "备注已添加",
+      "updated": "活动已更新"
+    },
+    "typeHint": "备注记录为已完成；电话、会议和任务可以安排时间",
+    "typeLabel": "活动类型"
+  },
+  "admin": {
+    "users": {
+      "description": "本组织的成员、群组、角色和策略，包括 CRM Viewer、User、Manager 和 Inviter 角色",
+      "invite": "邀请用户",
+      "pendingInvites": "待处理的邀请",
+      "title": "用户与角色"
+    }
+  },
+  "auth": {
+    "completingSignIn": "正在完成登录…"
+  },
+  "breadcrumbs": {
+    "admin": "管理",
+    "label": "面包屑导航",
+    "notifications": "通知",
+    "users": "用户与角色"
+  },
+  "common": {
+    "admin": "管理员",
+    "all": "全部",
+    "cancel": "取消",
+    "clear": "清除",
+    "clearFilters": "清除筛选",
+    "clearSearch": "清除搜索",
+    "clickToEdit": "点击编辑",
+    "confirm": "确认",
+    "create": "创建",
+    "created": "创建时间",
+    "delete": "删除",
+    "deletedToast": "已删除 {name}",
+    "description": "描述",
+    "details": "详情",
+    "done": "已完成",
+    "edit": "编辑",
+    "email": "邮箱",
+    "empty": "空",
+    "errorForbidden": "您没有执行此操作的权限",
+    "errorGeneric": "出了点问题",
+    "history": "历史",
+    "loading": "加载中…",
+    "me": "我",
+    "member": "成员",
+    "moreActions": "更多操作",
+    "name": "名称",
+    "next": "下一页",
+    "no": "否",
+    "none": "无",
+    "open": "进行中",
+    "overdue": "已逾期",
+    "owner": "负责人",
+    "page": "第 {page} 页，共 {total} 页",
+    "previous": "上一页",
+    "remove": "移除",
+    "save": "保存",
+    "search": "搜索",
+    "showing": "第 {from}–{to} 条，共 {count} 条{label}",
+    "tags": "标签",
+    "timeline": "时间线",
+    "today": "今天",
+    "tomorrow": "明天",
+    "unscheduled": "未安排",
+    "updated": "更新时间",
+    "user": "用户",
+    "yes": "是",
+    "errorLoadTitle": "无法加载",
+    "errorProtectedByDeals": "{count, plural, other {仍有 # 个商机引用此记录。}}",
+    "errorNetwork": "无法连接到服务器。"
+  },
+  "organizations": {
+    "actions": {
+      "new": "新建组织",
+      "newHint": "添加组织，然后关联其联系人和商机"
+    },
+    "address": {
+      "add": {
+        "city": "添加城市",
+        "country": "添加国家/地区",
+        "postalCode": "添加邮政编码",
+        "state": "添加省/州",
+        "street": "添加街道地址"
+      },
+      "city": "城市",
+      "country": "国家/地区",
+      "example": {
+        "city": "上海",
+        "country": "中国",
+        "postalCode": "200000",
+        "state": "上海市",
+        "street": "人民路 1 号"
+      },
+      "postalCode": "邮政编码",
+      "state": "省 / 州",
+      "street": "街道地址"
+    },
+    "detail": {
+      "addPerson": "添加联系人",
+      "addPersonHint": "创建一个已关联到此组织的联系人",
+      "back": "返回组织",
+      "breadcrumb": "组织",
+      "delete": "删除组织",
+      "deleteError": "无法删除此组织",
+      "deleteHint": "将删除该组织。其联系人和商机会保留但不再关联该组织；仅关联到该组织的活动会被删除。",
+      "deleteTitle": "删除 {name}？",
+      "moreHint": "删除此组织",
+      "noDeals": "还没有与 {name} 进行中的商机。",
+      "noPeople": "这里还没有联系人",
+      "noPeopleHint": "添加您在 {name} 的联系人。",
+      "notFound": "该组织已不存在",
+      "notFoundHint": "它可能已被您团队中的其他人删除。",
+      "ownerHint": "负责此组织的团队成员。",
+      "peopleCount": "{count} 位联系人",
+      "unnamed": "未命名组织"
+    },
+    "dialog": {
+      "added": "已添加 {name}",
+      "createError": "无法创建此组织",
+      "description": "组织将您沟通的联系人以及与他们进行的商机归为一组。",
+      "namePlaceholder": "Acme 大学",
+      "submit": "创建组织"
+    },
+    "list": {
+      "addFirst": "添加第一个组织",
+      "description": "您的联系人和商机所属的组织",
+      "emptyHint": "添加您合作的组织，然后为其关联联系人和商机。",
+      "emptyTitle": "还没有组织",
+      "noMatchFilters": "没有符合这些筛选条件的组织",
+      "noMatchFiltersHint": "试试其他名称、负责人或标签。",
+      "paginationLabel": "组织记录",
+      "searchLabel": "搜索组织",
+      "searchPlaceholder": "按名称搜索组织…"
+    },
+    "table": {
+      "location": "所在地"
+    }
+  },
+  "dashboard": {
+    "actions": {
+      "logActivity": "记录活动",
+      "logActivityHint": "记录电话或备注，或安排任务或会议",
+      "newDeal": "新建商机",
+      "newDealHint": "为联系人创建商机；商机从第一个阶段开始"
+    },
+    "onboarding": {
+      "addPerson": "添加联系人",
+      "body": "先添加一位联系人，再为其创建商机。其他一切（组织、活动和标签）都围绕这两者展开。",
+      "createDeal": "创建商机",
+      "steps": {
+        "activity": {
+          "body": "电话、会议和备注让历史记录真实完整。",
+          "title": "记录活动"
+        },
+        "deals": {
+          "body": "在销售流程的各个阶段跟踪商机。",
+          "title": "创建商机"
+        },
+        "people": {
+          "body": "联系人是每个商机和活动的核心。",
+          "title": "添加联系人"
+        }
+      },
+      "title": "您的 CRM 已就绪"
+    },
+    "panel": {
+      "aboutThisPanel": "关于此面板",
+      "viewAll": "查看全部"
+    },
+    "panels": {
+      "byStage": {
+        "defaultPipeline": "默认销售流程",
+        "empty": "此销售流程中还没有进行中的商机。",
+        "info": "默认销售流程中进行中的商机，按阶段统计。",
+        "link": "打开看板",
+        "title": "各阶段商机",
+        "titleText": "各阶段商机",
+        "tooltip": "{count} 个商机 · {value}",
+        "noPipeline": "没有默认销售流程，请在设置中指定。"
+      },
+      "recentDeals": {
+        "empty": "还没有商机。",
+        "meta": "{person} · {when}添加",
+        "title": "最近的商机"
+      },
+      "recentPeople": {
+        "empty": "还没有联系人。",
+        "title": "最近添加的联系人"
+      },
+      "upNext": {
+        "description": "已安排的未完成工作",
+        "empty": "暂无安排，您已处理完所有事项。",
+        "info": "整个组织中最近安排的未完成活动。",
+        "title": "接下来",
+        "titleText": "接下来的工作"
+      },
+      "wonLost": {
+        "description": "过去 6 个月",
+        "empty": "过去六个月内没有结束的商机。",
+        "info": "过去 6 个月内结束的商机，按结束日期统计。",
+        "lostDetail": "丢单 {count} · {value}",
+        "title": "赢单与丢单",
+        "titleText": "赢单与丢单",
+        "wonDetail": "赢单 {count} · {value}"
+      }
+    },
+    "period": {
+      "30d": "最近 30 天",
+      "7d": "最近 7 天",
+      "90d": "最近 90 天",
+      "label": "时间段",
+      "month": "本月",
+      "today": "今天"
+    },
+    "stats": {
+      "dueToday": {
+        "hint": "{count, plural, =0 {没有逾期事项} other {# 项已逾期}}",
+        "info": "今天安排的未完成活动；逾期数为已过期的活动。",
+        "label": "今日到期",
+        "labelText": "今日到期的活动"
+      },
+      "openDeals": {
+        "hint": "涵盖所有销售流程",
+        "info": "尚未赢单或丢单的商机。",
+        "label": "进行中的商机",
+        "labelText": "进行中的商机"
+      },
+      "people": {
+        "hint": "已记录的联系人",
+        "info": "本组织的所有有效联系人。",
+        "label": "联系人",
+        "labelText": "联系人"
+      },
+      "pipelineValue": {
+        "info": "进行中商机的金额总和。",
+        "label": "销售流程金额",
+        "labelText": "销售流程金额"
+      },
+      "weighted": {
+        "hint": "按阶段概率计算",
+        "info": "每个进行中的商机乘以其阶段概率。",
+        "label": "加权金额",
+        "labelText": "加权销售流程金额"
+      },
+      "won": {
+        "info": "所选时间段内按成交日期统计的赢单商机。",
+        "label": "赢单 · {period}",
+        "labelText": "赢单商机 · {period}"
+      }
+    },
+    "welcome": "欢迎回来",
+    "welcomeNamed": "欢迎回来，{name}"
+  },
+  "deals": {
+    "actions": {
+      "markLost": "标记为丢单",
+      "markWon": "标记为赢单",
+      "reopen": "重新打开"
+    },
+    "board": {
+      "countInStage": "{count, plural, other {此阶段有 # 个商机}}",
+      "dropHint": "将商机拖到此处以移至 {stage}",
+      "moreCards": "{count, plural, other {还有 # 个商机}}",
+      "noStages": "此销售流程还没有阶段。管理员可以在设置中添加。",
+      "probabilityHint": "用于加权销售流程的赢单概率",
+      "probabilityLabel": "{probability}% 的含义",
+      "stageLabel": "{stage} 阶段",
+      "totalHint": "此阶段商机的总金额",
+      "noPipeline": "还没有销售流程。管理员可以在设置中创建。"
+    },
+    "card": {
+      "moveHint": "无需拖动即可移至其他阶段",
+      "moveLabel": "将商机移至其他阶段",
+      "moveTo": "移至…",
+      "stale": "停滞",
+      "staleHint": "{days, plural, other {已 # 天无进展，达到销售流程的停滞阈值}}",
+      "staleHintNoDays": "自达到销售流程的停滞阈值以来无进展"
+    },
+    "closeDate": {
+      "closes": "预计 {date} 成交",
+      "expected": "预计于 {date} 成交",
+      "expectedPassed": "预计于 {date} 成交，该日期已过",
+      "overdue": "已逾期 · {date}"
+    },
+    "confirm": {
+      "deleteDescription": "“{title}”及其活动将被永久删除。",
+      "deleteTitle": "删除此商机？",
+      "move": "移动",
+      "moveDescription": "“{title}”将移至 {stage}。",
+      "moveTitle": "移至 {stage}？",
+      "moveWonDescription": "“{title}”将移至 {stage} 并以赢单关闭。",
+      "reopenDescription": "商机将在“{stage}”中重新打开，并清除其关闭日期。",
+      "reopenTitle": "重新打开此商机？",
+      "stage": "阶段",
+      "thisStage": "此阶段",
+      "wonDescription": "“{title}”将以 {value} 赢单关闭。",
+      "wonTitle": "将此商机标记为赢单？"
+    },
+    "deal": "商机",
+    "detail": {
+      "activity": "活动",
+      "backToDeals": "返回商机",
+      "deleteHint": "删除此商机及其活动，此操作无法撤销",
+      "deleteLabel": "删除商机",
+      "descriptionPlaceholder": "添加描述",
+      "expectedCloseHint": "日期已过且商机仍未关闭时会变红。",
+      "firstStage": "第一个阶段",
+      "markLostHint": "将商机关闭为丢单，需要填写原因",
+      "markWonHint": "按当前金额将商机关闭为赢单",
+      "noDate": "无日期",
+      "noValue": "无金额",
+      "notFoundDescription": "此商机可能已被删除，或属于其他组织。",
+      "notFoundTitle": "未找到商机",
+      "openOrganization": "打开组织",
+      "reopenHint": "将商机放回 {stage} 并清除其关闭日期",
+      "sourceHint": "此商机的来源；在设置中管理。",
+      "stageHint": "使用上方的阶段按钮移动商机。",
+      "tagsHint": "共享标签；在“标签”中管理。",
+      "untitled": "未命名商机"
+    },
+    "dialog": {
+      "currencyHint": "按商机设置；总额按原值相加，不做换算",
+      "description": "商机属于一个联系人，并处于某个销售流程的一个阶段。",
+      "descriptionPlaceholder": "这个商机是关于什么的？",
+      "expectedCloseHint": "预计成交的时间；日期过后卡片会标记出来",
+      "fieldAbout": "关于“{field}”字段",
+      "personHint": "每个商机都属于一个联系人；请先在“联系人”中添加",
+      "personPlaceholder": "搜索联系人…",
+      "pipelineHint": "此商机所经历的一组阶段",
+      "sourceHint": "商机的来源；管理员在设置中管理此列表",
+      "stageHint": "商机从这里开始；之后在看板上移动",
+      "submit": "创建商机",
+      "titlePlaceholder": "企业版许可证 — 25 个席位",
+      "valueHint": "商机的价值，计入销售流程总额"
+    },
+    "fields": {
+      "closedAt": "关闭时间",
+      "organization": "组织",
+      "currency": "币种",
+      "expectedClose": "预计成交日期",
+      "lostReason": "丢单原因",
+      "noOrganization": "无组织",
+      "noSource": "无来源",
+      "person": "联系人",
+      "pipeline": "销售流程",
+      "source": "来源",
+      "sourceFallback": "来源 #{id}",
+      "stage": "阶段",
+      "stageFallback": "阶段 #{id}",
+      "status": "状态",
+      "title": "标题",
+      "value": "金额"
+    },
+    "list": {
+      "description": "在销售流程各阶段中推进的商机",
+      "emptyDescription": "为联系人创建商机：它从第一个阶段开始，随着进展在看板上逐步推进。",
+      "emptyTitle": "暂无商机",
+      "kanbanView": "看板视图",
+      "newHint": "为联系人创建商机，从第一个阶段开始",
+      "noMatches": "没有符合这些筛选条件的商机。",
+      "paginationLabel": "商机",
+      "searchLabel": "按标题搜索商机",
+      "searchPlaceholder": "搜索商机…",
+      "tableView": "表格视图",
+      "tag": "标签"
+    },
+    "lost": {
+      "description": "商机将关闭并移至丢单阶段。原因会保留在记录中。",
+      "reason": "原因",
+      "reasonPlaceholder": "为什么丢掉了这个商机？",
+      "suggestions": {
+        "badTiming": "时机不对",
+        "competitor": "输给了竞争对手",
+        "noBudget": "没有预算",
+        "noDecision": "未做决定",
+        "price": "价格"
+      },
+      "title": "将此商机标记为丢单？"
+    },
+    "newDeal": "新建商机",
+    "owner": {
+      "anyone": "任何人",
+      "me": "我",
+      "self": "{name}（我）",
+      "unassigned": "未分配"
+    },
+    "stepper": {
+      "closeLost": "将此商机关闭为丢单",
+      "closeWon": "将此商机关闭为赢单",
+      "closedLost": "已丢单",
+      "closedWon": "已赢单",
+      "current": "此商机处于 {stage}",
+      "label": "销售流程阶段",
+      "move": "将此商机移至 {stage}",
+      "moveWithProbability": "将此商机移至 {stage}（{probability}%）"
+    },
+    "toast": {
+      "createFailed": "无法创建商机",
+      "created": "已创建商机“{title}”",
+      "deleted": "商机已删除",
+      "lost": "商机已标记为丢单",
+      "moveFailed": "无法移动商机",
+      "moved": "已移至 {stage}",
+      "reopened": "商机已重新打开",
+      "won": "商机已赢单 🎉"
+    }
+  },
+  "enums": {
+    "activityType": {
+      "call": "电话",
+      "deadline": "截止日期",
+      "email": "邮件",
+      "lunch": "午餐",
+      "meeting": "会议",
+      "note": "备注",
+      "task": "任务"
+    },
+    "dealStatus": {
+      "lost": "已丢单",
+      "open": "进行中",
+      "won": "已赢单"
+    },
+    "lifecycle": {
+      "churned": "已流失",
+      "customer": "客户",
+      "lead": "线索",
+      "opportunity": "商机",
+      "qualified": "已验证"
+    }
+  },
+  "errors": {
+    "badRequest": {
+      "body": "该链接有误。",
+      "title": "请求无效"
+    },
+    "code": "错误 {code}",
+    "fallbackBody": "请重试。",
+    "forbidden": {
+      "body": "您的账号不是所请求组织的成员，或该组织拒绝了此次登录。请切换到其他组织，或使用其他账号登录。",
+      "title": "无权访问此组织"
+    },
+    "goHome": "返回首页",
+    "notFound": {
+      "body": "找不到您要查找的内容。",
+      "title": "未找到"
+    },
+    "signInAgain": "重新登录"
+  },
+  "favorites": {
+    "add": "加入收藏",
+    "remove": "取消收藏",
+    "title": "收藏"
+  },
+  "fields": {
+    "about": "关于{label}",
+    "aboutThisField": "关于此字段",
+    "aboutThisMetric": "关于此指标",
+    "activities": {
+      "created_at": "创建时间",
+      "deal": "商机",
+      "is_done": "已完成",
+      "organization": "组织",
+      "owner": "负责人",
+      "person": "联系人",
+      "schedule_from": "计划时间",
+      "title": "标题",
+      "type": "类型"
+    },
+    "allTags": "所有标签",
+    "deals": {
+      "created_at": "创建时间",
+      "expected_close_date": "预计成交",
+      "lead_value": "金额",
+      "organization": "组织",
+      "owner": "负责人",
+      "person": "联系人",
+      "source": "来源",
+      "stage": "阶段",
+      "status": "状态",
+      "tags": "标签",
+      "title": "标题",
+      "description": "描述",
+      "currency": "货币",
+      "lost_reason": "丢单原因",
+      "closed_at": "关闭时间",
+      "pipeline": "销售流程",
+      "metadata": "自定义字段"
+    },
+    "filterByTag": "按标签筛选",
+    "organizations": {
+      "created_at": "创建时间",
+      "name": "名称",
+      "owner": "负责人",
+      "tags": "标签",
+      "updated_at": "更新时间",
+      "address": "地址",
+      "metadata": "自定义字段"
+    },
+    "owner": {
+      "me": "我",
+      "meOption": "{name}（我）",
+      "unassigned": "未分配",
+      "user": "用户 #{id}"
+    },
+    "pagination": {
+      "items": "记录",
+      "none": "暂无{label}"
+    },
+    "persons": {
+      "active": "有效",
+      "created_at": "创建时间",
+      "job_title": "职位",
+      "lifecycle_stage": "生命周期",
+      "name": "姓名",
+      "organization": "组织",
+      "owner": "负责人",
+      "primary_email": "邮箱",
+      "tags": "标签",
+      "updated_at": "更新时间",
+      "emails": "其他邮箱",
+      "contact_numbers": "电话号码",
+      "unique_id": "外部 ID",
+      "platform_user": "关联用户",
+      "metadata": "自定义字段"
+    },
+    "saveError": "无法保存此更改",
+    "select": "请选择…",
+    "tags": {
+      "add": "添加",
+      "addTag": "添加标签",
+      "create": "创建“{name}”",
+      "created": "已创建标签“{name}”",
+      "noMatch": "没有匹配的标签。",
+      "none": "还没有标签。",
+      "pickerHint": "关联现有标签或新建标签",
+      "remove": "移除标签 {name}",
+      "search": "查找或创建标签…"
+    },
+    "tagsHint": "共享标签；可在“标签”中管理。",
+    "whatIsThis": "这是什么？"
+  },
+  "history": {
+    "action": {
+      "access": "查看了此记录",
+      "create": "创建了此记录",
+      "delete": "删除了此记录",
+      "update": "修改了"
+    },
+    "empty": "空",
+    "emptyDescription": "通过 CRM 所做的更改会显示在这里，最新的在前；合并等批量操作不会留下记录。",
+    "emptyTitle": "暂无历史",
+    "system": "系统"
+  },
+  "language": {
+    "hint": "此应用及其他 ibl.ai 应用的语言",
+    "label": "语言"
+  },
+  "nav": {
+    "activities": "活动",
+    "organizations": "组织",
+    "deals": "商机",
+    "home": "首页",
+    "people": "联系人",
+    "search": "搜索",
+    "settings": "设置",
+    "tags": "标签"
+  },
+  "notifications": {
+    "description": "与您相关的 CRM 事件和平台提醒",
+    "title": "通知"
+  },
+  "palette": {
+    "description": "搜索联系人、组织和商机，或跳转到某个页面。",
+    "goTo": "前往",
+    "newActivity": "新建活动",
+    "newOrganization": "新建组织",
+    "newDeal": "新建商机",
+    "newPerson": "新建联系人",
+    "noResults": "没有结果。",
+    "placeholder": "搜索联系人、组织、商机…",
+    "toClose": "关闭",
+    "toNavigate": "导航",
+    "toOpen": "打开"
+  },
+  "people": {
+    "actions": {
+      "new": "新建联系人",
+      "newHint": "添加联系人——商机和活动都关联到联系人"
+    },
+    "dealsTable": {
+      "count": "{count} 个商机",
+      "deal": "商机",
+      "empty": "还没有商机",
+      "emptyHint": "创建商机，开始在销售流程中跟踪这段关系。",
+      "expectedClose": "预计成交日期",
+      "newDeal": "新建商机",
+      "stage": "阶段",
+      "stageFallback": "阶段 #{id}",
+      "status": "状态",
+      "value": "金额"
+    },
+    "detail": {
+      "addEmail": "添加邮箱",
+      "addEmails": "添加邮箱，用逗号分隔",
+      "addExternalId": "添加外部 ID",
+      "addJobTitle": "添加职位",
+      "addPhones": "添加电话号码",
+      "alreadyLinked": "已关联平台用户",
+      "back": "返回联系人",
+      "breadcrumb": "联系人",
+      "commaSeparated": "用逗号分隔。",
+      "delete": "删除联系人",
+      "deleteError": "无法删除此联系人",
+      "deleteHint": "有商机的联系人无法删除；请先合并该联系人或删除其商机。其活动和标签关联会随之删除。",
+      "deleteTitle": "删除 {name}？",
+      "externalId": "外部 ID",
+      "externalIdHint": "来自其他系统的 ID，在组织内唯一。",
+      "inactive": "已停用",
+      "inactiveHint": "已归档——仅保留历史记录，不再跟进",
+      "invite": "邀请加入平台",
+      "inviteDisabled": "邀请加入平台——{reason}",
+      "inviteHint": "发送 ibl.ai 邀请邮件；该联系人将成为平台用户",
+      "lifecycleHint": "此联系人所处的阶段：{lead} → {qualified} → {opportunity} → {customer} · {churned}。",
+      "linkUser": "关联用户",
+      "linkedUser": "已关联平台用户 #{id}",
+      "linkedUserHint": "此联系人可以登录平台",
+      "merge": "合并重复记录",
+      "moreHint": "关联用户、合并重复记录、删除",
+      "needsEmail": "请先添加主邮箱",
+      "noDeals": "还没有与 {name} 进行中的商机。",
+      "notFound": "该联系人已不存在",
+      "notFoundHint": "该记录可能已被团队中的其他人删除。",
+      "openOrganization": "打开组织",
+      "openOrganizationNamed": "打开 {name}",
+      "otherEmails": "其他邮箱",
+      "ownerHint": "负责此联系人的团队成员。",
+      "phones": "电话",
+      "unnamed": "未命名联系人"
+    },
+    "dialog": {
+      "added": "已添加 {name}",
+      "createError": "无法创建此联系人",
+      "description": "将联系人添加到 CRM。其余信息可稍后在其详情页中补充。",
+      "emailPlaceholder": "ada@example.com",
+      "jobTitlePlaceholder": "培训主管",
+      "namePlaceholder": "Ada Lovelace",
+      "submit": "创建联系人"
+    },
+    "fields": {
+      "organization": "组织",
+      "jobTitle": "职位",
+      "lifecycle": "生命周期",
+      "lifecycleStage": "生命周期阶段",
+      "noOrganization": "无组织"
+    },
+    "invite": {
+      "alreadyLinked": "此联系人已关联平台用户",
+      "asAdmin": "以管理员身份邀请",
+      "body": "我们会向 <b>{email}</b> 发送邀请邮件。对方接受后，其账户将关联到此记录。",
+      "error": "无法发送邀请",
+      "exists": "此联系人已有邀请",
+      "sent": "邀请已发送至 {email}",
+      "submit": "发送邀请",
+      "title": "邀请 {name} 加入平台？"
+    },
+    "linkUser": {
+      "chooseMember": "选择成员…",
+      "description": "将 {name} 关联到此组织中已有的账户。",
+      "error": "无法关联此联系人",
+      "linked": "{name} 已关联到用户 #{id}",
+      "loadingMembers": "正在加载成员…",
+      "manualHint": "当您无法访问成员目录时使用此项。",
+      "manualLabel": "…或输入用户 ID",
+      "manualPlaceholder": "例如 4821",
+      "submit": "关联用户",
+      "title": "关联平台用户",
+      "alreadyLinked": "该联系人已关联到其他用户。",
+      "notMember": "该用户还不是本组织成员，请改为发送邀请。"
+    },
+    "list": {
+      "addFirst": "添加第一位联系人",
+      "description": "与您合作的所有组织的联系人",
+      "emptyHint": "联系人是每个商机背后的人——从今天正在沟通的那位开始吧。",
+      "emptyTitle": "还没有联系人",
+      "loading": "正在加载联系人",
+      "noMatchFilters": "没有符合这些筛选条件的联系人",
+      "noMatchFiltersHint": "试试其他生命周期阶段、负责人或标签。",
+      "noMatchSearch": "没有与“{query}”匹配的联系人",
+      "noMatchSearchHint": "搜索会查看每位联系人的姓名、邮箱、职位和外部 ID。换个拼写试试，或清除搜索。",
+      "paginationLabel": "联系人",
+      "searchLabel": "搜索联系人",
+      "searchPlaceholder": "按姓名、邮箱、职位搜索…"
+    },
+    "merge": {
+      "confirm": "合并重复记录",
+      "confirmBody": "{count} 条重复记录将并入 {name}，随后标记为停用。此操作无法撤销。",
+      "confirmTitle": "合并这些记录？",
+      "description": "选择重复的记录。它们的商机、活动和标签将转移到 {name}，随后这些重复记录会被标记为停用。",
+      "error": "无法合并这些联系人",
+      "merged": "已将 {count} 条记录合并到 {name}",
+      "noMatch": "没有匹配的联系人。",
+      "noOne": "暂时没有其他可合并的联系人。",
+      "searchLabel": "搜索要合并的联系人",
+      "searchPlaceholder": "搜索联系人…",
+      "select": "合并 {name}",
+      "submit": "{count, plural, =0 {合并记录} other {合并 # 条记录}}",
+      "title": "将重复记录合并到 {name}"
+    },
+    "table": {
+      "viewOrganization": "查看组织"
+    }
+  },
+  "picker": {
+    "clear": "清除",
+    "organization": "选择组织",
+    "noMatches": "没有匹配项",
+    "person": "选择联系人",
+    "searchPlaceholder": "输入以搜索…",
+    "searching": "搜索中…",
+    "typeToSearch": "输入以搜索"
+  },
+  "settings": {
+    "about": {
+      "apiBase": "API 基础地址",
+      "app": "应用",
+      "communityOrg": "社区组织",
+      "docs": "ibl.ai 文档",
+      "docsLabel": "打开 ibl.ai 文档",
+      "manageRoles": "管理角色",
+      "mandate": "职责",
+      "mandates": {
+        "inviter": "可查看联系人并发送邀请，仅此而已。",
+        "manager": "拥有 User 角色的全部权限，并可管理销售流程、阶段和线索来源，以及发送邀请。",
+        "user": "可对联系人、组织、商机、活动和标签进行完整的增删改查；销售流程为只读；不能邀请用户。",
+        "viewer": "可查看 CRM 中的所有内容；只能修改自己的收藏和已保存视图。"
+      },
+      "organizationKey": "组织标识",
+      "role": "角色",
+      "rolesFootnote": "角色在组织的“用户与角色”页面中分配。CRM Manager 和组织管理员可以更改销售流程、阶段和线索来源。",
+      "rolesTitle": "CRM 角色",
+      "support": "支持",
+      "supportLabel": "打开 ibl.ai 支持",
+      "thisOrganization": "本组织"
+    },
+    "code": "代码",
+    "codeHint": "API 使用的固定标识符，创建后无法更改。",
+    "deleteTitle": "删除“{name}”？",
+    "description": "本组织的销售流程、阶段和线索来源",
+    "pipelines": {
+      "codeExample": "new-business",
+      "create": "创建销售流程",
+      "created": "已创建销售流程“{name}”",
+      "default": "默认",
+      "defaultPipeline": "默认销售流程",
+      "deleteBlocked": "仍有商机使用此销售流程，请先将它们移到其他销售流程。",
+      "deleteConfirm": "删除销售流程",
+      "deleteDescription": "此销售流程的所有阶段将一并删除。仍在此销售流程中的商机必须先移走。",
+      "deleteHint": "仅当没有商机使用此销售流程时才能删除",
+      "deleted": "销售流程已删除",
+      "dialogDescription": "销售流程包含商机依次经过的阶段。接下来添加它的阶段。",
+      "emptyDescription": "销售流程是商机依次经过的一组阶段。大多数组织一开始只需要一个。",
+      "emptyTitle": "还没有销售流程",
+      "inFlight": "进行中",
+      "madeDefault": "“{name}”现为默认销售流程",
+      "makeDefault": "设为默认",
+      "makeDefaultHint": "新商机使用默认销售流程",
+      "makeItDefault": "设为默认",
+      "makeItDefaultHint": "新商机将进入默认销售流程。",
+      "makeItDefaultLabel": "设为默认销售流程",
+      "nameExample": "新业务",
+      "namePlaceholder": "销售流程名称",
+      "new": "新建销售流程",
+      "rottenAfter": "停滞阈值",
+      "rottenAfterDays": "停滞阈值（天）",
+      "rottenLabel": "关于停滞阈值",
+      "rottenTip": "闲置超过此时长的商机会在看板上标记为停滞",
+      "rottenUnit": "天无进展",
+      "stageCount": "{count, plural, other {# 个阶段}}"
+    },
+    "sources": {
+      "aboutLabel": "关于线索来源",
+      "aboutTip": "商机的来源：在每个商机上设置，然后在看板上筛选",
+      "codeExample": "partner-referral",
+      "created": "已创建线索来源“{name}”",
+      "deleteDescription": "关联此来源的商机将失去该来源。商机本身会保留。",
+      "deleteHint": "商机会保留其数据，但不再关联此来源",
+      "deleteLabel": "删除线索来源“{name}”",
+      "deleted": "线索来源已删除",
+      "dialogDescription": "此类商机的来源。",
+      "emptyDescription": "添加商机的来源渠道，仪表盘即可按来源细分收入。",
+      "emptyTitle": "还没有线索来源",
+      "intro": "商机的来源，例如推荐、主动咨询、活动、合作伙伴。",
+      "nameExample": "合作伙伴推荐",
+      "namePlaceholder": "线索来源",
+      "new": "新建线索来源",
+      "newHint": "添加一个渠道，之后可在任意商机上选择"
+    },
+    "stages": {
+      "add": "添加阶段",
+      "added": "阶段已添加",
+      "codeExample": "proposal-sent",
+      "deleteBlocked": "仍有商机处于此阶段，请先将它们移走。",
+      "deleteConfirm": "删除阶段",
+      "deleteDescription": "必须先移走此阶段中的商机，才能删除它。",
+      "deleteHint": "仅当没有商机处于此阶段时才能删除",
+      "deleteLabel": "删除阶段“{name}”",
+      "deleteTitle": "删除阶段“{name}”？",
+      "deleted": "阶段已删除",
+      "dialogDescription": "新阶段会追加到销售流程末尾，之后可拖到合适的位置。",
+      "dragHint": "拖动可调整顺序，看板会按此顺序显示",
+      "empty": "还没有阶段。请添加第一个阶段，商机才有归属。",
+      "nameExample": "已发送报价",
+      "namePlaceholder": "阶段名称",
+      "orderSaved": "阶段顺序已保存",
+      "outcome": "结果",
+      "outcomeHint": "“已赢单”和“已丢单”阶段会关闭商机；“进行中”则保持商机开启",
+      "outcomeLabel": "阶段结果",
+      "outcomeOf": "“{name}”的结果",
+      "probability": "概率（%）",
+      "probabilityLabel": "关于阶段概率",
+      "probabilityTip": "从此阶段赢单的概率，用于计算加权销售流程",
+      "reorderHint": "拖动可调整顺序，此顺序即看板的列顺序。",
+      "reorderLabel": "调整“{name}”的顺序",
+      "title": "阶段"
+    },
+    "tabs": {
+      "about": "关于",
+      "pipelines": "销售流程",
+      "sources": "线索来源"
+    }
+  },
+  "shell": {
+    "adminMode": "管理员模式",
+    "adminModeHint": "管理员模式会显示“设置”和“用户与角色”；用户模式即成员看到的界面",
+    "members": {
+      "unassigned": "未分配",
+      "user": "用户 {id}",
+      "userId": "用户 #{id}"
+    },
+    "organization": "组织",
+    "toggleSidebar": "切换侧边栏",
+    "toggleSidebarHint": "折叠或展开侧边栏（⌘B）"
+  },
+  "tags": {
+    "card": {
+      "changeColor": "更改“{name}”的颜色",
+      "created": "创建于 {date}",
+      "deleteConfirm": "删除标签",
+      "deleteDescription": "这会从所有带有该标签的联系人、组织和商机上移除它。记录本身会保留。",
+      "deleteHint": "将从所有联系人、组织和商机上移除该标签",
+      "deleteLabel": "删除标签“{name}”",
+      "deleteTitle": "删除“{name}”？",
+      "deleted": "标签已删除",
+      "untitled": "未命名标签"
+    },
+    "colorPicker": {
+      "change": "更改颜色",
+      "customHex": "自定义十六进制",
+      "invalidHex": "请输入 6 位十六进制颜色，例如 #0058cc。",
+      "use": "使用颜色 {color}"
+    },
+    "description": "联系人、组织和商机共用的一套标签",
+    "dialog": {
+      "colorLabel": "颜色",
+      "created": "已创建标签“{name}”",
+      "description": "标签在联系人、组织和商机之间共用。",
+      "namePlaceholder": "企业客户、新闻通讯、VIP…",
+      "nameRequired": "名称为必填项。",
+      "preview": "预览",
+      "previewPlaceholder": "标签名称",
+      "submit": "创建标签"
+    },
+    "empty": {
+      "description": "标签用于归类联系人、组织和商机，例如“企业客户”“新闻通讯”“流失风险”。",
+      "noMatchDescription": "换个名称试试，或直接创建您要找的标签。",
+      "noMatchTitle": "没有符合搜索条件的标签",
+      "title": "还没有标签"
+    },
+    "newTag": "新建标签",
+    "newTagHint": "创建可添加到联系人、组织和商机上的标签",
+    "paginationLabel": "标签",
+    "searchLabel": "搜索标签",
+    "searchPlaceholder": "搜索标签…"
+  },
+  "views": {
+    "addFilter": "添加筛选",
+    "allRecords": "全部",
+    "clearSort": "清除排序",
+    "columns": "列",
+    "columnsHint": "选择要显示的列",
+    "deleteView": "删除视图",
+    "deleted": "视图“{name}”已删除",
+    "filter": "筛选",
+    "kanbanView": "看板",
+    "namePlaceholder": "视图名称",
+    "no": "否",
+    "op": {
+      "contains": "包含",
+      "is": "等于",
+      "isAfter": "不早于",
+      "isBefore": "不晚于"
+    },
+    "operand": "条件",
+    "pickerTitle": "视图",
+    "removeFilter": "移除筛选",
+    "saveAsNew": "另存为新视图",
+    "saved": "视图“{name}”已保存",
+    "sort": "排序",
+    "sortBy": "排序依据",
+    "tableView": "表格",
+    "unsaved": "未保存的更改",
+    "updateView": "更新视图",
+    "updated": "视图“{name}”已更新",
+    "yes": "是"
+  }
+}

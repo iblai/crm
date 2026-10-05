@@ -102,7 +102,8 @@ function Providers({ children }: { children: ReactNode }) {
   // "logged out elsewhere" and force a logout loop — keep the sync for real
   // hosts only.
   const enableStorageSync =
-    typeof window !== "undefined" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname);
+    typeof window !== "undefined" &&
+    !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname);
 
   const LOADING = <LoadingScreen />;
   if (!isInitialized || !mounted) return LOADING;

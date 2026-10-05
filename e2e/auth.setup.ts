@@ -8,7 +8,6 @@ dotenv.config({
 });
 
 const APP_HOST = process.env.APP_HOST || "http://localhost:3000";
-const AUTH_HOST = process.env.AUTH_HOST || "https://login.iblai.app";
 
 setup("authenticate", async ({ page }) => {
   setup.setTimeout(120_000);
@@ -54,7 +53,7 @@ setup("authenticate", async ({ page }) => {
 
   // Save storage state keyed by project name (e.g., setup-chromium, setup-firefox, setup-webkit)
   const projectName = setup.info().project.name; // e.g. "setup-chromium"
-  const authDir = "playwright/.auth";
+  const authDir = path.resolve(__dirname, "../playwright/.auth");
   if (!fs.existsSync(authDir)) fs.mkdirSync(authDir, { recursive: true });
   await page.context().storageState({ path: `${authDir}/user-${projectName}.json` });
 });

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -15,18 +16,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@iblai/iblai-js/web-containers";
+import { SearchPicker } from "@/components/crm/search-picker";
 import { SimpleSelect } from "@/components/crm/simple-select";
 import { OwnerSelect } from "@/components/crm/owner-select";
-import { toastApiError } from "@/components/crm/people/crm-error";
+import { useToastApiError } from "@/components/crm/people/crm-error";
 import { useSession } from "@/hooks/use-session";
-import { useCreatePersonMutation, useListOrganizationsQuery } from "@/lib/crm/api";
-import { LIFECYCLE_STAGES, type LifecycleStage, type Person } from "@/lib/crm/types";
+import { useCreatePersonMutation } from "@/lib/crm/api";
+import { useCrmEnums } from "@/lib/crm/i18n";
+import type { LifecycleStage, Person } from "@/lib/crm/types";
 
 /**
  * Create a person. Opened from the People list ("New person", `?new=1`) and
  * from an organization's People tab, where `defaultOrganization` pre-fills
- * the company so the record lands in the right place.
+ * the organization so the record lands in the right place.
  */
 export function PersonDialog({
   open,
@@ -42,11 +45,14 @@ export function PersonDialog({
   navigateOnCreate?: boolean;
   onCreated?: (person: Person) => void;
 }) {
+  const t = useTranslations("people");
+  const tc = useTranslations("common");
+  const { lifecycleOptions } = useCrmEnums();
+  const toastApiError = useToastApiError();
   const router = useRouter();
   const nameRef = useRef<HTMLInputElement>(null);
   const { href, userId } = useSession();
   const [createPerson, { isLoading }] = useCreatePersonMutation();
-  const { data: orgs } = useListOrganizationsQuery({ page_size: 100 }, { skip: !open });
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -66,8 +72,6 @@ export function PersonDialog({
     setOwner(userId ?? null);
   }, [open, defaultOrganization, userId]);
 
-  const orgOptions = (orgs?.results ?? []).map((o) => ({ value: o.id, label: o.name }));
-
   const submit = async () => {
     const trimmed = name.trim();
     if (!trimmed) return;
@@ -80,12 +84,12 @@ export function PersonDialog({
         lifecycle_stage: lifecycle,
         owner: owner ?? null,
       }).unwrap();
-      toast.success(`${person.name} added`);
+      toast.success(t("dialog.added", { name: person.name }));
       onOpenChange(false);
       onCreated?.(person);
       if (navigateOnCreate) router.push(href(`/people/${person.id}`));
     } catch (err) {
-      toastApiError(err, "Could not create this person");
+      toastApiError(err, t("dialog.createError"));
     }
   };
 
@@ -93,10 +97,8 @@ export function PersonDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md" initialFocus={nameRef}>
         <DialogHeader>
-          <DialogTitle>New person</DialogTitle>
-          <DialogDescription>
-            Add a contact to the CRM. You can fill in the rest on their record.
-          </DialogDescription>
+          <DialogTitle>{t("actions.new")}</DialogTitle>
+          <DialogDescription>{t("dialog.description")}</DialogDescription>
         </DialogHeader>
 
         <form
@@ -108,81 +110,80 @@ export function PersonDialog({
         >
           <div className="grid gap-1.5">
             <Label htmlFor="person-name" className="text-muted-foreground text-xs">
-              Name <span className="text-destructive">*</span>
+              {tc("name")} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="person-name"
               ref={nameRef}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Ada Lovelace"
+              placeholder={t("dialog.namePlaceholder")}
               required
             />
           </div>
 
           <div className="grid gap-1.5">
             <Label htmlFor="person-email" className="text-muted-foreground text-xs">
-              Email
+              {tc("email")}
             </Label>
             <Input
               id="person-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="ada@example.com"
+              placeholder={t("dialog.emailPlaceholder")}
             />
           </div>
 
           <div className="grid gap-1.5">
             <Label htmlFor="person-title" className="text-muted-foreground text-xs">
-              Job title
+              {t("fields.jobTitle")}
             </Label>
             <Input
               id="person-title"
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
-              placeholder="Head of Learning"
+              placeholder={t("dialog.jobTitlePlaceholder")}
             />
           </div>
 
           <div className="grid gap-1.5">
-            <Label className="text-muted-foreground text-xs">Organization</Label>
-            <SimpleSelect
-              value={organization}
-              onChange={setOrganization}
-              options={orgOptions}
-              allowEmpty
-              emptyLabel="No organization"
-              placeholder="No organization"
-              aria-label="Organization"
+            <Label className="text-muted-foreground text-xs">{t("fields.organization")}</Label>
+            <SearchPicker
+              kind="organization"
+              value={organization || null}
+              onChange={(id) => setOrganization(id ?? "")}
+              placeholder={t("fields.noOrganization")}
             />
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="grid gap-1.5">
-              <Label className="text-muted-foreground text-xs">Lifecycle stage</Label>
+              <Label className="text-muted-foreground text-xs">{t("fields.lifecycleStage")}</Label>
               <SimpleSelect
                 value={lifecycle}
                 onChange={(v) => setLifecycle((v || "lead") as LifecycleStage)}
-                options={LIFECYCLE_STAGES}
-                aria-label="Lifecycle stage"
+                options={lifecycleOptions}
+                aria-label={t("fields.lifecycleStage")}
               />
             </div>
             <div className="grid gap-1.5">
-              <Label className="text-muted-foreground text-xs">Owner</Label>
+              <Label className="text-muted-foreground text-xs">{tc("owner")}</Label>
               <OwnerSelect value={owner} onChange={setOwner} />
             </div>
           </div>
 
           <DialogFooter className="mt-1">
-            <DialogClose render={<Button variant="outline" type="button" />}>Cancel</DialogClose>
+            <DialogClose render={<Button variant="outline" type="button" />}>
+              {tc("cancel")}
+            </DialogClose>
             <Button
               type="submit"
               className="ibl-button-primary"
               disabled={!name.trim() || isLoading}
             >
-              {isLoading ? <Spinner data-icon="inline-start" /> : null}
-              Create person
+              {isLoading ? <Spinner size="sm" className="size-4 text-current" /> : null}
+              {t("dialog.submit")}
             </Button>
           </DialogFooter>
         </form>

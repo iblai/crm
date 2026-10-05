@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
 import { LifecycleBadge } from "@/components/crm/badges";
@@ -16,14 +17,6 @@ export type PersonColumn = "organization" | "job_title" | "owner" | "tags" | "cr
 
 const ALL_COLUMNS: PersonColumn[] = ["organization", "job_title", "owner", "tags", "created"];
 
-const HEADINGS: Record<PersonColumn, string> = {
-  organization: "Organization",
-  job_title: "Job title",
-  owner: "Owner",
-  tags: "Tags",
-  created: "Created",
-};
-
 const th =
   "h-9 whitespace-nowrap px-4 text-left text-xs font-medium tracking-wide text-muted-foreground";
 const td = "px-4 py-2 align-middle";
@@ -37,20 +30,27 @@ export function PeopleTable({
   persons,
   isLoading,
   columns = ALL_COLUMNS,
-  orgNames,
   skeletonRows = 8,
   className,
 }: {
   persons: Person[];
   isLoading?: boolean;
   columns?: PersonColumn[];
-  /** id → name, so the organization cell can render a link without a lookup. */
-  orgNames?: Map<string, string>;
   skeletonRows?: number;
   className?: string;
 }) {
+  const t = useTranslations("people");
+  const tc = useTranslations("common");
+  const locale = useLocale();
   const router = useRouter();
   const { href } = useSession();
+  const headings: Record<PersonColumn, string> = {
+    organization: t("fields.organization"),
+    job_title: t("fields.jobTitle"),
+    owner: tc("owner"),
+    tags: tc("tags"),
+    created: tc("created"),
+  };
   const shown = ALL_COLUMNS.filter((c) => columns.includes(c));
   const colCount = shown.length + 2;
 
@@ -61,10 +61,10 @@ export function PeopleTable({
       <thead className="sticky top-0 z-10 bg-white">
         <tr>
           <th scope="col" className={cn(th, "border-b border-[var(--border-color,#e5e7eb)]")}>
-            Name
+            {tc("name")}
           </th>
           <th scope="col" className={cn(th, "border-b border-[var(--border-color,#e5e7eb)]")}>
-            Lifecycle
+            {t("fields.lifecycle")}
           </th>
           {shown.map((c) => (
             <th
@@ -72,7 +72,7 @@ export function PeopleTable({
               scope="col"
               className={cn(th, "border-b border-[var(--border-color,#e5e7eb)]")}
             >
-              {HEADINGS[c]}
+              {headings[c]}
             </th>
           ))}
         </tr>
@@ -98,7 +98,7 @@ export function PeopleTable({
               </tr>
             ))
           : persons.map((p) => {
-              const orgName = p.organization ? orgNames?.get(p.organization) : undefined;
+              const orgName = p.organization_name ?? undefined;
               return (
                 <tr
                   key={p.id}
@@ -134,7 +134,7 @@ export function PeopleTable({
                             onClick={(e) => e.stopPropagation()}
                             className="truncate text-[#0058cc] hover:underline"
                           >
-                            {orgName ?? "View organization"}
+                            {orgName ?? t("table.viewOrganization")}
                           </Link>
                         ) : (
                           <span className="text-muted-foreground">—</span>
@@ -156,7 +156,9 @@ export function PeopleTable({
                         )
                       ) : null}
                       {c === "created" ? (
-                        <span className="text-muted-foreground">{formatDate(p.created_at)}</span>
+                        <span className="text-muted-foreground">
+                          {formatDate(p.created_at, locale)}
+                        </span>
                       ) : null}
                     </td>
                   ))}

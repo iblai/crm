@@ -1,15 +1,8 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Building2,
   CalendarCheck2,
@@ -31,8 +24,9 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { EntityAvatar } from "@/components/crm/entity-avatar";
+import { useDebounced } from "@/hooks/use-debounced";
 import { useSession } from "@/hooks/use-session";
-import { useListDealsQuery, useListOrganizationsQuery, useListPersonsQuery } from "@/lib/crm/api";
+import { errorMessage, useSearchQuery } from "@/lib/crm/api";
 import { formatCurrency } from "@/lib/crm/format";
 
 const PaletteContext = createContext<{ open: () => void; close: () => void }>({
@@ -44,11 +38,7 @@ export function useCommandPalette() {
   return useContext(PaletteContext);
 }
 
-/**
- * ⌘K search across people, organizations and deals (client-side match over
- * the first pages — the CRM API has no cross-resource search endpoint) plus
- * quick navigation and "New …" actions.
- */
+/** ⌘K: server search across people, organizations and deals, plus navigation and "New …" actions. */
 export function CommandPaletteProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const open = useCallback(() => setIsOpen(true), []);
@@ -80,13 +70,19 @@ function CommandPalette({
   open: boolean;
   onOpenChange: (o: boolean) => void;
 }) {
+  const t = useTranslations("palette");
+  const tn = useTranslations("nav");
+  const tc = useTranslations("common");
+  const locale = useLocale();
   const router = useRouter();
   const { href } = useSession();
   const [query, setQuery] = useState("");
 
-  const { data: people } = useListPersonsQuery({ page_size: 100 }, { skip: !open });
-  const { data: orgs } = useListOrganizationsQuery({ page_size: 100 }, { skip: !open });
-  const { data: deals } = useListDealsQuery({ page_size: 100 }, { skip: !open });
+  const q = useDebounced(query.trim(), 250);
+  const { data, error } = useSearchQuery({ q, limit: 6 }, { skip: !open || !q });
+  const matchedPeople = q ? (data?.persons ?? []) : [];
+  const matchedOrgs = q ? (data?.organizations ?? []) : [];
+  const matchedDeals = q ? (data?.deals ?? []) : [];
 
   const go = (path: string) => {
     onOpenChange(false);
@@ -94,48 +90,30 @@ function CommandPalette({
     router.push(href(path));
   };
 
-  const q = query.trim().toLowerCase();
-  const match = (...fields: Array<string | undefined | null>) =>
-    !q || fields.some((f) => f && f.toLowerCase().includes(q));
-
-  const matchedPeople = useMemo(
-    () =>
-      (people?.results ?? [])
-        .filter((p) => match(p.name, p.primary_email, p.job_title))
-        .slice(0, 6),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [people, q],
-  );
-  const matchedOrgs = useMemo(
-    () => (orgs?.results ?? []).filter((o) => match(o.name)).slice(0, 6),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [orgs, q],
-  );
-  const matchedDeals = useMemo(
-    () => (deals?.results ?? []).filter((d) => match(d.title)).slice(0, 6),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [deals, q],
-  );
-
   return (
     <CommandDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Search"
-      description="Search people, organizations and deals, or jump to a page."
+      title={tc("search")}
+      description={t("description")}
       className="max-w-xl"
     >
       <Command shouldFilter={false} className="rounded-xl">
         <CommandInput
           autoFocus
-          placeholder="Search people, organizations, deals…"
+          placeholder={t("placeholder")}
           value={query}
           onValueChange={setQuery}
         />
         <CommandList className="max-h-[60vh]">
-          <CommandEmpty>No results.</CommandEmpty>
+          <CommandEmpty>{t("noResults")}</CommandEmpty>
+          {q && error ? (
+            <p role="alert" className="text-destructive px-3 py-2 text-xs">
+              {errorMessage(error, tc("errorGeneric"))}
+            </p>
+          ) : null}
           {matchedPeople.length ? (
-            <CommandGroup heading="People">
+            <CommandGroup heading={tn("people")}>
               {matchedPeople.map((p) => (
                 <CommandItem
                   key={p.id}
@@ -154,7 +132,7 @@ function CommandPalette({
             </CommandGroup>
           ) : null}
           {matchedOrgs.length ? (
-            <CommandGroup heading="Organizations">
+            <CommandGroup heading={tn("organizations")}>
               {matchedOrgs.map((o) => (
                 <CommandItem
                   key={o.id}
@@ -168,7 +146,7 @@ function CommandPalette({
             </CommandGroup>
           ) : null}
           {matchedDeals.length ? (
-            <CommandGroup heading="Deals">
+            <CommandGroup heading={tn("deals")}>
               {matchedDeals.map((d) => (
                 <CommandItem
                   key={d.id}
@@ -178,48 +156,48 @@ function CommandPalette({
                   <Handshake className="size-4 text-[#0058cc]" />
                   <span className="truncate">{d.title}</span>
                   <span className="text-muted-foreground ml-auto text-xs">
-                    {formatCurrency(d.lead_value, d.currency)}
+                    {formatCurrency(d.lead_value, d.currency, locale)}
                   </span>
                 </CommandItem>
               ))}
             </CommandGroup>
           ) : null}
           <CommandSeparator />
-          <CommandGroup heading="Create">
+          <CommandGroup heading={tc("create")}>
             <CommandItem value="new person" onSelect={() => go("/people?new=1")}>
-              <Plus className="size-4" /> New person
+              <Plus className="size-4" /> {t("newPerson")}
             </CommandItem>
             <CommandItem value="new organization" onSelect={() => go("/organizations?new=1")}>
-              <Plus className="size-4" /> New organization
+              <Plus className="size-4" /> {t("newOrganization")}
             </CommandItem>
             <CommandItem value="new deal" onSelect={() => go("/deals?new=1")}>
-              <Plus className="size-4" /> New deal
+              <Plus className="size-4" /> {t("newDeal")}
             </CommandItem>
             <CommandItem value="new activity" onSelect={() => go("/activities?new=1")}>
-              <Plus className="size-4" /> New activity
+              <Plus className="size-4" /> {t("newActivity")}
             </CommandItem>
           </CommandGroup>
-          <CommandGroup heading="Go to">
+          <CommandGroup heading={t("goTo")}>
             <CommandItem value="go home" onSelect={() => go("")}>
-              <Home className="size-4" /> Home
+              <Home className="size-4" /> {tn("home")}
             </CommandItem>
             <CommandItem value="go people" onSelect={() => go("/people")}>
-              <Users className="size-4" /> People
+              <Users className="size-4" /> {tn("people")}
             </CommandItem>
             <CommandItem value="go organizations" onSelect={() => go("/organizations")}>
-              <Building2 className="size-4" /> Organizations
+              <Building2 className="size-4" /> {tn("organizations")}
             </CommandItem>
             <CommandItem value="go deals" onSelect={() => go("/deals")}>
-              <Handshake className="size-4" /> Deals
+              <Handshake className="size-4" /> {tn("deals")}
             </CommandItem>
             <CommandItem value="go activities" onSelect={() => go("/activities")}>
-              <CalendarCheck2 className="size-4" /> Activities
+              <CalendarCheck2 className="size-4" /> {tn("activities")}
             </CommandItem>
             <CommandItem value="go tags" onSelect={() => go("/tags")}>
-              <Tag className="size-4" /> Tags
+              <Tag className="size-4" /> {tn("tags")}
             </CommandItem>
             <CommandItem value="go settings" onSelect={() => go("/settings")}>
-              <Settings className="size-4" /> Settings
+              <Settings className="size-4" /> {tn("settings")}
             </CommandItem>
           </CommandGroup>
         </CommandList>
@@ -229,14 +207,15 @@ function CommandPalette({
             <kbd className="ml-0.5 rounded border border-gray-200 bg-white px-1 font-sans">
               ↓
             </kbd>{" "}
-            to navigate
+            {t("toNavigate")}
           </span>
           <span>
-            <kbd className="rounded border border-gray-200 bg-white px-1 font-sans">↵</kbd> to open
+            <kbd className="rounded border border-gray-200 bg-white px-1 font-sans">↵</kbd>{" "}
+            {t("toOpen")}
           </span>
           <span>
-            <kbd className="rounded border border-gray-200 bg-white px-1 font-sans">esc</kbd> to
-            close
+            <kbd className="rounded border border-gray-200 bg-white px-1 font-sans">esc</kbd>{" "}
+            {t("toClose")}
           </span>
         </div>
       </Command>

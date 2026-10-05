@@ -13,6 +13,20 @@ describe("resolveSsoRedirectPath", () => {
     expect(resolveSsoRedirectPath("", {}, "")).toBe("/");
   });
 
+  it("refuses a resolved path that is not a plain same-origin path", () => {
+    expect(resolveSsoRedirectPath(".evil.example/x", {}, "")).toBe("/");
+    expect(resolveSsoRedirectPath("@evil.example", {}, "")).toBe("/");
+    expect(resolveSsoRedirectPath("//evil.example", {}, "")).toBe("/");
+    expect(resolveSsoRedirectPath("https://evil.example/", {}, "")).toBe("/");
+    expect(resolveSsoRedirectPath("/\t/evil.example", {}, "")).toBe("/");
+  });
+
+  it("refuses the same when it arrives as the explicit path too", () => {
+    expect(resolveSsoRedirectPath(".evil.example/x", {}, "?redirect-path=.evil.example%2Fx")).toBe(
+      "/",
+    );
+  });
+
   describe("an explicit ?redirect-path", () => {
     it("wins when it is a plain same-origin path", () => {
       expect(resolveSsoRedirectPath("/", {}, "?redirect-path=/platform/acme/tags")).toBe(

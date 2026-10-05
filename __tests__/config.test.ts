@@ -22,7 +22,6 @@ const PUBLIC_KEYS = [
   "NEXT_PUBLIC_ENABLE_RBAC",
   "NEXT_PUBLIC_ENABLE_GRAVATAR_ON_PROFILE_PIC",
   "NEXT_PUBLIC_DEFAULT_CURRENCY",
-  "IBLAI_API_KEY",
 ];
 
 async function loadConfig() {
@@ -183,14 +182,5 @@ describe("getEnv", () => {
     const { getEnv } = await import("../lib/iblai/config");
     expect(getEnv("NEXT_PUBLIC_APP_NAME", "fallback")).toBe("fallback");
     expect(getEnv("NEXT_PUBLIC_APP_NAME")).toBe("");
-  });
-});
-
-describe("apiKey", () => {
-  it("is empty unless the server environment carries it", async () => {
-    const config = await loadConfig();
-    expect(config.apiKey()).toBe("");
-    process.env.IBLAI_API_KEY = "secret-token";
-    expect(config.apiKey()).toBe("secret-token");
   });
 });

@@ -1,6 +1,10 @@
 "use client";
 
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { useSelector } from "react-redux";
+import { selectRbacPermissions } from "@iblai/iblai-js/web-utils";
+import { useSession } from "@/hooks/use-session";
+import { canManageCrm } from "@/lib/crm/permissions";
 
 /**
  * Org admins can view the CRM exactly as a member sees it (the OS's User /
@@ -38,4 +42,12 @@ export function AdminModeProvider({
 
 export function useAdminMode() {
   return useContext(AdminModeContext);
+}
+
+/** Settings access: Admin mode, or the CRM Manager role. */
+export function useCanManageCrm() {
+  const { isAdmin, adminMode } = useAdminMode();
+  const { tenantKey } = useSession();
+  const permissions = useSelector(selectRbacPermissions);
+  return canManageCrm(permissions, tenantKey, { isAdmin, adminMode });
 }

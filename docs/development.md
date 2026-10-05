@@ -2,8 +2,8 @@
 
 ## Prerequisites
 
-- Node.js 20+ (25.x works; the `dev` script disables Node's experimental web storage)
-- pnpm 10 (`npm install -g pnpm`)
+- Node.js 22+ (25.x works; the `dev` script disables Node's experimental web storage)
+- pnpm 12 — `corepack enable` installs the version pinned in `package.json`
 - An ibl.ai account — [ibl.ai/join](https://ibl.ai/join) — that belongs to at least one organization
 - For native builds: the Rust toolchain ([rustup](https://rustup.rs)); Xcode for iOS; Android Studio + NDK for Android
 
@@ -56,8 +56,9 @@ Four roles are seeded per organization: **CRM Viewer**, **CRM User**,
 **CRM Manager**, **CRM Inviter**. Assign them on `/platform/<org>/admin/users`
 (the SDK's Management surface, Roles + Policies tabs). Organization admins
 hold every permission. The app shows every affordance and surfaces a
-permission error from the API as a toast; `/settings` and `/admin/*` are
-additionally hidden from non-admins.
+permission error from the API as a toast; `/admin/*` is for organization
+admins in Admin mode, and `/settings` opens to them and to CRM Managers (the
+DM's `can_write_crm_pipelines` flag).
 
 ## Project layout
 
@@ -66,15 +67,28 @@ Shared record widgets live in `components/crm/` (tag picker, owner select,
 inline fields, activity timeline, confirm dialog, badges, avatars); module
 components live under `components/crm/<module>/`.
 
+## Languages
+
+The UI is in English, Spanish, French and Chinese. The active language comes
+from the shared `openedx-language-preference` cookie (set by any ibl.ai app),
+then this app's `NEXT_LOCALE` cookie, then English; the top bar has a selector
+that writes both. Strings live in `messages/{en,es,fr,zh}.json`;
+`pnpm i18n:check` fails when the four files disagree, when a value says “tenant” or
+“company”, or when it uses an ASCII apostrophe instead of `’`.
+
 ## Verify a change
 
 ```bash
-pnpm typecheck && pnpm lint && pnpm test && pnpm build
+pnpm typecheck && pnpm lint && pnpm format:check && pnpm i18n:check && pnpm test:coverage && pnpm build
 ```
+
+`pnpm lint` runs under a warning budget (`--max-warnings` in `package.json`): fix a
+warning, lower the number; never raise it. `pnpm test:coverage` holds the pure modules
+under `lib/` at 85 % lines (`vitest.config.ts`).
 
 Then open the page you touched and take a screenshot for the PR.
 `pnpm screenshots` regenerates the README captures in `docs/images/` from the
-Playwright session (`pnpm exec playwright test --project=setup-chromium` once,
+Playwright session (`pnpm exec playwright test --config e2e/playwright.config.ts --project=setup-chromium` once,
 with your credentials in `e2e/.env.development`).
 
 ## Native shell

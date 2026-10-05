@@ -1,8 +1,11 @@
 import type { Metadata, Viewport } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
+import { WebContainersLocaleProvider } from "@/components/web-containers-locale-provider";
 import { IblaiProviders } from "@/providers/iblai-providers";
 
-// The middleware's nonce-based CSP requires per-request rendering.
+// The proxy's nonce-based CSP requires per-request rendering.
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
@@ -23,11 +26,17 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang={locale} className="h-full antialiased">
       <body className="flex min-h-full flex-col">
-        <IblaiProviders>{children}</IblaiProviders>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <WebContainersLocaleProvider>
+            <IblaiProviders>{children}</IblaiProviders>
+          </WebContainersLocaleProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

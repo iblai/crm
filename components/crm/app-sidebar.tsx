@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
-  Bell,
   Building2,
   CalendarCheck2,
   Handshake,
@@ -13,215 +13,160 @@ import {
   Settings,
   Tag,
   Users,
-  ExternalLink,
-  BookOpen,
-  ShieldCheck,
-  type LucideIcon,
 } from "lucide-react";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarRail,
+  PlatformAccountSheet,
+  PlatformSidebar,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { OrgSwitcher } from "@/components/crm/org-switcher";
-import { useAdminMode } from "@/components/crm/admin-mode";
+  type PlatformAccountTab,
+  type PlatformSidebarFooterActionId,
+  type PlatformSidebarSectionConfig,
+} from "@iblai/iblai-js/web-containers/next";
+import { InviteUserDialog } from "@iblai/iblai-js/web-containers";
+import { useAdminMode, useCanManageCrm } from "@/components/crm/admin-mode";
 import { useCommandPalette } from "@/components/crm/command-palette";
+import { FavoritesSection } from "@/components/crm/favorites-section";
+import { NavRow } from "@/components/crm/nav-row";
 import { useSession } from "@/hooks/use-session";
 import config from "@/lib/iblai/config";
-import { cn } from "@/lib/utils";
-
-type NavItem = {
-  label: string;
-  path: string;
-  icon: LucideIcon;
-  exact?: boolean;
-  adminOnly?: boolean;
-};
-
-const WORKSPACE: NavItem[] = [
-  { label: "Home", path: "", icon: Home, exact: true },
-  { label: "People", path: "/people", icon: Users },
-  { label: "Organizations", path: "/organizations", icon: Building2 },
-  { label: "Deals", path: "/deals", icon: Handshake },
-  { label: "Activities", path: "/activities", icon: CalendarCheck2 },
-  { label: "Tags", path: "/tags", icon: Tag },
-];
-
-const MANAGE: NavItem[] = [
-  { label: "Notifications", path: "/notifications", icon: Bell },
-  { label: "Settings", path: "/settings", icon: Settings, adminOnly: true },
-  { label: "Users & roles", path: "/admin/users", icon: ShieldCheck, adminOnly: true },
-];
 
 /**
- * The CRM sidebar — the OS's look (white, brand-blue active state, icon-only
- * collapsed mode) with Twenty's information architecture: an organization
- * switcher, search, then the workspace objects.
+ * The SDK's cross-SPA sidebar shell with this app's content: Search as the
+ * primary action, the CRM objects as flat rows, Settings for admins in Admin
+ * mode and for CRM Managers, and the SDK footer cluster (Notifications, Invites, Management, …).
  */
 export function AppSidebar() {
-  const pathname = usePathname() ?? "/";
-  const { href, tenantKey } = useSession();
+  const t = useTranslations("nav");
+  const router = useRouter();
+  const { tenantKey, username, email, isAdmin, currentTenant, href } = useSession();
   const { adminMode } = useAdminMode();
-  const { state, isMobile, setOpenMobile } = useSidebar();
-  const collapsed = state === "collapsed" && !isMobile;
+  const { isMobile, setOpenMobile } = useSidebar();
   const { open: openPalette } = useCommandPalette();
+  const isLiveAdmin = isAdmin && adminMode;
+  const canManage = useCanManageCrm();
+  const [accountTab, setAccountTab] = useState<PlatformAccountTab | null>(null);
+  const [inviteOpen, setInviteOpen] = useState(false);
 
-  const isActive = (item: NavItem) => {
-    const target = href(item.path);
-    if (item.exact) return pathname === target || pathname === `${target}/`;
-    return pathname === target || pathname.startsWith(`${target}/`);
+  const go = (path: string) => {
+    router.push(href(path));
+    if (isMobile) setOpenMobile(false);
   };
 
-  const renderItem = (item: NavItem) => {
-    if (item.adminOnly && !adminMode) return null;
-    const active = isActive(item);
-    return (
-      <SidebarMenuItem key={item.path}>
-        <SidebarMenuButton
-          render={<Link href={href(item.path)} onClick={() => setOpenMobile(false)} />}
-          isActive={active}
-          tooltip={item.label}
-          className={cn(
-            "h-8 gap-2.5 rounded-md text-[13.5px] text-[#4a5568] hover:bg-[#f0f4fa] hover:text-gray-900",
-            "data-[active=true]:bg-[#eef6fc] data-[active=true]:font-medium data-[active=true]:text-[#0058cc]",
-          )}
-        >
-          <item.icon
-            className={cn("size-4 shrink-0", active ? "text-[#0058cc]" : "text-[#5f5f61]")}
-            strokeWidth={1.75}
-          />
-          <span className="truncate">{item.label}</span>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-    );
+  const rows = [
+    { id: "home", label: t("home"), path: "", icon: Home, exact: true },
+    { id: "people", label: t("people"), path: "/people", icon: Users },
+    { id: "organizations", label: t("organizations"), path: "/organizations", icon: Building2 },
+    { id: "deals", label: t("deals"), path: "/deals", icon: Handshake },
+    { id: "activities", label: t("activities"), path: "/activities", icon: CalendarCheck2 },
+    { id: "tags", label: t("tags"), path: "/tags", icon: Tag },
+  ];
+
+  const sections: PlatformSidebarSectionConfig[] = [
+    {
+      type: "custom",
+      id: "objects",
+      render: (ctx) => (
+        <div className="flex flex-col gap-0.5">
+          {rows.map((row) => (
+            <NavRow
+              key={row.id}
+              collapsed={ctx.collapsed}
+              icon={row.icon}
+              label={row.label}
+              href={href(row.path)}
+              exact={row.exact}
+              onAfterNav={ctx.onAfterNav}
+            />
+          ))}
+        </div>
+      ),
+    },
+    {
+      type: "custom",
+      id: "favorites",
+      render: (ctx) => (
+        <FavoritesSection
+          collapsed={ctx.collapsed}
+          expandFromRail={ctx.expandFromRail}
+          onAfterNav={ctx.onAfterNav}
+        />
+      ),
+    },
+  ];
+  if (canManage) {
+    sections.push({ type: "divider", id: "admin-divider" });
+    sections.push({
+      type: "custom",
+      id: "admin",
+      render: (ctx) => (
+        <NavRow
+          collapsed={ctx.collapsed}
+          icon={Settings}
+          label={t("settings")}
+          href={href("/settings")}
+          onAfterNav={ctx.onAfterNav}
+        />
+      ),
+    });
+  }
+
+  const onFooterAction = (id: PlatformSidebarFooterActionId) => {
+    if (id === "notifications") go("/notifications");
+    else if (id === "management") go("/admin/users");
+    else if (id === "invites") setInviteOpen(true);
+    else setAccountTab(id);
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-[#e6e6e8] bg-white">
-      <SidebarHeader className="gap-2 px-2 pt-2">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <OrgSwitcher collapsed={collapsed} />
-          </SidebarMenuItem>
-        </SidebarMenu>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <SidebarMenuButton
-                    onClick={openPalette}
-                    aria-label="Search"
-                    className="text-muted-foreground h-8 gap-2.5 rounded-md border border-[#e6e6e8] bg-[#fafbfc] text-[13px] hover:bg-white hover:text-gray-900"
-                  />
-                }
-              >
-                <Search className="size-4 shrink-0" strokeWidth={1.75} />
-                <span className="flex-1 truncate text-left">Search…</span>
-                <kbd className="text-muted-foreground rounded border border-[#e6e6e8] bg-white px-1 font-sans text-[10px] group-data-[collapsible=icon]:hidden">
-                  ⌘K
-                </kbd>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                Search people, organizations and deals — ⌘K
-              </TooltipContent>
-            </Tooltip>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-
-      <SidebarContent className="px-2">
-        <SidebarGroup className="px-0">
-          <SidebarGroupLabel className="text-muted-foreground text-[11px] font-medium tracking-wide uppercase">
-            Workspace
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-0.5">{WORKSPACE.map(renderItem)}</SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        <SidebarGroup className="px-0">
-          <SidebarGroupLabel className="text-muted-foreground text-[11px] font-medium tracking-wide uppercase">
-            Manage
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-0.5">{MANAGE.map(renderItem)}</SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-
-      <SidebarFooter className="px-2 pb-3">
-        <SidebarMenu className="gap-0.5">
-          <SidebarMenuItem>
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <SidebarMenuButton
-                    render={
-                      <a
-                        href={`${config.osUrl()}/platform/${encodeURIComponent(tenantKey)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Agentic OS"
-                      />
-                    }
-                    className="h-8 gap-2.5 rounded-md text-[13px] text-[#4a5568] hover:bg-[#f0f4fa]"
-                  />
-                }
-              >
-                <ExternalLink className="size-4 shrink-0 text-[#5f5f61]" strokeWidth={1.75} />
-                <span className="truncate">Agentic OS</span>
-              </TooltipTrigger>
-              <TooltipContent side="right">Open this organization in the Agentic OS</TooltipContent>
-            </Tooltip>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <SidebarMenuButton
-                    render={
-                      <a
-                        href={config.documentationUrl()}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Documentation"
-                      />
-                    }
-                    className="h-8 gap-2.5 rounded-md text-[13px] text-[#4a5568] hover:bg-[#f0f4fa]"
-                  />
-                }
-              >
-                <BookOpen className="size-4 shrink-0 text-[#5f5f61]" strokeWidth={1.75} />
-                <span className="truncate">Documentation</span>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                Guides and API reference for ibl.ai/crm — opens in a new tab
-              </TooltipContent>
-            </Tooltip>
-          </SidebarMenuItem>
-        </SidebarMenu>
-        <div className="mt-2 flex items-center justify-center gap-1.5 px-1 group-data-[collapsible=icon]:hidden">
-          <Image
-            src="/images/iblai-logo.png"
-            alt="ibl.ai"
-            width={60}
-            height={20}
-            className="h-4 w-auto opacity-70"
-          />
-          <span className="text-muted-foreground text-[11px]">/crm</span>
-        </div>
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
+    <>
+      <PlatformSidebar
+        logo={
+          <span className="flex items-center gap-1.5 px-1">
+            <Image
+              src="/images/iblai-logo.png"
+              alt="ibl.ai"
+              width={60}
+              height={20}
+              className="h-4 w-auto"
+            />
+            <span className="text-muted-foreground text-[11px]">/crm</span>
+          </span>
+        }
+        primaryAction={{ label: t("search"), icon: Search, onClick: openPalette }}
+        sections={sections}
+        footer={{
+          isAdmin,
+          isLiveAdmin,
+          enableRbac: false,
+          rbacPermissions: {},
+          tenantKey,
+          currentTenant: {
+            key: tenantKey,
+            enable_monetization: currentTenant?.enable_monetization ?? false,
+          },
+          notificationsAllowed: true,
+          invitesUserTypeAllowed: true,
+          supportUrl: config.documentationUrl(),
+          onAction: onFooterAction,
+        }}
+      />
+      <PlatformAccountSheet
+        tab={accountTab}
+        onClose={() => setAccountTab(null)}
+        tenantKey={tenantKey}
+        username={username}
+        email={email}
+        onInviteClick={() => setInviteOpen(true)}
+        mainPlatformKey={config.mainTenantKey()}
+        authUrl={config.authUrl()}
+        currentSpa="crm"
+        platformBaseDomain={config.platformBaseDomain()}
+      />
+      <InviteUserDialog
+        tenant={tenantKey}
+        isOpen={inviteOpen}
+        onClose={() => setInviteOpen(false)}
+      />
+    </>
   );
 }

@@ -34,13 +34,19 @@
     {
       "id": "S3",
       "journey": "shell",
-      "name": "organization switcher lists the session's organizations",
+      "name": "profile menu names the current organization and switches",
       "spec": "journeys/shell.journey.spec.ts"
     },
     {
       "id": "S4",
       "journey": "shell",
       "name": "Settings hidden outside Admin mode; /settings redirects home",
+      "spec": "journeys/shell.journey.spec.ts"
+    },
+    {
+      "id": "S5",
+      "journey": "shell",
+      "name": "home period select asks the overview for that window",
       "spec": "journeys/shell.journey.spec.ts"
     },
     {
@@ -71,6 +77,36 @@
       "id": "C5",
       "journey": "crm",
       "name": "create and delete a tag",
+      "spec": "journeys/crm.journey.spec.ts"
+    },
+    {
+      "id": "C6",
+      "journey": "crm",
+      "name": "log a note on an organization's timeline",
+      "spec": "journeys/crm.journey.spec.ts"
+    },
+    {
+      "id": "C7",
+      "journey": "crm",
+      "name": "star a person and find it under Favorites",
+      "spec": "journeys/crm.journey.spec.ts"
+    },
+    {
+      "id": "C8",
+      "journey": "crm",
+      "name": "save a People view and reopen it",
+      "spec": "journeys/crm.journey.spec.ts"
+    },
+    {
+      "id": "C9",
+      "journey": "crm",
+      "name": "a person's History tab lists a field change",
+      "spec": "journeys/crm.journey.spec.ts"
+    },
+    {
+      "id": "C10",
+      "journey": "crm",
+      "name": "⌘K finds the person through server search",
       "spec": "journeys/crm.journey.spec.ts"
     }
   ]

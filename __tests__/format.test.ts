@@ -1,19 +1,19 @@
-import { addDays, format as formatDate } from "date-fns";
+import { addDays } from "date-fns";
 import { describe, expect, it } from "vitest";
 
 import {
   avatarColor,
   contrastText,
-  dealValue,
   formatCompactCurrency,
   formatCurrency,
+  formatDate,
+  formatDateTime,
+  formatRelative,
   initials,
-  pluralize,
-  scheduleLabel,
+  scheduleState,
   sortStages,
   tagStyle,
   truncate,
-  weightedValue,
 } from "../lib/crm/format";
 
 /** Noon today / tomorrow, so the assertions never straddle midnight. */
@@ -73,43 +73,49 @@ describe("formatCompactCurrency", () => {
   });
 });
 
-describe("scheduleLabel", () => {
-  it("has a muted 'Unscheduled' label with no date", () => {
-    expect(scheduleLabel(undefined)).toEqual({ label: "Unscheduled", tone: "muted" });
-    expect(scheduleLabel(null)).toEqual({ label: "Unscheduled", tone: "muted" });
-    expect(scheduleLabel("")).toEqual({ label: "Unscheduled", tone: "muted" });
+describe("scheduleState", () => {
+  it("is unscheduled with no date", () => {
+    expect(scheduleState(undefined)).toEqual({ kind: "unscheduled", date: null });
+    expect(scheduleState(null)).toEqual({ kind: "unscheduled", date: null });
+    expect(scheduleState("")).toEqual({ kind: "unscheduled", date: null });
   });
 
-  it("marks today with the brand tone", () => {
-    const { label, tone } = scheduleLabel(atNoon(0));
-    expect(tone).toBe("today");
-    expect(label.startsWith("Today · ")).toBe(true);
+  it("recognises today and tomorrow", () => {
+    expect(scheduleState(atNoon(0)).kind).toBe("today");
+    expect(scheduleState(atNoon(1)).kind).toBe("tomorrow");
   });
 
-  it("marks tomorrow as soon", () => {
-    const { label, tone } = scheduleLabel(atNoon(1));
-    expect(tone).toBe("soon");
-    expect(label.startsWith("Tomorrow · ")).toBe(true);
+  it("marks a past, open item as overdue but not a done one", () => {
+    expect(scheduleState("2020-01-02T12:00:00.000Z").kind).toBe("overdue");
+    expect(scheduleState("2020-01-02T12:00:00.000Z", true).kind).toBe("date");
   });
 
-  it("marks a past, open item as overdue", () => {
-    const { label, tone } = scheduleLabel("2020-01-02T12:00:00.000Z");
-    expect(tone).toBe("overdue");
-    expect(label.startsWith("Overdue · ")).toBe(true);
-  });
-
-  it("does not call a done item overdue", () => {
-    const { label, tone } = scheduleLabel("2020-01-02T12:00:00.000Z", true);
-    expect(tone).toBe("muted");
-    expect(label).toContain("2020");
-  });
-
-  it("shows a plain date for a future item", () => {
+  it("returns the parsed date for a future item", () => {
     const future = atNoon(30);
-    expect(scheduleLabel(future)).toEqual({
-      label: formatDate(new Date(future), "MMM d, yyyy"),
-      tone: "muted",
-    });
+    const state = scheduleState(future);
+    expect(state.kind).toBe("date");
+    expect(state.date?.toISOString()).toBe(future);
+  });
+});
+
+describe("formatDate / formatDateTime / formatRelative", () => {
+  it("formats in the given locale", () => {
+    expect(formatDate("2026-09-03T12:00:00.000Z", "en-US")).toBe("Sep 3, 2026");
+    expect(formatDate("2026-09-03T12:00:00.000Z", "fr-FR")).toBe("3 sept. 2026");
+    expect(formatDateTime("2026-09-03T12:30:00.000Z", "en-US")).toContain("Sep 3, 2026");
+  });
+
+  it("returns an em dash for nothing", () => {
+    expect(formatDate(null, "en-US")).toBe("—");
+    expect(formatRelative(undefined, "en-US")).toBe("—");
+  });
+
+  it("picks the largest fitting unit, relative to now", () => {
+    const now = new Date("2026-09-03T12:00:00.000Z");
+    expect(formatRelative("2026-09-01T12:00:00.000Z", "en-US", now)).toBe("2 days ago");
+    expect(formatRelative("2026-09-03T14:00:00.000Z", "en-US", now)).toBe("in 2 hours");
+    expect(formatRelative("2026-09-03T12:00:10.000Z", "en-US", now)).toBe("now");
+    expect(formatRelative("2026-08-31T12:00:00.000Z", "es-ES", now)).toBe("hace 3 días");
   });
 });
 
@@ -207,28 +213,6 @@ describe("tagStyle", () => {
   });
 });
 
-describe("dealValue / weightedValue", () => {
-  it("parses the decimal string", () => {
-    expect(dealValue({ lead_value: "1500.50" })).toBe(1500.5);
-  });
-
-  it("treats a missing or unparseable value as zero", () => {
-    expect(dealValue({})).toBe(0);
-    expect(dealValue({ lead_value: undefined })).toBe(0);
-    expect(dealValue({ lead_value: "abc" })).toBe(0);
-  });
-
-  it("weights by the stage probability", () => {
-    expect(weightedValue({ lead_value: "1000" }, { probability: 40 })).toBe(400);
-    expect(weightedValue({ lead_value: "1000" }, { probability: 100 })).toBe(1000);
-  });
-
-  it("weights to zero without a stage or probability", () => {
-    expect(weightedValue({ lead_value: "1000" })).toBe(0);
-    expect(weightedValue({ lead_value: "1000" }, {})).toBe(0);
-  });
-});
-
 describe("sortStages", () => {
   it("orders by sort_order then id", () => {
     const stages = [
@@ -276,21 +260,5 @@ describe("truncate", () => {
     expect(truncate(undefined)).toBe("");
     expect(truncate(null)).toBe("");
     expect(truncate("")).toBe("");
-  });
-});
-
-describe("pluralize", () => {
-  it("uses the singular for exactly one", () => {
-    expect(pluralize(1, "deal")).toBe("1 deal");
-  });
-
-  it("uses the plural otherwise", () => {
-    expect(pluralize(0, "deal")).toBe("0 deals");
-    expect(pluralize(7, "deal")).toBe("7 deals");
-  });
-
-  it("accepts an irregular plural", () => {
-    expect(pluralize(2, "person", "people")).toBe("2 people");
-    expect(pluralize(1, "person", "people")).toBe("1 person");
   });
 });

@@ -24,35 +24,17 @@ if (
 }
 
 import type { NextConfig } from "next";
-import { createRequire } from "module";
+import createNextIntlPlugin from "next-intl/plugin";
 
-const require = createRequire(import.meta.url);
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
-/**
- * Resolve a package to its root directory so webpack never loads duplicate
- * copies (can happen in npm/pnpm hoisting with differing peer deps).
- * Without this, @reduxjs/toolkit may be duplicated and SDK components get
- * a different ReactReduxContext — RTK Query hooks silently return undefined.
- */
-function dedup(packageName: string): string | undefined {
-  try {
-    const entry = require.resolve(packageName);
-    const marker = `node_modules/${packageName}`;
-    const idx = entry.lastIndexOf(marker);
-    if (idx !== -1) return entry.slice(0, idx + marker.length);
-    return undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-const resolveAliases: Record<string, string> = {};
-const dataLayerDir = dedup("@iblai/data-layer");
-if (dataLayerDir) resolveAliases["@iblai/data-layer"] = dataLayerDir;
-const rtkDir = dedup("@reduxjs/toolkit");
-if (rtkDir) resolveAliases["@reduxjs/toolkit"] = rtkDir;
-const reactReduxDir = dedup("react-redux");
-if (reactReduxDir) resolveAliases["react-redux"] = reactReduxDir;
+// The SDK's Account pages load the platform logo from the DM through next/image.
+const apiHost = new URL(process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.iblai.app").hostname;
+const baseDomain = process.env.NEXT_PUBLIC_PLATFORM_BASE_DOMAIN?.replace(/^\./, "");
+const remotePatterns = [
+  { protocol: "https" as const, hostname: apiHost },
+  ...(baseDomain ? [{ protocol: "https" as const, hostname: `*.${baseDomain}` }] : []),
+];
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -60,17 +42,22 @@ const nextConfig: NextConfig = {
   // dev double-mount, wedging voice input at "Processing…". Host workaround
   // (see /iblai-vibe-agent-chat "Known issues"); production runs effects once.
   reactStrictMode: false,
-  images: {
-    remotePatterns: [{ protocol: "https", hostname: "**" }],
-  },
-  turbopack: {},
-  webpack: (config) => {
-    config.resolve = config.resolve || {};
-    config.resolve.alias = config.resolve.alias || {};
-    // ibl.ai: Deduplicate @reduxjs/toolkit + react-redux (shared Redux context)
-    Object.assign(config.resolve.alias, resolveAliases);
-    return config;
+  images: { remotePatterns },
+  poweredByHeader: false,
+  async headers() {
+    // Transport security (HSTS) is the host's; microphone stays open for voice chat.
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Permissions-Policy", value: "camera=(), geolocation=(), payment=()" },
+        ],
+      },
+    ];
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

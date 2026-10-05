@@ -1,42 +1,26 @@
 "use client";
 
 import { useMemo } from "react";
-import {
-  useListLeadSourcesQuery,
-  useListOrganizationsQuery,
-  useListPersonsQuery,
-  useListPipelinesQuery,
-} from "@/lib/crm/api";
+import { useTranslations } from "next-intl";
+import { useListLeadSourcesQuery, useListPipelinesQuery } from "@/lib/crm/api";
 import { sortStages } from "@/lib/crm/format";
-import type { LeadSource, Organization, Person, Pipeline, PipelineStage } from "@/lib/crm/types";
+import type { LeadSource, Pipeline, PipelineStage } from "@/lib/crm/types";
 
 /**
- * The reference data every deal surface needs: the people and organizations a
- * deal points at (the API returns ids only), the pipelines with their stages,
- * and the lead sources. All of it is small and heavily cached by RTK Query, so
- * each surface may call this freely.
+ * The reference data every deal surface needs: the pipelines with their
+ * stages and the lead sources. Small and cached by RTK Query, so each surface
+ * may call this freely. Person and organization names ride on the deal.
  */
 export function useDealLookups(options?: { skip?: boolean }) {
+  const t = useTranslations("deals");
   const skip = options?.skip;
-  const { data: persons, isLoading: personsLoading } = useListPersonsQuery({ page_size: 100 }, { skip });
-  const { data: organizations, isLoading: orgsLoading } = useListOrganizationsQuery(
-    { page_size: 100 },
-    { skip },
-  );
-  const { data: pipelines, isLoading: pipelinesLoading } = useListPipelinesQuery(
-    { page_size: 100 },
-    { skip },
-  );
+  const {
+    data: pipelines,
+    isLoading: pipelinesLoading,
+    error: pipelinesError,
+  } = useListPipelinesQuery({ page_size: 100 }, { skip });
   const { data: sources, isLoading: sourcesLoading } = useListLeadSourcesQuery(undefined, { skip });
 
-  const personById = useMemo(
-    () => new Map<string, Person>((persons?.results ?? []).map((p) => [p.id, p])),
-    [persons],
-  );
-  const organizationById = useMemo(
-    () => new Map<string, Organization>((organizations?.results ?? []).map((o) => [o.id, o])),
-    [organizations],
-  );
   const pipelineById = useMemo(
     () => new Map<number, Pipeline>((pipelines?.results ?? []).map((p) => [p.id, p])),
     [pipelines],
@@ -57,22 +41,19 @@ export function useDealLookups(options?: { skip?: boolean }) {
   }, [pipelines]);
 
   return {
-    persons: persons?.results ?? [],
-    personCount: persons?.count ?? 0,
-    organizations: organizations?.results ?? [],
     pipelines: pipelines?.results ?? [],
     sources: sources?.results ?? [],
-    personById,
-    organizationById,
     pipelineById,
     stageById,
     sourceById,
     defaultPipeline,
-    personName: (id?: string | null) => (id ? (personById.get(id)?.name ?? "Unknown person") : "—"),
-    organizationName: (id?: string | null) => (id ? (organizationById.get(id)?.name ?? "") : ""),
-    stageName: (id?: number | null) => (id ? (stageById.get(id)?.name ?? `Stage #${id}`) : "—"),
-    sourceName: (id?: number | null) => (id ? (sourceById.get(id)?.name ?? `Source #${id}`) : ""),
-    isLoading: personsLoading || orgsLoading || pipelinesLoading || sourcesLoading,
+    stageName: (id?: number | null) =>
+      id ? (stageById.get(id)?.name ?? t("fields.stageFallback", { id })) : "—",
+    sourceName: (id?: number | null) =>
+      id ? (sourceById.get(id)?.name ?? t("fields.sourceFallback", { id })) : "",
+    isLoading: pipelinesLoading || sourcesLoading,
+    /** The pipelines request failed: nothing below can render. */
+    error: pipelinesError,
   };
 }
 

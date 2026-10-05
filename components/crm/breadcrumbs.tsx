@@ -4,8 +4,9 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useSession } from "@/hooks/use-session";
-import { shortTenantKey, tenantDisplayName } from "@/lib/iblai/tenant";
+import { isUnnamedTenant, shortTenantKey, tenantDisplayName } from "@/lib/iblai/tenant";
 
 export interface Crumb {
   label: ReactNode;
@@ -35,19 +36,23 @@ export function useBreadcrumbs(crumbs: Crumb[]) {
   }, [key]);
 }
 
-const SECTION_LABELS: Record<string, string> = {
-  people: "People",
-  organizations: "Organizations",
-  deals: "Deals",
-  activities: "Activities",
-  tags: "Tags",
-  settings: "Settings",
-  notifications: "Notifications",
-  admin: "Admin",
-  users: "Users & roles",
-};
+const SECTION_KEYS = {
+  people: "nav.people",
+  organizations: "nav.organizations",
+  deals: "nav.deals",
+  activities: "nav.activities",
+  tags: "nav.tags",
+  settings: "nav.settings",
+  notifications: "breadcrumbs.notifications",
+  admin: "breadcrumbs.admin",
+  users: "breadcrumbs.users",
+} as const;
+
+const isSection = (seg: string): seg is keyof typeof SECTION_KEYS =>
+  Object.hasOwn(SECTION_KEYS, seg);
 
 export function Breadcrumbs() {
+  const t = useTranslations();
   const { crumbs } = useContext(CrumbContext);
   const pathname = usePathname() ?? "/";
   const { currentTenant, tenantKey, href } = useSession();
@@ -60,19 +65,24 @@ export function Breadcrumbs() {
           .replace(href(), "")
           .split("/")
           .filter(Boolean)
-          .filter((seg) => SECTION_LABELS[seg])
+          .filter(isSection)
           .map((seg, i, arr) => ({
-            label: SECTION_LABELS[seg],
+            label: t(SECTION_KEYS[seg]),
             href: href(`/${arr.slice(0, i + 1).join("/")}`),
           }));
 
   const items: Crumb[] = [
-    { label: tenantDisplayName(currentTenant) || shortTenantKey(tenantKey), href: href() },
+    {
+      label: isUnnamedTenant(currentTenant)
+        ? t("shell.organization")
+        : tenantDisplayName(currentTenant) || shortTenantKey(tenantKey),
+      href: href(),
+    },
     ...derived,
   ];
 
   return (
-    <nav aria-label="Breadcrumb" className="flex min-w-0 items-center text-sm">
+    <nav aria-label={t("breadcrumbs.label")} className="flex min-w-0 items-center text-sm">
       {items.map((item, i) => {
         const last = i === items.length - 1;
         return (

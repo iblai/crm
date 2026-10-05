@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { InfoTip } from "@/components/crm/info-tip";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,7 @@ export function StatCard({
   tone?: "default" | "brand" | "success" | "warning" | "danger";
   className?: string;
 }) {
+  const t = useTranslations("fields");
   const tones = {
     default: "bg-gray-100 text-gray-600",
     brand: "bg-[#eef6fc] text-[#0058cc]",
@@ -42,7 +44,13 @@ export function StatCard({
       <div className="min-w-0">
         <p className="text-muted-foreground flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
           <span className="truncate">{label}</span>
-          {info ? <InfoTip label={`About ${labelText ?? "this metric"}`}>{info}</InfoTip> : null}
+          {info ? (
+            <InfoTip
+              label={labelText == null ? t("aboutThisMetric") : t("about", { label: labelText })}
+            >
+              {info}
+            </InfoTip>
+          ) : null}
         </p>
         <p className="mt-1.5 truncate text-2xl font-semibold tracking-tight text-gray-900">
           {value}

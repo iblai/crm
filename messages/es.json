@@ -1,0 +1,1035 @@
+{
+  "activities": {
+    "composer": {
+      "add": "Añadir",
+      "detailsPlaceholder": "Detalles, resultado, próximos pasos…",
+      "needsTime": "— requiere una hora",
+      "placeholder": "{type, select, note {Escribe una nota…} call {Registra una llamada…} meeting {Registra una reunión…} email {Registra un correo…} task {Registra una tarea…} lunch {Registra un almuerzo…} deadline {Registra una fecha límite…} other {Registra una actividad…}}",
+      "remind": "Recordar al responsable a la hora programada",
+      "reminderHint": "Se envía un recordatorio al responsable a la hora programada",
+      "reminderNeedsWhen": "Primero indica una hora en “Cuándo”",
+      "titleLabel": "Título de la actividad",
+      "when": "Cuándo",
+      "whenAbout": "Acerca del campo Cuándo",
+      "whenHint": "Déjalo vacío para registrarla ahora; indica una hora para programarla"
+    },
+    "confirm": {
+      "deleteDescription": "“{title}” se quitará de la cronología.",
+      "deleteTitle": "¿Eliminar esta actividad?"
+    },
+    "dialog": {
+      "alreadyDone": "Ya hecha",
+      "organization": "Organización",
+      "create": "Crear actividad",
+      "deal": "Negocio",
+      "description": "Las llamadas, reuniones, tareas y notas pertenecen a una persona, un negocio o una organización.",
+      "detailsPlaceholder": "Orden del día, resultado, próximos pasos…",
+      "editTitle": "Editar actividad",
+      "ends": "Fin",
+      "linkHint": "Elige una persona, un negocio o una organización.",
+      "linkRequired": "Vincula la actividad a una persona, una organización o un negocio.",
+      "noOrganization": "Sin organización",
+      "noDeal": "Sin negocio",
+      "noPerson": "Sin persona",
+      "ownerAbout": "Acerca del campo responsable",
+      "ownerHint": "Quién la verá en su lista “Mías”",
+      "person": "Persona",
+      "remind": "Recordar al responsable",
+      "remindOff": "Indica una hora de inicio para activar los recordatorios.",
+      "remindOn": "Se envía un recordatorio a la hora de inicio.",
+      "saveChanges": "Guardar cambios",
+      "starts": "Inicio",
+      "startsAbout": "Acerca de la hora de inicio",
+      "startsHint": "Déjalo vacío para trabajo sin programar; los recordatorios necesitan una hora",
+      "titleLabel": "Título",
+      "titlePlaceholder": "Llamada de presentación con el equipo…",
+      "titleRequired": "El título es obligatorio.",
+      "type": "Tipo",
+      "typeAbout": "Acerca del campo tipo",
+      "dealMismatch": "Este negocio pertenece a otra persona."
+    },
+    "list": {
+      "allHint": "Todos: abiertos y hechos a la vez",
+      "allTypes": "Todos los tipos",
+      "description": "Llamadas, reuniones, tareas y notas de todos los negocios y contactos",
+      "doneHint": "Hecho: ya completado",
+      "emptyEveryone": "Nada coincide con estos filtros. Amplía el rango de fechas o registra una llamada o tarea desde la página de una persona o de un negocio.",
+      "emptyMine": "Nada tuyo coincide con estos filtros. Prueba “Todo el equipo”, amplía el rango de fechas o registra una llamada o tarea desde la página de una persona o de un negocio.",
+      "emptyTitle": "Nada programado aquí",
+      "everyone": "Todo el equipo",
+      "everyoneHint": "Todo el equipo: actividades de cualquier persona del equipo",
+      "mine": "Mías",
+      "mineHint": "Mías: actividades de las que eres responsable",
+      "newHint": "Registra una llamada o una nota, o programa una tarea o una reunión",
+      "openHint": "Abierto: aún pendiente",
+      "paginationLabel": "actividades",
+      "rangeLabel": "Rango de fechas",
+      "refreshing": "Actualizando…",
+      "scopeLabel": "Ámbito del responsable",
+      "statusLabel": "Estado"
+    },
+    "location": "Lugar / enlace",
+    "locationPlaceholder": "Zoom, oficina, teléfono…",
+    "newActivity": "Nueva actividad",
+    "range": {
+      "all": "Todas las fechas",
+      "next7": "Próximos 7 días",
+      "week": "Esta semana"
+    },
+    "schedule": {
+      "overdue": "Atrasada · {date}",
+      "today": "Hoy · {time}",
+      "tomorrow": "Mañana · {time}"
+    },
+    "sections": {
+      "overdueAbout": "Acerca de las atrasadas",
+      "overdueInfo": "Programadas antes de hoy y aún sin hacer.",
+      "todayAbout": "Acerca de hoy",
+      "todayInfo": "Programadas para hoy y aún abiertas.",
+      "unscheduledAbout": "Acerca de las no programadas",
+      "unscheduledInfo": "Trabajo abierto aún sin fecha; lo más reciente primero.",
+      "upcoming": "Próximas",
+      "upcomingAbout": "Acerca de las próximas",
+      "upcomingInfo": "Programadas para después de hoy."
+    },
+    "timeline": {
+      "dealLink": "Negocio #{id}",
+      "doneAgo": "hecha {when}",
+      "empty": "Aún no hay actividad. Registra una llamada, programa una reunión o deja una nota arriba.",
+      "historyAbout": "Acerca del historial",
+      "historyHint": "Todo lo ya hecho, lo más reciente primero; las notas también llegan aquí",
+      "loggedAgo": "registrada {when}",
+      "markDone": "Marcar hecha",
+      "markDoneLabel": "Marcar como hecha",
+      "markNotDone": "Marcar no hecha",
+      "markNotDoneLabel": "Marcar como no hecha",
+      "moreHint": "Más acciones para esta actividad",
+      "openAbout": "Acerca de las actividades abiertas",
+      "openHint": "Aún sin hacer: marca el círculo para completar una",
+      "viewPerson": "Ver persona",
+      "viewOrganization": "Ver organización",
+      "stageChanged": "Etapa cambiada"
+    },
+    "toast": {
+      "created": "Actividad creada",
+      "deleted": "Actividad eliminada",
+      "logged": "Actividad registrada",
+      "noteAdded": "Nota añadida",
+      "updated": "Actividad actualizada"
+    },
+    "typeHint": "Las notas se registran como hechas; las llamadas, reuniones y tareas se pueden programar",
+    "typeLabel": "Tipo de actividad"
+  },
+  "admin": {
+    "users": {
+      "description": "Miembros, grupos, roles y políticas de esta organización, incluidos los roles CRM Viewer, User, Manager e Inviter",
+      "invite": "Invitar usuario",
+      "pendingInvites": "Invitaciones pendientes",
+      "title": "Usuarios y roles"
+    }
+  },
+  "auth": {
+    "completingSignIn": "Completando el inicio de sesión…"
+  },
+  "breadcrumbs": {
+    "admin": "Administración",
+    "label": "Ruta de navegación",
+    "notifications": "Notificaciones",
+    "users": "Usuarios y roles"
+  },
+  "common": {
+    "admin": "Administrador",
+    "all": "Todos",
+    "cancel": "Cancelar",
+    "clear": "Limpiar",
+    "clearFilters": "Limpiar filtros",
+    "clearSearch": "Limpiar búsqueda",
+    "clickToEdit": "Clic para editar",
+    "confirm": "Confirmar",
+    "create": "Crear",
+    "created": "Creado",
+    "delete": "Eliminar",
+    "deletedToast": "{name} eliminado",
+    "description": "Descripción",
+    "details": "Detalles",
+    "done": "Hecho",
+    "edit": "Editar",
+    "email": "Correo",
+    "empty": "Vacío",
+    "errorForbidden": "No tienes permiso para hacer eso",
+    "errorGeneric": "Algo salió mal",
+    "history": "Historial",
+    "loading": "Cargando…",
+    "me": "yo",
+    "member": "Miembro",
+    "moreActions": "Más acciones",
+    "name": "Nombre",
+    "next": "Siguiente",
+    "no": "No",
+    "none": "Ninguno",
+    "open": "Abierto",
+    "overdue": "Atrasado",
+    "owner": "Responsable",
+    "page": "Página {page} de {total}",
+    "previous": "Anterior",
+    "remove": "Quitar",
+    "save": "Guardar",
+    "search": "Buscar",
+    "showing": "{from}–{to} de {count, plural, one {# {label}} other {# {label}}}",
+    "tags": "Etiquetas",
+    "timeline": "Cronología",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "unscheduled": "Sin programar",
+    "updated": "Actualizado",
+    "user": "Usuario",
+    "yes": "Sí",
+    "errorLoadTitle": "No se pudo cargar",
+    "errorProtectedByDeals": "{count, plural, one {# negocio todavía hace referencia} other {# negocios todavía hacen referencia}} a este registro.",
+    "errorNetwork": "Sin conexión con el servidor."
+  },
+  "organizations": {
+    "actions": {
+      "new": "Nueva organización",
+      "newHint": "Añade una organización y luego vincula sus personas y negocios"
+    },
+    "address": {
+      "add": {
+        "city": "Añadir una ciudad",
+        "country": "Añadir un país",
+        "postalCode": "Añadir un código postal",
+        "state": "Añadir una provincia",
+        "street": "Añadir una dirección"
+      },
+      "city": "Ciudad",
+      "country": "País",
+      "example": {
+        "city": "Madrid",
+        "country": "España",
+        "postalCode": "28013",
+        "state": "Madrid",
+        "street": "Calle Mayor 1"
+      },
+      "postalCode": "Código postal",
+      "state": "Provincia / región",
+      "street": "Dirección"
+    },
+    "detail": {
+      "addPerson": "Añadir persona",
+      "addPersonHint": "Crea un contacto ya vinculado a esta organización",
+      "back": "Volver a Organizaciones",
+      "breadcrumb": "Organización",
+      "delete": "Eliminar organización",
+      "deleteError": "No se pudo eliminar esta organización",
+      "deleteHint": "Se elimina la organización. Sus personas y negocios se quedan y pierden su organización; las actividades vinculadas solo a ella se eliminan.",
+      "deleteTitle": "¿Eliminar {name}?",
+      "moreHint": "Eliminar esta organización",
+      "noDeals": "Aún no hay ningún negocio abierto con {name}.",
+      "noPeople": "Aún no hay personas aquí",
+      "noPeopleHint": "Añade los contactos con los que trabajas en {name}.",
+      "notFound": "Esta organización ya no existe",
+      "notFoundHint": "Es posible que otra persona de tu equipo la haya eliminado.",
+      "ownerHint": "La persona del equipo responsable de esta organización.",
+      "peopleCount": "{count, plural, one {# persona} other {# personas}}",
+      "unnamed": "Organización sin nombre"
+    },
+    "dialog": {
+      "added": "Organización añadida: {name}",
+      "createError": "No se pudo crear esta organización",
+      "description": "Las organizaciones agrupan a las personas con las que hablas y los negocios que llevas con ellas.",
+      "namePlaceholder": "Universidad Acme",
+      "submit": "Crear organización"
+    },
+    "list": {
+      "addFirst": "Añade tu primera organización",
+      "description": "Las organizaciones a las que pertenecen tus personas y negocios",
+      "emptyHint": "Añade las organizaciones a las que vendes y luego vincúlales personas y negocios.",
+      "emptyTitle": "Aún no hay organizaciones",
+      "noMatchFilters": "Ninguna organización coincide con estos filtros",
+      "noMatchFiltersHint": "Prueba con otro nombre, responsable o etiqueta.",
+      "paginationLabel": "organizaciones",
+      "searchLabel": "Buscar organizaciones",
+      "searchPlaceholder": "Buscar organizaciones por nombre…"
+    },
+    "table": {
+      "location": "Ubicación"
+    }
+  },
+  "dashboard": {
+    "actions": {
+      "logActivity": "Registrar actividad",
+      "logActivityHint": "Registra una llamada o una nota, o programa una tarea o una reunión",
+      "newDeal": "Nuevo negocio",
+      "newDealHint": "Abre un negocio para una persona; empieza en la primera etapa"
+    },
+    "onboarding": {
+      "addPerson": "Añadir una persona",
+      "body": "Empieza añadiendo una persona y luego abre un negocio para ella. Todo lo demás —organizaciones, actividades y etiquetas— depende de esos dos.",
+      "createDeal": "Crear un negocio",
+      "steps": {
+        "activity": {
+          "body": "Las llamadas, reuniones y notas mantienen un historial fiel.",
+          "title": "Registra actividades"
+        },
+        "deals": {
+          "body": "Sigue las oportunidades a lo largo de las etapas de tu pipeline.",
+          "title": "Abre negocios"
+        },
+        "people": {
+          "body": "Los contactos son la base de cada negocio y cada actividad.",
+          "title": "Añade personas"
+        }
+      },
+      "title": "Tu CRM está listo"
+    },
+    "panel": {
+      "aboutThisPanel": "Acerca de este panel",
+      "viewAll": "Ver todo"
+    },
+    "panels": {
+      "byStage": {
+        "defaultPipeline": "Pipeline predeterminado",
+        "empty": "Aún no hay negocios abiertos en este pipeline.",
+        "info": "Negocios abiertos del pipeline predeterminado, por etapa.",
+        "link": "Abrir tablero",
+        "title": "Negocios por etapa",
+        "titleText": "negocios por etapa",
+        "tooltip": "{count, plural, one {# negocio} other {# negocios}} · {value}",
+        "noPipeline": "No hay pipeline predeterminado; elige uno en Configuración."
+      },
+      "recentDeals": {
+        "empty": "Aún no hay negocios.",
+        "meta": "{person} · añadido {when}",
+        "title": "Negocios recientes"
+      },
+      "recentPeople": {
+        "empty": "Aún no hay personas.",
+        "title": "Personas añadidas recientemente"
+      },
+      "upNext": {
+        "description": "Trabajo pendiente y programado",
+        "empty": "Nada programado. Estás al día.",
+        "info": "Las próximas actividades pendientes programadas en toda la organización.",
+        "title": "A continuación",
+        "titleText": "lo próximo"
+      },
+      "wonLost": {
+        "description": "Últimos 6 meses",
+        "empty": "Nada cerrado en los últimos seis meses.",
+        "info": "Negocios cerrados en los últimos 6 meses, por fecha de cierre.",
+        "lostDetail": "Perdidos: {count} · {value}",
+        "title": "Ganados vs. perdidos",
+        "titleText": "negocios ganados frente a perdidos",
+        "wonDetail": "Ganados: {count} · {value}"
+      }
+    },
+    "period": {
+      "30d": "Últimos 30 días",
+      "7d": "Últimos 7 días",
+      "90d": "Últimos 90 días",
+      "label": "Periodo",
+      "month": "Este mes",
+      "today": "Hoy"
+    },
+    "stats": {
+      "dueToday": {
+        "hint": "{count, plural, =0 {nada atrasado} one {# elemento atrasado} other {# elementos atrasados}}",
+        "info": "Actividades pendientes programadas para hoy; los atrasos cuentan lo que ya venció.",
+        "label": "Para hoy",
+        "labelText": "actividades para hoy"
+      },
+      "openDeals": {
+        "hint": "en todos los pipelines",
+        "info": "Negocios que aún no se han ganado ni perdido.",
+        "label": "Negocios abiertos",
+        "labelText": "negocios abiertos"
+      },
+      "people": {
+        "hint": "contactos registrados",
+        "info": "Todos los contactos activos de esta organización.",
+        "label": "Personas",
+        "labelText": "personas"
+      },
+      "pipelineValue": {
+        "info": "Suma del valor de los negocios abiertos.",
+        "label": "Valor del pipeline",
+        "labelText": "valor del pipeline"
+      },
+      "weighted": {
+        "hint": "según la probabilidad de la etapa",
+        "info": "Cada negocio abierto multiplicado por la probabilidad de su etapa.",
+        "label": "Ponderado",
+        "labelText": "pipeline ponderado"
+      },
+      "won": {
+        "info": "Negocios cerrados como ganados en el periodo elegido, por fecha de cierre.",
+        "label": "Ganados · {period}",
+        "labelText": "negocios ganados · {period}"
+      }
+    },
+    "welcome": "Hola de nuevo",
+    "welcomeNamed": "Hola de nuevo, {name}"
+  },
+  "deals": {
+    "actions": {
+      "markLost": "Marcar como perdido",
+      "markWon": "Marcar como ganado",
+      "reopen": "Reabrir"
+    },
+    "board": {
+      "countInStage": "{count, plural, one {# negocio en esta etapa} other {# negocios en esta etapa}}",
+      "dropHint": "Arrastra un negocio aquí para moverlo a {stage}",
+      "moreCards": "{count, plural, one {# negocio más} other {# negocios más}}",
+      "noStages": "Este pipeline aún no tiene etapas. Un administrador puede añadirlas en Configuración.",
+      "probabilityHint": "Probabilidad de ganar que se usa en el pipeline ponderado",
+      "probabilityLabel": "Qué significa {probability}%",
+      "stageLabel": "Etapa {stage}",
+      "totalHint": "Valor total de los negocios en esta etapa",
+      "noPipeline": "Aún no hay ningún pipeline. Un administrador puede crear uno en Configuración."
+    },
+    "card": {
+      "moveHint": "Mover a otra etapa sin arrastrar",
+      "moveLabel": "Mover el negocio a otra etapa",
+      "moveTo": "Mover a…",
+      "stale": "Estancado",
+      "staleHint": "{days, plural, one {Sin movimiento en # día: el umbral de estancamiento del pipeline} other {Sin movimiento en # días: el umbral de estancamiento del pipeline}}",
+      "staleHintNoDays": "Sin movimiento desde el umbral de estancamiento del pipeline"
+    },
+    "closeDate": {
+      "closes": "Cierra el {date}",
+      "expected": "Cierre previsto el {date}",
+      "expectedPassed": "Cierre previsto el {date}; esa fecha ya pasó",
+      "overdue": "Atrasado · {date}"
+    },
+    "confirm": {
+      "deleteDescription": "“{title}” y su actividad se eliminarán de forma permanente.",
+      "deleteTitle": "¿Eliminar este negocio?",
+      "move": "Mover",
+      "moveDescription": "“{title}” pasa a {stage}.",
+      "moveTitle": "¿Mover a {stage}?",
+      "moveWonDescription": "“{title}” pasa a {stage} y se cierra como ganado.",
+      "reopenDescription": "El negocio se reabre en “{stage}” y se borra su fecha de cierre.",
+      "reopenTitle": "¿Reabrir este negocio?",
+      "stage": "la etapa",
+      "thisStage": "esta etapa",
+      "wonDescription": "“{title}” se cierra como ganado por {value}.",
+      "wonTitle": "¿Marcar este negocio como ganado?"
+    },
+    "deal": "Negocio",
+    "detail": {
+      "activity": "Actividad",
+      "backToDeals": "Volver a negocios",
+      "deleteHint": "Eliminar este negocio y su actividad; no se puede deshacer",
+      "deleteLabel": "Eliminar negocio",
+      "descriptionPlaceholder": "Añade una descripción",
+      "expectedCloseHint": "Se pone en rojo cuando pasa la fecha y el negocio sigue abierto.",
+      "firstStage": "la primera etapa",
+      "markLostHint": "Cerrar el negocio como perdido; se te pedirá un motivo",
+      "markWonHint": "Cerrar el negocio como ganado con su valor actual",
+      "noDate": "Sin fecha",
+      "noValue": "Sin valor",
+      "notFoundDescription": "Puede que este negocio se haya eliminado o que pertenezca a otra organización.",
+      "notFoundTitle": "Negocio no encontrado",
+      "openOrganization": "Abrir organización",
+      "reopenHint": "Devolver el negocio a {stage} y borrar su fecha de cierre",
+      "sourceHint": "De dónde viene este negocio; se gestiona en Configuración.",
+      "stageHint": "Mueve el negocio con los botones de etapa de arriba.",
+      "tagsHint": "Etiquetas compartidas; gestiónalas en Etiquetas.",
+      "untitled": "Negocio sin título"
+    },
+    "dialog": {
+      "currencyHint": "Se define por negocio: los totales se suman tal cual, sin convertir",
+      "description": "Los negocios pertenecen a una persona y están en una etapa de un pipeline.",
+      "descriptionPlaceholder": "¿De qué trata este negocio?",
+      "expectedCloseHint": "Cuándo esperas cerrarlo; la tarjeta lo señala cuando pasa la fecha",
+      "fieldAbout": "Acerca del campo {field}",
+      "personHint": "Cada negocio pertenece a una persona; añádela primero en Personas",
+      "personPlaceholder": "Buscar una persona…",
+      "pipelineHint": "El conjunto de etapas por las que pasa este negocio",
+      "sourceHint": "De dónde viene el negocio; los administradores gestionan la lista en Configuración",
+      "stageHint": "Los negocios empiezan aquí; muévelos desde el tablero",
+      "submit": "Crear negocio",
+      "titlePlaceholder": "Licencia empresarial — 25 puestos",
+      "valueHint": "Lo que vale el negocio; suma a los totales del pipeline"
+    },
+    "fields": {
+      "closedAt": "Cerrado el",
+      "organization": "Organización",
+      "currency": "Moneda",
+      "expectedClose": "Cierre previsto",
+      "lostReason": "Motivo de pérdida",
+      "noOrganization": "Sin organización",
+      "noSource": "Sin origen",
+      "person": "Persona",
+      "pipeline": "Pipeline",
+      "source": "Origen",
+      "sourceFallback": "Origen #{id}",
+      "stage": "Etapa",
+      "stageFallback": "Etapa #{id}",
+      "status": "Estado",
+      "title": "Título",
+      "value": "Valor"
+    },
+    "list": {
+      "description": "Oportunidades que avanzan por las etapas de tu pipeline",
+      "emptyDescription": "Abre un negocio para una persona: empieza en la primera etapa y lo vas moviendo por el tablero a medida que avanza.",
+      "emptyTitle": "Aún no hay negocios",
+      "kanbanView": "Vista kanban",
+      "newHint": "Abre un negocio para una persona; empieza en la primera etapa",
+      "noMatches": "Ningún negocio coincide con estos filtros.",
+      "paginationLabel": "negocios",
+      "searchLabel": "Buscar negocios por título",
+      "searchPlaceholder": "Buscar negocios…",
+      "tableView": "Vista de tabla",
+      "tag": "Etiqueta"
+    },
+    "lost": {
+      "description": "El negocio se cierra y pasa a la etapa de perdido. El motivo queda en el registro.",
+      "reason": "Motivo",
+      "reasonPlaceholder": "¿Por qué se perdió este negocio?",
+      "suggestions": {
+        "badTiming": "Mal momento",
+        "competitor": "Perdido frente a un competidor",
+        "noBudget": "Sin presupuesto",
+        "noDecision": "Sin decisión",
+        "price": "Precio"
+      },
+      "title": "¿Marcar este negocio como perdido?"
+    },
+    "newDeal": "Nuevo negocio",
+    "owner": {
+      "anyone": "Cualquiera",
+      "me": "Yo",
+      "self": "{name} (yo)",
+      "unassigned": "Sin asignar"
+    },
+    "stepper": {
+      "closeLost": "Cerrar este negocio como perdido",
+      "closeWon": "Cerrar este negocio como ganado",
+      "closedLost": "Cerrado: perdido",
+      "closedWon": "Cerrado: ganado",
+      "current": "Este negocio está en {stage}",
+      "label": "Etapa del pipeline",
+      "move": "Mover este negocio a {stage}",
+      "moveWithProbability": "Mover este negocio a {stage} ({probability}%)"
+    },
+    "toast": {
+      "createFailed": "No se pudo crear el negocio",
+      "created": "Negocio “{title}” creado",
+      "deleted": "Negocio eliminado",
+      "lost": "Negocio marcado como perdido",
+      "moveFailed": "No se pudo mover el negocio",
+      "moved": "Movido a {stage}",
+      "reopened": "Negocio reabierto",
+      "won": "Negocio ganado 🎉"
+    }
+  },
+  "enums": {
+    "activityType": {
+      "call": "Llamada",
+      "deadline": "Fecha límite",
+      "email": "Correo",
+      "lunch": "Almuerzo",
+      "meeting": "Reunión",
+      "note": "Nota",
+      "task": "Tarea"
+    },
+    "dealStatus": {
+      "lost": "Perdido",
+      "open": "Abierto",
+      "won": "Ganado"
+    },
+    "lifecycle": {
+      "churned": "Perdido",
+      "customer": "Cliente",
+      "lead": "Prospecto",
+      "opportunity": "Oportunidad",
+      "qualified": "Calificado"
+    }
+  },
+  "errors": {
+    "badRequest": {
+      "body": "Algo en ese enlace no era correcto.",
+      "title": "Solicitud no válida"
+    },
+    "code": "Error {code}",
+    "fallbackBody": "Inténtalo de nuevo.",
+    "forbidden": {
+      "body": "Tu cuenta no es miembro de la organización solicitada, o la organización rechazó el inicio de sesión. Cambia a otra organización o inicia sesión con otra cuenta.",
+      "title": "Sin acceso a esta organización"
+    },
+    "goHome": "Ir al inicio",
+    "notFound": {
+      "body": "No encontramos lo que buscabas.",
+      "title": "No encontrado"
+    },
+    "signInAgain": "Volver a iniciar sesión"
+  },
+  "favorites": {
+    "add": "Añadir a favoritos",
+    "remove": "Quitar de favoritos",
+    "title": "Favoritos"
+  },
+  "fields": {
+    "about": "Acerca de {label}",
+    "aboutThisField": "Acerca de este campo",
+    "aboutThisMetric": "Acerca de esta métrica",
+    "activities": {
+      "created_at": "Creado",
+      "deal": "Negocio",
+      "is_done": "Hecho",
+      "organization": "Organización",
+      "owner": "Responsable",
+      "person": "Persona",
+      "schedule_from": "Programado",
+      "title": "Título",
+      "type": "Tipo"
+    },
+    "allTags": "Todas las etiquetas",
+    "deals": {
+      "created_at": "Creado",
+      "expected_close_date": "Cierre previsto",
+      "lead_value": "Valor",
+      "organization": "Organización",
+      "owner": "Responsable",
+      "person": "Persona",
+      "source": "Origen",
+      "stage": "Etapa",
+      "status": "Estado",
+      "tags": "Etiquetas",
+      "title": "Título",
+      "description": "Descripción",
+      "currency": "Moneda",
+      "lost_reason": "Motivo de pérdida",
+      "closed_at": "Cerrado",
+      "pipeline": "Pipeline",
+      "metadata": "Campos personalizados"
+    },
+    "filterByTag": "Filtrar por etiqueta",
+    "organizations": {
+      "created_at": "Creado",
+      "name": "Nombre",
+      "owner": "Responsable",
+      "tags": "Etiquetas",
+      "updated_at": "Actualizado",
+      "address": "Dirección",
+      "metadata": "Campos personalizados"
+    },
+    "owner": {
+      "me": "Yo",
+      "meOption": "{name} (yo)",
+      "unassigned": "Sin asignar",
+      "user": "Usuario #{id}"
+    },
+    "pagination": {
+      "items": "elementos",
+      "none": "Sin {label}"
+    },
+    "persons": {
+      "active": "Activo",
+      "created_at": "Creado",
+      "job_title": "Cargo",
+      "lifecycle_stage": "Ciclo de vida",
+      "name": "Nombre",
+      "organization": "Organización",
+      "owner": "Responsable",
+      "primary_email": "Correo",
+      "tags": "Etiquetas",
+      "updated_at": "Actualizado",
+      "emails": "Otros correos",
+      "contact_numbers": "Teléfonos",
+      "unique_id": "Identificador externo",
+      "platform_user": "Usuario vinculado",
+      "metadata": "Campos personalizados"
+    },
+    "saveError": "No se pudo guardar este cambio",
+    "select": "Seleccionar…",
+    "tags": {
+      "add": "Añadir",
+      "addTag": "Añadir etiqueta",
+      "create": "Crear «{name}»",
+      "created": "Etiqueta «{name}» creada",
+      "noMatch": "Ninguna etiqueta coincide.",
+      "none": "Aún no hay etiquetas.",
+      "pickerHint": "Asigna una etiqueta existente o crea una",
+      "remove": "Quitar la etiqueta {name}",
+      "search": "Busca o crea una etiqueta…"
+    },
+    "tagsHint": "Etiquetas compartidas; gestiónalas en Etiquetas.",
+    "whatIsThis": "¿Qué es esto?"
+  },
+  "history": {
+    "action": {
+      "access": "consultó este registro",
+      "create": "creó este registro",
+      "delete": "eliminó este registro",
+      "update": "cambió"
+    },
+    "empty": "vacío",
+    "emptyDescription": "Los cambios hechos desde el CRM aparecen aquí, los más recientes primero; las operaciones masivas, como una fusión, no dejan registro.",
+    "emptyTitle": "Aún no hay historial",
+    "system": "Sistema"
+  },
+  "language": {
+    "hint": "Idioma de esta y las demás aplicaciones de ibl.ai",
+    "label": "Idioma"
+  },
+  "nav": {
+    "activities": "Actividades",
+    "organizations": "Organizaciones",
+    "deals": "Negocios",
+    "home": "Inicio",
+    "people": "Personas",
+    "search": "Buscar",
+    "settings": "Configuración",
+    "tags": "Etiquetas"
+  },
+  "notifications": {
+    "description": "Eventos del CRM y avisos de la plataforma para ti",
+    "title": "Notificaciones"
+  },
+  "palette": {
+    "description": "Busca personas, organizaciones y negocios, o ve a una página.",
+    "goTo": "Ir a",
+    "newActivity": "Nueva actividad",
+    "newOrganization": "Nueva organización",
+    "newDeal": "Nuevo negocio",
+    "newPerson": "Nueva persona",
+    "noResults": "Sin resultados.",
+    "placeholder": "Buscar personas, organizaciones, negocios…",
+    "toClose": "para cerrar",
+    "toNavigate": "para navegar",
+    "toOpen": "para abrir"
+  },
+  "people": {
+    "actions": {
+      "new": "Nueva persona",
+      "newHint": "Añade un contacto: los negocios y las actividades dependen de las personas"
+    },
+    "dealsTable": {
+      "count": "{count, plural, one {# negocio} other {# negocios}}",
+      "deal": "Negocio",
+      "empty": "Aún no hay negocios",
+      "emptyHint": "Abre un negocio para empezar a seguir esta relación en el pipeline.",
+      "expectedClose": "Cierre previsto",
+      "newDeal": "Nuevo negocio",
+      "stage": "Etapa",
+      "stageFallback": "Etapa #{id}",
+      "status": "Estado",
+      "value": "Valor"
+    },
+    "detail": {
+      "addEmail": "Añadir un correo",
+      "addEmails": "Añadir correos, separados por comas",
+      "addExternalId": "Añadir un ID externo",
+      "addJobTitle": "Añadir un cargo",
+      "addPhones": "Añadir números de teléfono",
+      "alreadyLinked": "Ya está vinculada a un usuario de la plataforma",
+      "back": "Volver a Personas",
+      "breadcrumb": "Persona",
+      "commaSeparated": "Separados por comas.",
+      "delete": "Eliminar persona",
+      "deleteError": "No se pudo eliminar a esta persona",
+      "deleteHint": "No se puede eliminar a una persona con negocios; fusiónala o elimina sus negocios primero. Sus actividades y etiquetas asignadas se eliminan con ella.",
+      "deleteTitle": "¿Eliminar a {name}?",
+      "externalId": "ID externo",
+      "externalIdHint": "ID de otro sistema, único por organización.",
+      "inactive": "Inactiva",
+      "inactiveHint": "Archivada: se conserva como historial y ya no se gestiona",
+      "invite": "Invitar a la plataforma",
+      "inviteDisabled": "Invitar a la plataforma: {reason}",
+      "inviteHint": "Envía una invitación de ibl.ai por correo; la persona se convierte en usuaria de la plataforma",
+      "lifecycleHint": "En qué punto está este contacto: {lead} → {qualified} → {opportunity} → {customer} · {churned}.",
+      "linkUser": "Vincular a usuario",
+      "linkedUser": "Vinculada al usuario de la plataforma #{id}",
+      "linkedUserHint": "Esta persona puede iniciar sesión en la plataforma",
+      "merge": "Fusionar duplicados",
+      "moreHint": "Vincular a un usuario, fusionar duplicados, eliminar",
+      "needsEmail": "Añade primero un correo principal",
+      "noDeals": "Aún no hay ningún negocio abierto con {name}.",
+      "notFound": "Esta persona ya no existe",
+      "notFoundHint": "Puede que alguien de tu equipo haya eliminado el registro.",
+      "openOrganization": "Abrir organización",
+      "openOrganizationNamed": "Abrir {name}",
+      "otherEmails": "Otros correos",
+      "ownerHint": "La persona del equipo responsable de este contacto.",
+      "phones": "Teléfonos",
+      "unnamed": "Persona sin nombre"
+    },
+    "dialog": {
+      "added": "Persona añadida: {name}",
+      "createError": "No se pudo crear esta persona",
+      "description": "Añade un contacto al CRM. Puedes completar el resto en su ficha.",
+      "emailPlaceholder": "ada@example.com",
+      "jobTitlePlaceholder": "Responsable de formación",
+      "namePlaceholder": "Ada Lovelace",
+      "submit": "Crear persona"
+    },
+    "fields": {
+      "organization": "Organización",
+      "jobTitle": "Cargo",
+      "lifecycle": "Ciclo de vida",
+      "lifecycleStage": "Etapa del ciclo de vida",
+      "noOrganization": "Sin organización"
+    },
+    "invite": {
+      "alreadyLinked": "Esta persona ya está vinculada a un usuario de la plataforma",
+      "asAdmin": "Invitar como administrador",
+      "body": "Enviaremos por correo una invitación a <b>{email}</b>. Cuando la acepte, su cuenta quedará vinculada a esta ficha.",
+      "error": "No se pudo enviar la invitación",
+      "exists": "Ya existe una invitación para esta persona",
+      "sent": "Invitación enviada a {email}",
+      "submit": "Enviar invitación",
+      "title": "¿Invitar a {name} a la plataforma?"
+    },
+    "linkUser": {
+      "chooseMember": "Elige un miembro…",
+      "description": "Conecta a {name} con una cuenta que ya existe en esta organización.",
+      "error": "No se pudo vincular a esta persona",
+      "linked": "Se vinculó a {name} con el usuario #{id}",
+      "loadingMembers": "Cargando miembros…",
+      "manualHint": "Úsalo cuando no tengas acceso al directorio de miembros.",
+      "manualLabel": "…o introduce un ID de usuario",
+      "manualPlaceholder": "p. ej., 4821",
+      "submit": "Vincular usuario",
+      "title": "Vincular a un usuario de la plataforma",
+      "alreadyLinked": "Esta persona ya está vinculada a otro usuario.",
+      "notMember": "Aún no es miembro de esta organización; envíale una invitación."
+    },
+    "list": {
+      "addFirst": "Añade tu primera persona",
+      "description": "Contactos de todas las organizaciones con las que trabajas",
+      "emptyHint": "Las personas son los contactos detrás de cada negocio: empieza por la persona con la que hablas hoy.",
+      "emptyTitle": "Aún no hay personas",
+      "loading": "Cargando personas",
+      "noMatchFilters": "Ninguna persona coincide con estos filtros",
+      "noMatchFiltersHint": "Prueba con otra etapa del ciclo de vida, otro responsable u otra etiqueta.",
+      "noMatchSearch": "Nadie coincide con “{query}”",
+      "noMatchSearchHint": "La búsqueda recorre el nombre, el correo, el cargo y el identificador externo de todas las personas. Prueba otra grafía o borra la búsqueda.",
+      "paginationLabel": "personas",
+      "searchLabel": "Buscar personas",
+      "searchPlaceholder": "Buscar por nombre, correo, cargo…"
+    },
+    "merge": {
+      "confirm": "Fusionar duplicados",
+      "confirmBody": "{count, plural, one {# duplicado se integrará en {name} y quedará inactivo.} other {# duplicados se integrarán en {name} y quedarán inactivos.}} Esta acción no se puede deshacer.",
+      "confirmTitle": "¿Fusionar estos registros?",
+      "description": "Elige los registros duplicados. Sus negocios, actividades y etiquetas pasan a {name} y los duplicados quedan inactivos.",
+      "error": "No se pudo fusionar a estas personas",
+      "merged": "{count, plural, one {Se fusionó # registro} other {Se fusionaron # registros}} en {name}",
+      "noMatch": "Ninguna persona coincide.",
+      "noOne": "Aún no hay nadie más para fusionar.",
+      "searchLabel": "Buscar personas para fusionar",
+      "searchPlaceholder": "Buscar personas…",
+      "select": "Fusionar {name}",
+      "submit": "{count, plural, =0 {Fusionar registros} one {Fusionar # registro} other {Fusionar # registros}}",
+      "title": "Fusionar duplicados en {name}"
+    },
+    "table": {
+      "viewOrganization": "Ver organización"
+    }
+  },
+  "picker": {
+    "clear": "Limpiar",
+    "organization": "Elegir una organización",
+    "noMatches": "Sin coincidencias",
+    "person": "Elegir una persona",
+    "searchPlaceholder": "Escribe para buscar…",
+    "searching": "Buscando…",
+    "typeToSearch": "Escribe para buscar"
+  },
+  "settings": {
+    "about": {
+      "apiBase": "Base de la API",
+      "app": "Aplicación",
+      "communityOrg": "organización comunitaria",
+      "docs": "Documentación de ibl.ai",
+      "docsLabel": "Abrir la documentación de ibl.ai",
+      "manageRoles": "Gestionar roles",
+      "mandate": "Atribuciones",
+      "mandates": {
+        "inviter": "Lee personas y envía invitaciones; nada más.",
+        "manager": "Todo lo que puede hacer el rol User, más la administración de pipelines, etapas y orígenes del lead, y las invitaciones.",
+        "user": "CRUD completo de personas, organizaciones, negocios, actividades y etiquetas; los pipelines son de solo lectura; no puede invitar.",
+        "viewer": "Lee todo en el CRM; solo modifica sus propios favoritos y vistas guardadas."
+      },
+      "organizationKey": "Clave de la organización",
+      "role": "Rol",
+      "rolesFootnote": "Los roles se asignan en la pantalla Usuarios y roles de la organización. Los CRM Manager y los administradores de la organización pueden cambiar pipelines, etapas y orígenes del lead.",
+      "rolesTitle": "Roles del CRM",
+      "support": "Soporte",
+      "supportLabel": "Abrir el soporte de ibl.ai",
+      "thisOrganization": "Esta organización"
+    },
+    "code": "Código",
+    "codeHint": "El identificador estable que usa la API; no se puede cambiar después.",
+    "deleteTitle": "¿Eliminar “{name}”?",
+    "description": "Pipelines, etapas y orígenes del lead de esta organización",
+    "pipelines": {
+      "codeExample": "nuevos-negocios",
+      "create": "Crear pipeline",
+      "created": "Pipeline “{name}” creado",
+      "default": "Predeterminado",
+      "defaultPipeline": "Pipeline predeterminado",
+      "deleteBlocked": "Aún hay negocios en este pipeline: muévelos primero a otro pipeline.",
+      "deleteConfirm": "Eliminar pipeline",
+      "deleteDescription": "Todas las etapas de este pipeline se eliminan con él. Los negocios que sigan en este pipeline deben moverse antes.",
+      "deleteHint": "Solo es posible cuando ningún negocio usa este pipeline",
+      "deleted": "Pipeline eliminado",
+      "dialogDescription": "Un pipeline contiene las etapas por las que pasa un negocio. Después, añade sus etapas.",
+      "emptyDescription": "Un pipeline es el conjunto de etapas por las que pasa un negocio. La mayoría de las organizaciones empiezan con uno.",
+      "emptyTitle": "Aún no hay pipelines",
+      "inFlight": "En curso",
+      "madeDefault": "“{name}” es ahora el pipeline predeterminado",
+      "makeDefault": "Hacer predeterminado",
+      "makeDefaultHint": "Los negocios nuevos usan el pipeline predeterminado",
+      "makeItDefault": "Hacerlo predeterminado",
+      "makeItDefaultHint": "Los negocios nuevos entran en el pipeline predeterminado.",
+      "makeItDefaultLabel": "Hacer que sea el pipeline predeterminado",
+      "nameExample": "Nuevos negocios",
+      "namePlaceholder": "Nombre del pipeline",
+      "new": "Nuevo pipeline",
+      "rottenAfter": "Estancado tras",
+      "rottenAfterDays": "Estancado tras (días)",
+      "rottenLabel": "Acerca del umbral de estancamiento",
+      "rottenTip": "Los negocios inactivos durante más tiempo se marcan como estancados en el tablero",
+      "rottenUnit": "días sin movimiento",
+      "stageCount": "{count, plural, one {# etapa} other {# etapas}}"
+    },
+    "sources": {
+      "aboutLabel": "Acerca de los orígenes del lead",
+      "aboutTip": "De dónde vienen los negocios: se indica en cada negocio y luego se filtra en el tablero",
+      "codeExample": "recomendacion-de-socio",
+      "created": "Origen del lead “{name}” creado",
+      "deleteDescription": "Los negocios que apuntan a este origen lo pierden. Los negocios se conservan.",
+      "deleteHint": "Los negocios conservan sus datos, pero pierden este origen",
+      "deleteLabel": "Eliminar el origen del lead {name}",
+      "deleted": "Origen del lead eliminado",
+      "dialogDescription": "De dónde viene este tipo de negocio.",
+      "emptyDescription": "Añade los canales por los que llegan tus negocios para que el panel pueda desglosar los ingresos por origen.",
+      "emptyTitle": "Aún no hay orígenes del lead",
+      "intro": "De dónde vienen los negocios: recomendaciones, solicitudes entrantes, eventos, socios.",
+      "nameExample": "Recomendación de socio",
+      "namePlaceholder": "Origen del lead",
+      "new": "Nuevo origen del lead",
+      "newHint": "Añade un canal que luego podrás elegir en cualquier negocio"
+    },
+    "stages": {
+      "add": "Añadir etapa",
+      "added": "Etapa añadida",
+      "codeExample": "propuesta-enviada",
+      "deleteBlocked": "Aún hay negocios en esta etapa: muévelos primero.",
+      "deleteConfirm": "Eliminar etapa",
+      "deleteDescription": "Los negocios de esta etapa deben moverse antes de poder eliminarla.",
+      "deleteHint": "Solo es posible cuando ningún negocio está en esta etapa",
+      "deleteLabel": "Eliminar la etapa {name}",
+      "deleteTitle": "¿Eliminar la etapa “{name}”?",
+      "deleted": "Etapa eliminada",
+      "dialogDescription": "Se añade al final del pipeline; después, arrástrala a su lugar.",
+      "dragHint": "Arrastra para reordenar: el tablero sigue este orden",
+      "empty": "Aún no hay etapas. Añade la primera: los negocios necesitan un lugar donde estar.",
+      "nameExample": "Propuesta enviada",
+      "namePlaceholder": "Nombre de la etapa",
+      "orderSaved": "Orden de etapas guardado",
+      "outcome": "Resultado",
+      "outcomeHint": "Las etapas Ganado y Perdido cierran el negocio; En curso lo mantiene abierto",
+      "outcomeLabel": "Resultado de la etapa",
+      "outcomeOf": "Resultado de {name}",
+      "probability": "Probabilidad (%)",
+      "probabilityLabel": "Acerca de la probabilidad de la etapa",
+      "probabilityTip": "Probabilidad de ganar desde esta etapa; determina el pipeline ponderado",
+      "reorderHint": "Arrastra para reordenar: el orden es el de las columnas del tablero.",
+      "reorderLabel": "Reordenar {name}",
+      "title": "Etapas"
+    },
+    "tabs": {
+      "about": "Acerca de",
+      "pipelines": "Pipelines",
+      "sources": "Orígenes del lead"
+    }
+  },
+  "shell": {
+    "adminMode": "Modo administrador",
+    "adminModeHint": "El modo administrador muestra Configuración y Usuarios y roles; el modo usuario es lo que ven los miembros",
+    "members": {
+      "unassigned": "Sin asignar",
+      "user": "Usuario {id}",
+      "userId": "Usuario #{id}"
+    },
+    "organization": "Organización",
+    "toggleSidebar": "Mostrar u ocultar la barra lateral",
+    "toggleSidebarHint": "Contrae o expande la barra lateral (⌘B)"
+  },
+  "tags": {
+    "card": {
+      "changeColor": "Cambiar el color de {name}",
+      "created": "Creada el {date}",
+      "deleteConfirm": "Eliminar etiqueta",
+      "deleteDescription": "Se quitará la etiqueta de todas las personas, organizaciones y negocios que la tengan. Los registros se conservan.",
+      "deleteHint": "Quita la etiqueta de todas las personas, organizaciones y negocios",
+      "deleteLabel": "Eliminar la etiqueta {name}",
+      "deleteTitle": "¿Eliminar “{name}”?",
+      "deleted": "Etiqueta eliminada",
+      "untitled": "Etiqueta sin nombre"
+    },
+    "colorPicker": {
+      "change": "Cambiar color",
+      "customHex": "Hex personalizado",
+      "invalidHex": "Usa un hex de 6 dígitos, como #0058cc.",
+      "use": "Usar el color {color}"
+    },
+    "description": "Un vocabulario compartido para personas, organizaciones y negocios",
+    "dialog": {
+      "colorLabel": "Color",
+      "created": "Etiqueta “{name}” creada",
+      "description": "Las etiquetas se comparten entre personas, organizaciones y negocios.",
+      "namePlaceholder": "Empresarial, Boletín, VIP…",
+      "nameRequired": "El nombre es obligatorio.",
+      "preview": "Vista previa",
+      "previewPlaceholder": "Nombre de la etiqueta",
+      "submit": "Crear etiqueta"
+    },
+    "empty": {
+      "description": "Las etiquetas agrupan personas, organizaciones y negocios: “Empresarial”, “Boletín”, “Riesgo de baja”.",
+      "noMatchDescription": "Prueba con otro nombre o crea la etiqueta que buscabas.",
+      "noMatchTitle": "Ninguna etiqueta coincide con la búsqueda",
+      "title": "Aún no hay etiquetas"
+    },
+    "newTag": "Nueva etiqueta",
+    "newTagHint": "Crea una etiqueta que puedes asignar a personas, organizaciones y negocios",
+    "paginationLabel": "etiquetas",
+    "searchLabel": "Buscar etiquetas",
+    "searchPlaceholder": "Buscar etiquetas…"
+  },
+  "views": {
+    "addFilter": "Añadir un filtro",
+    "allRecords": "Todos",
+    "clearSort": "Quitar orden",
+    "columns": "Columnas",
+    "columnsHint": "Elige las columnas que se muestran",
+    "deleteView": "Eliminar vista",
+    "deleted": "Vista «{name}» eliminada",
+    "filter": "Filtrar",
+    "kanbanView": "Tablero",
+    "namePlaceholder": "Nombre de la vista",
+    "no": "No",
+    "op": {
+      "contains": "contiene",
+      "is": "es",
+      "isAfter": "es a partir del",
+      "isBefore": "es hasta el"
+    },
+    "operand": "Condición",
+    "pickerTitle": "Vistas",
+    "removeFilter": "Quitar filtro",
+    "saveAsNew": "Guardar como vista nueva",
+    "saved": "Vista «{name}» guardada",
+    "sort": "Ordenar",
+    "sortBy": "Ordenar por",
+    "tableView": "Tabla",
+    "unsaved": "Cambios sin guardar",
+    "updateView": "Actualizar vista",
+    "updated": "Vista «{name}» actualizada",
+    "yes": "Sí"
+  }
+}

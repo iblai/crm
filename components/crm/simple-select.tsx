@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   Select,
   SelectContent,
@@ -22,12 +23,12 @@ export function SimpleSelect({
   value,
   onChange,
   options,
-  placeholder = "Select…",
+  placeholder,
   className,
   size = "default",
   disabled,
   allowEmpty,
-  emptyLabel = "None",
+  emptyLabel,
   "aria-label": ariaLabel,
 }: {
   value: string | null | undefined;
@@ -41,7 +42,12 @@ export function SimpleSelect({
   emptyLabel?: string;
   "aria-label"?: string;
 }) {
-  const items = [...(allowEmpty ? [{ value: "", label: emptyLabel }] : []), ...options];
+  const t = useTranslations("fields");
+  const tc = useTranslations("common");
+  const items = [
+    ...(allowEmpty ? [{ value: "", label: emptyLabel ?? tc("none") }] : []),
+    ...options,
+  ];
   return (
     <Select
       value={value ?? ""}
@@ -50,7 +56,7 @@ export function SimpleSelect({
       disabled={disabled}
     >
       <SelectTrigger size={size} className={cn("w-full", className)} aria-label={ariaLabel}>
-        <SelectValue placeholder={placeholder} />
+        <SelectValue placeholder={placeholder ?? t("select")} />
       </SelectTrigger>
       <SelectContent>
         {items.map((o) => (

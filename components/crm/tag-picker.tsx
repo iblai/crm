@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Check, Plus, Tag as TagIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -49,6 +50,8 @@ export function TagPicker({
   disabled?: boolean;
   compact?: boolean;
 }) {
+  const tf = useTranslations("fields");
+  const tc = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const { data } = useListTagsQuery(undefined, { skip: !open });
@@ -64,7 +67,7 @@ export function TagPicker({
       if (attached.has(tagId)) await onDetach(tagId);
       else await onAttach(tagId);
     } catch (err) {
-      toast.error(errorMessage(err));
+      toast.error(errorMessage(err, tc("errorGeneric")));
     }
   };
 
@@ -76,9 +79,9 @@ export function TagPicker({
       const tag = await createTag({ name, color }).unwrap();
       await onAttach(tag.id);
       setQuery("");
-      toast.success(`Tag "${tag.name}" created`);
+      toast.success(tf("tags.created", { name: tag.name }));
     } catch (err) {
-      toast.error(errorMessage(err));
+      toast.error(errorMessage(err, tc("errorGeneric")));
     }
   };
 
@@ -111,20 +114,20 @@ export function TagPicker({
               ) : (
                 <TagIcon data-icon="inline-start" />
               )}
-              {tags.length ? "Add" : "Add tag"}
+              {tags.length ? tf("tags.add") : tf("tags.addTag")}
             </TooltipTrigger>
-            <TooltipContent>Attach an existing tag or create one</TooltipContent>
+            <TooltipContent>{tf("tags.pickerHint")}</TooltipContent>
           </Tooltip>
           <PopoverContent className="w-64 p-0" align="start">
             <Command shouldFilter>
               <CommandInput
                 autoFocus
-                placeholder="Find or create a tag…"
+                placeholder={tf("tags.search")}
                 value={query}
                 onValueChange={setQuery}
               />
               <CommandList>
-                <CommandEmpty>{q ? "No matching tag." : "No tags yet."}</CommandEmpty>
+                <CommandEmpty>{q ? tf("tags.noMatch") : tf("tags.none")}</CommandEmpty>
                 <CommandGroup>
                   {all.map((t) => (
                     <CommandItem key={t.id} value={t.name} onSelect={() => void toggle(t.id)}>
@@ -151,7 +154,7 @@ export function TagPicker({
                         forceMount
                       >
                         <Plus className="size-4" />
-                        Create “{query.trim()}”
+                        {tf("tags.create", { name: query.trim() })}
                       </CommandItem>
                     </CommandGroup>
                   </>
