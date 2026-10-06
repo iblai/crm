@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.2](https://github.com/iblai/crm/compare/v1.0.1...v1.0.2) (2026-10-06)
+
+### Build
+
+* **deps:** bump tauri-plugin-deep-link in /src-tauri ([ba6ff0a](https://github.com/iblai/crm/commit/ba6ff0aa8ebdfca6696309272c384eebba670dc0))
+
 ## [1.0.1](https://github.com/iblai/crm/compare/v1.0.0...v1.0.1) (2026-10-06)
 
 ### Build
