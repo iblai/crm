@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.3](https://github.com/iblai/crm/compare/v1.0.2...v1.0.3) (2026-10-06)
+
+### Build
+
+* **deps-dev:** bump @types/node from 22.20.4 to 26.6.3 ([7d4bdca](https://github.com/iblai/crm/commit/7d4bdca917f466ca2ea2159669549c2f11457f70))
+
 ## [1.0.2](https://github.com/iblai/crm/compare/v1.0.1...v1.0.2) (2026-10-06)
 
 ### Build
