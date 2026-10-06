@@ -4,9 +4,9 @@
 
 # ibl.ai/crm
 
-[![Watch the intro video](https://img.youtube.com/vi/UEOr1aSQypw/maxresdefault.jpg)](https://www.youtube.com/watch?v=UEOr1aSQypw)
+[![Watch the intro video](https://img.youtube.com/vi/KIz0XiJOizw/maxresdefault.jpg)](https://www.youtube.com/watch?v=KIz0XiJOizw)
 
-**▶︎ [Watch the intro video](https://www.youtube.com/watch?v=UEOr1aSQypw)** &nbsp;·&nbsp; _People, organizations and deals in two minutes_
+**▶︎ [Watch the intro video](https://www.youtube.com/watch?v=KIz0XiJOizw)** &nbsp;·&nbsp; _Organizations, people, deals, activities and tags in five minutes_
 
 **The open-source CRM for organizations on the ibl.ai platform.**
 
