@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.4](https://github.com/iblai/crm/compare/v1.0.3...v1.0.4) (2026-10-06)
+
+### Documentation
+
+* point the README intro video at the new five-minute walkthrough ([f8f6caa](https://github.com/iblai/crm/commit/f8f6caa2f458ff55b3830d9f149a4a0d1809a178))
+
 ## [1.0.3](https://github.com/iblai/crm/compare/v1.0.2...v1.0.3) (2026-10-06)
 
 ### Build
