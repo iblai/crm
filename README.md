@@ -4,6 +4,10 @@
 
 # ibl.ai/crm
 
+[![Watch the intro video](https://img.youtube.com/vi/UEOr1aSQypw/maxresdefault.jpg)](https://www.youtube.com/watch?v=UEOr1aSQypw)
+
+**▶︎ [Watch the intro video](https://www.youtube.com/watch?v=UEOr1aSQypw)** &nbsp;·&nbsp; _People, organizations and deals in two minutes_
+
 **The open-source CRM for organizations on the ibl.ai platform.**
 
 People, organizations, deals, activities and tags — for every organization you belong to, with ibl.ai single sign-on and roles built in. One codebase. Every platform. Your data, your organization, your rules.
@@ -31,12 +35,6 @@ People, organizations, deals, activities and tags — for every organization you
 <a href="docs/platform-deployment.md#android"><img src="https://img.shields.io/badge/Android-Google_Play_(coming_soon)-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android — coming soon" height="42"></a>
 
 <sub>Windows ARM64 · Linux · every build → [all downloads](docs/DOWNLOADS.md)</sub>
-
-<br>
-
-[![Watch the intro video](https://img.youtube.com/vi/UEOr1aSQypw/maxresdefault.jpg)](https://www.youtube.com/watch?v=UEOr1aSQypw)
-
-**▶︎ [Watch the intro video](https://www.youtube.com/watch?v=UEOr1aSQypw)** &nbsp;·&nbsp; _People, organizations and deals in two minutes_
 
 <br>
 
