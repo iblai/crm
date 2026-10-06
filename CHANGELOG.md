@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/iblai/crm/compare/v1.0.0...v1.0.1) (2026-10-06)
+
+### Build
+
+* **deps-dev:** bump dotenv from 17.4.2 to 18.0.4 ([7927475](https://github.com/iblai/crm/commit/7927475509b155a53117d11b61f65d915a1d9a09))
+* **deps:** bump tauri-plugin-opener from 2.5.5 to 2.6.0 in /src-tauri ([810df42](https://github.com/iblai/crm/commit/810df42a3f6ad637b0dd9f9f90ea4075d133fb68))
+
 ## 1.0.0 — 2026-10-07
 
 - First public release; from here every push to main is released by release-it from the commit subjects.
