@@ -91,6 +91,10 @@ Then open the page you touched and take a screenshot for the PR.
 Playwright session (`pnpm exec playwright test --config e2e/playwright.config.ts --project=setup-chromium` once,
 with your credentials in `e2e/.env.development`).
 
+## Release
+
+The first public release, `v1.0.0`, is published by hand: tag main and create the GitHub Release with the CHANGELOG's 1.0.0 section as its notes. From then on every push to main runs `.github/workflows/release.yml`: [release-it](https://github.com/release-it/release-it) reads the conventional commit subjects since the last `v*` tag, bumps `package.json` (`fix` → patch, `feat` → minor, a breaking change — `!` or `BREAKING CHANGE` — → major), prepends the entry to `CHANGELOG.md`, commits `chore(release): v<version>`, tags `v<version>` and publishes the GitHub Release — as `github-actions[bot]`, so the release commit triggers no other workflow. The workflow refuses to run while no `v*` tag exists. `pnpm release` runs the same locally (a `GITHUB_TOKEN` with `repo` scope in the environment). Native builds are a separate, manual step — see [DOWNLOADS.md](DOWNLOADS.md).
+
 ## Native shell
 
 ```bash

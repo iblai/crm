@@ -16,15 +16,10 @@ line, from `src-tauri/tauri.conf.json`).
 
 ## Releases
 
+**Web app:** every push to main is released automatically by [release-it](../.release-it.json) through [`release.yml`](../.github/workflows/release.yml) — a `v<version>` tag and a [GitHub Release](https://github.com/iblai/crm/releases) whose notes are the CHANGELOG entry generated from the commits.
+
+**Native builds:** manual until crm.ibl.ai is live (the shells load it). Push an `app-v<version>` tag — `<version>` from `src-tauri/tauri.conf.json`, currently `0.2.0` — to run the macOS and Windows release workflows, which attach the installers to that tag's release; or run any build workflow from the Actions tab.
+
 | Version    | Date | Download                                                               |
 | ---------- | ---- | ---------------------------------------------------------------------- |
-| app-v0.1.0 | —    | Push the `app-v0.1.0` tag to publish the first macOS + Windows builds. |
-
-The latest build is always linked from the [README](../README.md#️-get-iblaicrm)
-(`https://github.com/iblai/crm/releases/latest`).
-
-## Store listings
-
-The iOS (App Store) and Android (Google Play) listings are not published yet.
-The apps build today (`pnpm tauri ios build`, `pnpm tauri android build`) —
-see [platform-deployment.md](platform-deployment.md) for signing and submission.
+| app-v0.2.0 | —    | Push the `app-v0.2.0` tag to publish the first macOS + Windows builds. |

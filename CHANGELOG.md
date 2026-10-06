@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.2.0 — 2026-10-03
+## 1.0.0 — 2026-10-07
 
+- First public release; from here every push to main is released by release-it from the commit subjects.
 - Toolchain: Next.js 16.3, TypeScript 7 (the native compiler is the `typescript` dependency; `next build` type-checks through its CLI), pnpm 12, oxlint 1.86, oxfmt 0.71 replacing prettier (Tailwind class sorting included). Node 22+.
 - Shell: the SDK's `SidebarProvider → PlatformSidebar + SidebarInset` and footer cluster replace the local shadcn sidebar copy; the SDK `Spinner` everywhere; the brand tokens from `iblai-styles.css` are no longer overridden by shadcn's neutral defaults.
 - i18n: every string goes through next-intl — English, Spanish, French and Chinese (`messages/{en,es,fr,zh}.json`, `pnpm i18n:check` keeps them in sync); the language of record is the profile’s (`public_metadata.language`, the OS pattern): applied on load, changed from the top bar or the Profile tab, and written to the shared `openedx-language-preference` cookie; dates and amounts format in the active locale.

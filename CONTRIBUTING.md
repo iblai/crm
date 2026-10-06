@@ -24,6 +24,6 @@ Thanks for helping build the open-source CRM for the ibl.ai platform.
 - **The CRM API is the source of truth** — types in `lib/crm/types.ts`, endpoints in `lib/crm/api.ts`; never write `status` / `closed_at` on deals, use the actions
 - **Every string is translated** — `useTranslations()`; a key goes into all four `messages/*.json` files or none
 - **Brand** — primary `#0058cc`, gradient buttons via `ibl-button-primary`, Lucide icons, system font
-- **pnpm 12** as the package manager (`corepack enable`); conventional commit messages
+- **pnpm 12** as the package manager (`corepack enable`); conventional commit messages — they drive the release: every push to main is released by [release-it](.release-it.json), the subjects since the last `v*` tag become the CHANGELOG entry, and `fix` bumps the patch number, `feat` the minor, a breaking change (`!` or `BREAKING CHANGE`) the major
 
 See [AGENTS.md](AGENTS.md) for the rules AI assistants follow in this repo.
