@@ -24,17 +24,17 @@ People, organizations, deals, activities and tags — for every organization you
 
 ### ⬇️ Get ibl.ai/crm
 
-<a href="https://crm.ibl.ai"><img src="https://img.shields.io/badge/Use_it_on_the_Web-2563eb?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Use it on the Web" height="42"></a>
+<img src="https://img.shields.io/badge/Web-crm.ibl.ai_(coming_soon)-2563eb?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Web — crm.ibl.ai, coming soon" height="42">
 &nbsp;
-<a href="https://github.com/iblai/crm/releases/latest"><img src="https://img.shields.io/badge/Download_for_macOS-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download for macOS" height="42"></a>
+<img src="https://img.shields.io/badge/macOS-(coming_soon)-000000?style=for-the-badge&logo=apple&logoColor=white" alt="macOS — coming soon" height="42">
 &nbsp;
-<a href="https://github.com/iblai/crm/releases/latest"><img src="https://img.shields.io/badge/Download_for_Windows-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Download for Windows" height="42"></a>
+<img src="https://img.shields.io/badge/Windows-(coming_soon)-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows — coming soon" height="42">
 
 <a href="docs/platform-deployment.md#ios"><img src="https://img.shields.io/badge/iOS-App_Store_(coming_soon)-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS — coming soon" height="42"></a>
 &nbsp;
 <a href="docs/platform-deployment.md#android"><img src="https://img.shields.io/badge/Android-Google_Play_(coming_soon)-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android — coming soon" height="42"></a>
 
-<sub>Windows ARM64 · Linux · every build → [all downloads](docs/DOWNLOADS.md)</sub>
+<sub>Hosted web app and published builds coming soon · today: [run it locally](#quick-start) or [deploy it yourself](#deployment) · [how builds are made](docs/DOWNLOADS.md)</sub>
 
 <br>
 
@@ -60,7 +60,7 @@ People, organizations, deals, activities and tags — for every organization you
 | 🏢 **Every organization you own** | Sign in once with ibl.ai SSO and switch between all of your organizations, exactly like [os.ibl.ai](https://os.ibl.ai). Each organization gets its own people, pipelines, deals and roles.                                              |
 | 🧭 **The Twenty way, on ibl.ai**  | The information architecture of [Twenty](https://github.com/twentyhq/twenty) — objects in a sidebar, saved table & board views, favorites, record pages with a timeline and a history — built on the ibl.ai CRM API and SDK components. |
 | 🌍 **Four languages**             | English, Spanish, French and Chinese, following the language you chose in any other ibl.ai app.                                                                                                                                         |
-| 📱 **Truly everywhere**           | One codebase ships as web, macOS, Windows, Linux, iOS and Android — native shells around the same app.                                                                                                                                  |
+| 📱 **Truly everywhere**           | One codebase for web, macOS, Windows, Linux, iOS and Android — native shells around the same app. The hosted web app and published builds are coming soon.                                                                              |
 | 🔐 **Enterprise-ready**           | SSO (OAuth / OIDC / SAML via the platform), four seeded CRM roles (Viewer, User, Manager, Inviter), org-level notifications, invitations that turn leads into platform users.                                                           |
 
 ---
@@ -71,18 +71,18 @@ ibl.ai/crm meets your team wherever they are — the same product, native everyw
 
 <div align="center">
 
-| Platform    |     | Status                                                                                                                            |
-| ----------- | --- | --------------------------------------------------------------------------------------------------------------------------------- |
-| **Web**     | 🌐  | Live at **[crm.ibl.ai](https://crm.ibl.ai)** — any modern browser                                                                 |
-| **macOS**   | 🍎  | Native app — [download universal .dmg](docs/DOWNLOADS.md) (Intel + Apple Silicon, signed & notarized by the release workflow)     |
-| **Windows** | 🪟  | Native app — [download installer](docs/DOWNLOADS.md) (x64 + ARM64)                                                                |
-| **Linux**   | 🐧  | Native app — `.deb` / AppImage from the [desktop build workflow](.github/workflows/tauri-build-desktop.yml), or build from source |
-| **iOS**     | 📱  | Native app — built by the [iOS workflow](.github/workflows/tauri-build-ios.yml); App Store listing coming soon                    |
-| **Android** | 🤖  | Native app — `pnpm tauri android build`; Google Play listing coming soon                                                          |
+| Platform    |     | Status                                                                                                                                                     |
+| ----------- | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Web**     | 🌐  | Coming soon at **crm.ibl.ai** — today, [run it locally](#quick-start) or [deploy it yourself](#deployment)                                                 |
+| **macOS**   | 🍎  | Native app (universal .dmg, Intel + Apple Silicon) — built by the [release workflow](.github/workflows/tauri-release-macos-dmg.yml); downloads coming soon |
+| **Windows** | 🪟  | Native app (x64 + ARM64 installer) — built by the [release workflow](.github/workflows/tauri-release-windows.yml); downloads coming soon                   |
+| **Linux**   | 🐧  | Native app (`.deb` / AppImage) — built by the [desktop build workflow](.github/workflows/tauri-build-desktop.yml); downloads coming soon                   |
+| **iOS**     | 📱  | Native app — built by the [iOS workflow](.github/workflows/tauri-build-ios.yml); App Store listing coming soon                                             |
+| **Android** | 🤖  | Coming soon — the Android project is not set up yet (`pnpm tauri android init`)                                                                            |
 
 </div>
 
-The native apps are [Tauri 2](https://tauri.app) WebView shells around the hosted app (`src-tauri/`), the same way [iblai/os](https://github.com/iblai/os) and [iblai/lms](https://github.com/iblai/lms) ship. Sign-in on mobile goes through the system browser and returns via the `iblai-crm://` deep link. See [docs/platform-deployment.md](docs/platform-deployment.md).
+The native apps are [Tauri 2](https://tauri.app) WebView shells around the hosted app (`src-tauri/`), so they load crm.ibl.ai and work once it is live — or point them at your own deployment ([docs/development.md](docs/development.md)). They are built the same way [iblai/os](https://github.com/iblai/os) and [iblai/lms](https://github.com/iblai/lms) ship. Sign-in on mobile goes through the system browser and returns via the `iblai-crm://` deep link. See [docs/platform-deployment.md](docs/platform-deployment.md).
 
 ---
 
@@ -94,9 +94,9 @@ The native apps are [Tauri 2](https://tauri.app) WebView shells around the hoste
 
 **👥 People & organizations**
 
-- **People** — leads, contacts and customers with lifecycle stage, owner, job title, emails, phones, tags and free-form metadata; merged duplicates stay out of the way
+- **People** — leads, contacts and customers with lifecycle stage, owner, job title, emails, phones, and tags; merged duplicates stay out of the way
 - **Organizations** — accounts with address, owner and tags; the people, deals and the timeline that belong to them
-- **Invite · link · merge** — turn a lead into a platform user by email invitation, link a person to an existing user, or merge duplicates in one click
+- **Invite · link · merge** — turn a lead into a platform user by email invitation, link a person to an existing user, or merge duplicates
 - **Tags** — colored labels shared across people, organizations and deals
 - **Search, sort, views** — server-side search and sorting on every list; save a view with its filters, sort and columns (table or board); star anything into the sidebar's Favorites
 
@@ -113,7 +113,7 @@ The native apps are [Tauri 2](https://tauri.app) WebView shells around the hoste
 **🗓️ Activities**
 
 - **Timeline** on every person, organization and deal — calls, meetings, emails, notes, tasks, lunches, deadlines
-- **Schedule & remind** — scheduled work with owner reminders; overdue / today / upcoming views; mark done
+- **Schedule** — scheduled work with an owner; overdue / today / upcoming views; mark done
 - **Auto-recorded history** — stage changes are logged for you
 
 **📊 Home**
@@ -122,11 +122,11 @@ The native apps are [Tauri 2](https://tauri.app) WebView shells around the hoste
 
 **🏢 Operate & scale**
 
-- **Multi-organization** — the organization is in the URL (`/platform/<org>/…`); switch between every organization you belong to from the sidebar or the profile menu
+- **Multi-organization** — the organization is in the URL (`/platform/<org>/…`); switch between every organization you belong to from the profile menu
 - **SSO & roles** — ibl.ai sign-in; CRM Viewer / User / Manager / Inviter roles assigned on the Users & roles page (the SDK's Management surface)
 - **Notifications** — person created, deal stage changed, person linked to user — in the bell and the notifications center
 - **⌘K** — one server-side search across people, organizations and deals; jump anywhere; create anything
-- **Native shells** — macOS, Windows, Linux, iOS, Android via Tauri 2
+- **Native shells** — macOS, Windows, Linux and iOS via Tauri 2; Android and published builds coming soon
 
 </td>
 </tr>
@@ -153,7 +153,7 @@ pnpm install --ignore-scripts
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). You are sent to [login.iblai.app](https://login.iblai.app) to sign in and come back to `/platform/<your-org>` — the CRM of the organization your session is scoped to. Use the switcher at the top of the sidebar to move between organizations.
+Open [http://localhost:3000](http://localhost:3000). You are sent to [login.iblai.app](https://login.iblai.app) to sign in and come back to `/platform/<your-org>` — the CRM of the organization your session is scoped to. Use the switcher in the profile menu to move between organizations.
 
 No configuration is required against hosted `iblai.app`: the service URLs default in [`lib/iblai/config.ts`](lib/iblai/config.ts). Copy `.env.example` to `.env.local` only to point at a self-hosted platform or to change the community org (`NEXT_PUBLIC_MAIN_TENANT_KEY`, default `main`).
 
@@ -220,15 +220,15 @@ Ship **Web, macOS, Windows, Linux, iOS and Android** pointed at your own deploym
 
 #### Build-time flags (native apps)
 
-The Tauri shell reads two optional compile-time flags (Rust `option_env!`); set them in the build shell before `pnpm tauri build`:
+The Tauri shell reads two optional compile-time flags (Rust `option_env!`) and exposes them as commands; set them in the build shell before `pnpm tauri build`. The web app does not read these commands yet, so neither flag changes the app today — the organization lock and the in-app purchase UI are coming soon:
 
-| Env var                     | Tauri command                  | Default         | Effect                                                                                                                       |
-| --------------------------- | ------------------------------ | --------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `IBL_TENANT`                | `get_locked_tenant` → `string` | `""` (unlocked) | **Organization lock.** When set, the app forces every user onto this organization and hides the switcher. Empty = multi-org. |
-| `IBL_ALLOW_IN_APP_PURCHASE` | `allow_in_app_purchase` → bool | `false`         | Enables in-app purchase UI. Truthy: `1`, `true`, `yes`, `on`.                                                                |
+| Env var                     | Tauri command                  | Default         | Effect                                                                                         |
+| --------------------------- | ------------------------------ | --------------- | ---------------------------------------------------------------------------------------------- |
+| `IBL_TENANT`                | `get_locked_tenant` → `string` | `""` (unlocked) | **Organization lock** (coming soon): the organization a build is meant for. Empty = multi-org. |
+| `IBL_ALLOW_IN_APP_PURCHASE` | `allow_in_app_purchase` → bool | `false`         | In-app purchase UI (coming soon). Truthy: `1`, `true`, `yes`, `on`.                            |
 
 ```bash
-IBL_TENANT=acme pnpm tauri build   # a build locked to the "acme" organization
+IBL_TENANT=acme pnpm tauri build   # a build meant for the "acme" organization
 ```
 
 ---
@@ -244,11 +244,9 @@ All app config is `NEXT_PUBLIC_*` and optional against hosted `iblai.app`. Defau
 | `NEXT_PUBLIC_PLATFORM_BASE_DOMAIN` | `iblai.app`               | Base domain; with no API base, services resolve to their own subdomains      |
 | `NEXT_PUBLIC_MAIN_TENANT_KEY`      | `main`                    | The community organization — the default when nothing else resolves          |
 | `NEXT_PUBLIC_IBL_PLATFORM`         | `mentor`                  | `app=` sent to the Auth SPA (the OS's value, so every organization signs in) |
-| `NEXT_PUBLIC_OS_URL`               | `https://os.ibl.ai`       | Where "Open in Agentic OS" links go                                          |
 | `NEXT_PUBLIC_TAURI_CUSTOM_SCHEME`  | `iblai-crm`               | Deep-link scheme the native shells return through after SSO                  |
 | `NEXT_PUBLIC_DEFAULT_CURRENCY`     | `USD`                     | Currency preselected on new deals                                            |
 | `NEXT_PUBLIC_ENABLE_RBAC`          | `false`                   | Gate SDK admin surfaces on RBAC policies as well as the admin flag           |
-| `NEXT_PUBLIC_SUPPORT_EMAIL`        | `support@ibl.ai`          | Shown in error states                                                        |
 
 ---
 
