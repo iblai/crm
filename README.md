@@ -34,6 +34,12 @@ People, organizations, deals, activities and tags — for every organization you
 
 <br>
 
+[![Watch the intro video](https://img.youtube.com/vi/UEOr1aSQypw/maxresdefault.jpg)](https://www.youtube.com/watch?v=UEOr1aSQypw)
+
+**▶︎ [Watch the intro video](https://www.youtube.com/watch?v=UEOr1aSQypw)** &nbsp;·&nbsp; _People, organizations and deals in two minutes_
+
+<br>
+
 [Why ibl.ai/crm](#why-iblaicrm) · [Every platform](#every-platform-one-codebase) · [Features](#features) · [Screenshots](#screenshots) · [Quick Start](#quick-start) · [Deployment](#deployment) · [Architecture](#architecture)
 
 </div>
