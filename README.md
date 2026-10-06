@@ -189,12 +189,15 @@ ibl.ai/crm is a front end for the ibl.ai platform. The platform provides sign-in
 
 ### Option A: Hosted ibl.ai platform
 
-1. **Build**
+1. **Build and run with Node**
 
    ```bash
    pnpm build
-   PORT=3000 pnpm start
+   cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/
+   PORT=3000 node .next/standalone/server.js
    ```
+
+   The build is a [standalone](https://nextjs.org/docs/app/api-reference/config/next-config-js/output) server, so `next start` does not apply; the two copies are what the Dockerfile does. On Vercel nothing of this is needed: the project builds the regular Next.js output (`vercel.json` pins the preset) and only wants `ENABLE_EXPERIMENTAL_COREPACK=1` so pnpm 12 is used.
 
 2. **Or run with Docker**
 
@@ -204,8 +207,6 @@ ibl.ai/crm is a front end for the ibl.ai platform. The platform provides sign-in
    ```
 
    `NEXT_PUBLIC_*` values are inlined at build time and `.env*` files stay out of the image, so a self-hosted platform passes its URLs as build arguments: `--build-arg NEXT_PUBLIC_API_BASE_URL=https://api.example.com --build-arg NEXT_PUBLIC_AUTH_URL=https://login.example.com --build-arg NEXT_PUBLIC_PLATFORM_BASE_DOMAIN=example.com` (omit them for hosted `iblai.app`). The Dockerfile declares these three and `NEXT_PUBLIC_MAIN_TENANT_KEY`; any other `NEXT_PUBLIC_*` setting needs an `ARG` of its own there.
-
-   The build emits a self-contained server under `.next/standalone/` (Next.js [standalone output](https://nextjs.org/docs/app/api-reference/config/next-config-js/output)).
 
 3. **Register the origin.** Every origin the app runs on (`http://localhost:3000`, `https://crm.example.com`, the `iblai-crm://` native scheme) must be an allowed redirect origin of the organizations that sign in, or the Auth SPA never returns. Ask your ibl.ai operator.
 

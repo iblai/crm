@@ -37,7 +37,8 @@ const remotePatterns = [
 ];
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  // Vercel builds the regular output; standalone is for the Dockerfile.
+  output: process.env.VERCEL ? undefined : "standalone",
   // The SDK's useVoiceChat never resets its isMounted ref after StrictMode's
   // dev double-mount, wedging voice input at "Processing…". Host workaround
   // (see /iblai-vibe-agent-chat "Known issues"); production runs effects once.
