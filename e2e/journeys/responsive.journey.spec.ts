@@ -45,4 +45,29 @@ test.describe("responsive journey", () => {
     await submit.scrollIntoViewIfNeeded();
     await expect(submit).toBeInViewport();
   });
+
+  test("M4 · the home page scrolls as one document under a touch on its header", async ({
+    page,
+  }) => {
+    await gotoHome(page);
+    const header = await page.getByRole("heading", { name: "Home", exact: true }).boundingBox();
+    const client = await page.context().newCDPSession(page);
+    // A real touch sequence: the synthesized scroll gesture is a no-op headless.
+    const x = 200;
+    const y0 = header!.y + header!.height / 2;
+    await client.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [{ x, y: y0 }],
+    });
+    for (let i = 1; i <= 8; i++) {
+      await client.send("Input.dispatchTouchEvent", {
+        type: "touchMove",
+        touchPoints: [{ x, y: y0 - i * 60 }],
+      });
+    }
+    await client.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await expect
+      .poll(() => page.evaluate(() => document.scrollingElement!.scrollTop))
+      .toBeGreaterThan(200);
+  });
 });

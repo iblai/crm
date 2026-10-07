@@ -19,23 +19,35 @@ export function canManageCrm(
   return Boolean(flags?.[MANAGE_CRM_FLAG]);
 }
 
-/** Every platform flag the DM derives from an `Ibl.CRM/*` verb carries `crm` in its name. */
-const CRM_FLAG = /crm/;
+/** The DM's list flags (`Ibl.CRM/<object>/list`): what it takes to see CRM data. */
+const VIEW_FLAG = /^can_view_crm_/;
+
+export type Entry = "enter" | "register" | { switchTo: string };
 
 /**
- * A signed-in user with no organization of their own: admin nowhere and no CRM
- * permission in the organization being entered. False while unknown — no
- * organizations stored yet, or no flags loaded for this platform.
+ * Where a signed-in user may work. `enter` while unknown (no organizations
+ * stored, no flags for this platform) or when they can see CRM data here;
+ * otherwise back to the organization they came from, or to one they
+ * administer; with neither, ibl.ai registration.
  */
-export function needsOrganization(
-  tenants: ReadonlyArray<{ is_admin?: boolean }>,
+export function decideEntry(
+  tenants: ReadonlyArray<{ key: string; is_admin?: boolean }>,
   permissions: object,
   tenantKey: string,
-): boolean {
-  if (tenants.length === 0 || tenants.some((t) => t.is_admin)) return false;
+  previous?: string | null,
+): Entry {
   const flags = (permissions as Record<string, Record<string, unknown> | undefined>)[
     `/platforms/${tenantKey}/`
   ];
-  if (!flags) return false;
-  return !Object.entries(flags).some(([name, on]) => CRM_FLAG.test(name) && on === true);
+  if (tenants.length === 0 || !flags) return "enter";
+  if (tenants.find((t) => t.key === tenantKey)?.is_admin) return "enter";
+  if (Object.entries(flags).some(([name, on]) => VIEW_FLAG.test(name) && on === true)) {
+    return "enter";
+  }
+  const back =
+    previous && previous !== tenantKey && tenants.some((t) => t.key === previous)
+      ? previous
+      : undefined;
+  const target = back ?? tenants.find((t) => t.is_admin && t.key !== tenantKey)?.key;
+  return target ? { switchTo: target } : "register";
 }

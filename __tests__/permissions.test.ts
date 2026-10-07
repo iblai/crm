@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { MANAGE_CRM_FLAG, canManageCrm, needsOrganization } from "../lib/crm/permissions";
+import { MANAGE_CRM_FLAG, canManageCrm, decideEntry } from "../lib/crm/permissions";
 
 describe("canManageCrm", () => {
   const granted = { "/platforms/acme/": { [MANAGE_CRM_FLAG]: true, can_manage_users: false } };
@@ -23,30 +23,42 @@ describe("canManageCrm", () => {
   });
 });
 
-describe("needsOrganization", () => {
-  const members = [{ key: "main", is_admin: false }];
-  const noCrm = { "/platforms/main/": { can_manage_users: false, can_view_mentors: true } };
+describe("decideEntry", () => {
+  const member = { key: "acme", is_admin: false };
+  const admin = { key: "globex", is_admin: true };
+  const noView = { "/platforms/acme/": { can_write_crm_persons: true, can_crm_invite: true } };
+  const view = { "/platforms/acme/": { can_view_crm_deals: true } };
 
-  it("is true for a member who is admin nowhere and holds no CRM flag here", () => {
-    expect(needsOrganization(members, noCrm, "main")).toBe(true);
-    expect(needsOrganization(members, { "/platforms/main/": {} }, "main")).toBe(true);
+  it("enters while unknown: no organizations stored, or no flags for this platform", () => {
+    expect(decideEntry([], noView, "acme")).toBe("enter");
+    expect(decideEntry([member], {}, "acme")).toBe("enter");
   });
 
-  it("is false for an admin anywhere, or any CRM flag in this organization", () => {
-    expect(needsOrganization([{ key: "acme", is_admin: true }, ...members], noCrm, "main")).toBe(
-      false,
+  it("enters an organization the user administers, or whose data a view flag shows", () => {
+    expect(decideEntry([{ key: "acme", is_admin: true }], { "/platforms/acme/": {} }, "acme")).toBe(
+      "enter",
     );
-    expect(
-      needsOrganization(members, { "/platforms/main/": { can_view_crm_persons: true } }, "main"),
-    ).toBe(false);
-    expect(
-      needsOrganization(members, { "/platforms/main/": { can_crm_invite: true } }, "main"),
-    ).toBe(false);
+    expect(decideEntry([member], view, "acme")).toBe("enter");
   });
 
-  it("is false while unknown: no organizations stored, or no flags for this platform", () => {
-    expect(needsOrganization([], noCrm, "main")).toBe(false);
-    expect(needsOrganization(members, {}, "main")).toBe(false);
-    expect(needsOrganization(members, noCrm, "acme")).toBe(false);
+  it("write and invite flags alone do not show data", () => {
+    expect(decideEntry([member], noView, "acme")).not.toBe("enter");
+  });
+
+  it("switches back to the organization the user came from, even one they do not administer", () => {
+    expect(decideEntry([member, { key: "initech" }], noView, "acme", "initech")).toEqual({
+      switchTo: "initech",
+    });
+  });
+
+  it("falls back to an organization they administer when the previous one is this one or unknown", () => {
+    expect(decideEntry([member, admin], noView, "acme", "acme")).toEqual({ switchTo: "globex" });
+    expect(decideEntry([member, admin], noView, "acme", "stale")).toEqual({ switchTo: "globex" });
+    expect(decideEntry([member, admin], noView, "acme")).toEqual({ switchTo: "globex" });
+  });
+
+  it("sends a user with nowhere to go to registration", () => {
+    expect(decideEntry([member], noView, "acme")).toBe("register");
+    expect(decideEntry([member], noView, "acme", null)).toBe("register");
   });
 });

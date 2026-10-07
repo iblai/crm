@@ -153,7 +153,7 @@ pnpm install --ignore-scripts
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). You are sent to [login.iblai.app](https://login.iblai.app) to sign in and come back to `/platform/<your-org>` — the CRM of the organization your session is scoped to. Use the switcher in the profile menu to move between organizations.
+Open [http://localhost:3000](http://localhost:3000). Sign up (registration at ibl.ai, which brings you back) or log in at [login.iblai.app](https://login.iblai.app); you come back to `/platform/<your-org>` — the CRM of the organization your session is scoped to. Use the switcher in the profile menu to move between organizations.
 
 No configuration is required against hosted `iblai.app`: the service URLs default in [`lib/iblai/config.ts`](lib/iblai/config.ts). Copy `.env.example` to `.env.local` only to point at a self-hosted platform or to change the community org (`NEXT_PUBLIC_MAIN_TENANT_KEY`, default `main`).
 
@@ -294,7 +294,7 @@ User → React pages → RTK Query (lib/crm/api.ts) → https://api.iblai.app/dm
                            └── /data-layer       platform users · org metadata
 ```
 
-Sign-in is the platform's hosted round trip (`login.<domain>/login?app=mentor&redirect-to=<origin>&tenant=<org>` → `/sso-login-complete?data=…`). `TenantProvider` compares the organization in the URL with the one the session is scoped to and re-authenticates when they differ, handing back an org-scoped token pair. The CRM API infers the organization from that token — there is no `?platform_key=` — so every record you see belongs to A signed-in user who administers no organization and holds no CRM role in the one they entered is sent to ibl.ai registration (the free plan `ibl.ai/join` resolves to) and comes back signed in to the organization it created. the organization in the URL. Details: [`docs/development.md`](docs/development.md).
+Sign-in is the platform's hosted round trip (`login.<domain>/login?app=mentor&redirect-to=<origin>&tenant=<org>` → `/sso-login-complete?data=…`). `TenantProvider` compares the organization in the URL with the one the session is scoped to and re-authenticates when they differ, handing back an org-scoped token pair. The CRM API infers the organization from that token — there is no `?platform_key=` — so every record you see belongs to the organization in the URL. A signed-in user who administers no organization and holds no CRM role in the one they entered is sent to ibl.ai registration (the free plan `ibl.ai/join` resolves to) and comes back signed in to the organization it created. A user who switches to an organization whose CRM data they cannot see is switched back. Details: [`docs/development.md`](docs/development.md).
 
 ### The CRM API
 

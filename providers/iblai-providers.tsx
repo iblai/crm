@@ -30,22 +30,33 @@ import {
   updateRbacPermissions,
   type Tenant,
 } from "@iblai/iblai-js/web-utils";
-import { Toaster } from "sonner";
+import { useTranslations } from "next-intl";
+import { Toaster, toast } from "sonner";
 import { RadixPointerEventsGuard } from "@/components/radix-pointer-events-guard";
 import { LoadingScreen } from "@/components/loading-screen";
 
 import { iblaiStore } from "@/store/iblai-store";
 import { LocalStorageService } from "@/lib/iblai/storage-service";
 import config from "@/lib/iblai/config";
-import { needsOrganization } from "@/lib/crm/permissions";
+import { decideEntry } from "@/lib/crm/permissions";
 import { createOrganizationUrl } from "@/lib/iblai/auth-redirect";
 import {
+  findTenant,
+  isUnnamedTenant,
   readCurrentTenantKey,
   readTenants,
+  readUserEmail,
   readUsername,
   resolveDefaultTenant,
+  shortTenantKey,
+  tenantDisplayName,
 } from "@/lib/iblai/tenant";
-import { redirectToAuthSpa, handleTenantSwitch, LOCAL_STORAGE_KEYS } from "@/lib/iblai/auth-utils";
+import {
+  redirectToAuthSpa,
+  handleTenantSwitch,
+  LOCAL_STORAGE_KEYS,
+  SWITCH_FROM,
+} from "@/lib/iblai/auth-utils";
 
 const storageService = LocalStorageService.getInstance();
 
@@ -56,19 +67,65 @@ const PUBLIC_ROUTES = new Map<RegExp, () => Promise<boolean>>([
   [new RegExp("^/error/([0-9]+)"), async () => false],
   [new RegExp("^/version"), async () => false],
   [new RegExp("^/join$"), async () => false],
+  [new RegExp("^/$"), async () => false],
 ]);
 
 /** One retry of the sign-in without an organization, when a remembered one refused the user. */
 const REAUTH_WITHOUT_ORG = "crm_reauth_without_org";
 
-/** A signed-in user with no organization of their own goes to ibl.ai registration, then comes back here. */
+/** The organization the gate just sent the user away from, kept for this tab until they land. */
+const SWITCHED_BACK_FROM = "crm_switched_back_from";
+
+/** A readable organization name for the toast; unnamed ones get the shell's generic label. */
+function orgLabel(key: string, generic: string): string {
+  const entry = findTenant(key);
+  return !entry || isUnnamedTenant(entry)
+    ? `${generic} ${shortTenantKey(key)}`
+    : tenantDisplayName(entry);
+}
+
+/**
+ * Where a signed-in user may work: an organization whose CRM data they can
+ * see. No access here → back to the one they came from, or one they
+ * administer; none of their own → ibl.ai registration, then back here.
+ */
 function OrganizationGate({ tenantKey, children }: { tenantKey: string; children: ReactNode }) {
+  const t = useTranslations("shell");
   const permissions = useSelector(selectRbacPermissions);
-  const blocked = needsOrganization(readTenants(), permissions, tenantKey);
+  // Read once: the gate re-renders on every client navigation.
+  const [arrival] = useState(() => ({
+    from: sessionStorage.getItem(SWITCH_FROM),
+    bouncedFrom: sessionStorage.getItem(SWITCHED_BACK_FROM),
+  }));
+  // After a bounce the previous organization is no longer a target, so a user
+  // who administers one goes there and the trip ends.
+  const entry = decideEntry(
+    readTenants(),
+    permissions,
+    tenantKey,
+    arrival.bouncedFrom ? null : arrival.from,
+  );
+  const register = entry === "register";
+  const switchTo = typeof entry === "object" ? entry.switchTo : "";
   useEffect(() => {
-    if (blocked) window.location.replace(createOrganizationUrl(window.location.origin));
-  }, [blocked]);
-  return blocked ? <LoadingScreen /> : <>{children}</>;
+    sessionStorage.removeItem(SWITCH_FROM);
+    sessionStorage.removeItem(SWITCHED_BACK_FROM);
+    if (register) {
+      window.location.replace(createOrganizationUrl(window.location.origin, readUserEmail()));
+    } else if (switchTo) {
+      sessionStorage.setItem(SWITCHED_BACK_FROM, tenantKey);
+      void handleTenantSwitch(switchTo);
+    } else if (arrival.bouncedFrom) {
+      const generic = t("organization");
+      toast.message(
+        t("switchedBack", {
+          from: orgLabel(arrival.bouncedFrom, generic),
+          to: orgLabel(tenantKey, generic),
+        }),
+      );
+    }
+  }, [register, switchTo, tenantKey, arrival.bouncedFrom, t]);
+  return register || switchTo ? <LoadingScreen /> : <>{children}</>;
 }
 
 function Providers({ children }: { children: ReactNode }) {
@@ -117,7 +174,8 @@ function Providers({ children }: { children: ReactNode }) {
     pathname.startsWith("/mobile-sso-login") ||
     pathname.startsWith("/error/") ||
     pathname.startsWith("/version") ||
-    pathname === "/join";
+    pathname === "/join" ||
+    pathname === "/";
 
   // Cross-SPA cookie sync mirrors the session into `ibl_*` cookies on the
   // parent domain so sibling apps (os.ibl.ai, lms.ibl.ai, crm.ibl.ai) notice a

@@ -14,8 +14,8 @@ pnpm install --ignore-scripts
 pnpm dev
 ```
 
-The app redirects to `login.iblai.app`; after sign-in you land on
-`/platform/<org>`. `http://localhost:3000` must be an allowed redirect origin
+`/` is a start page: Sign up goes to registration and back, Log in to
+`login.iblai.app`; after sign-in you land on `/platform/<org>`. `http://localhost:3000` must be an allowed redirect origin
 of the organization you sign in to (it is for ibl.ai's own organizations; ask
 your operator otherwise).
 
@@ -51,9 +51,13 @@ Nothing is required against hosted `iblai.app`. Copy `.env.example` to
 7. A user who administers no organization and holds no CRM permission in the one
    being entered is sent to ibl.ai registration (`lib/iblai/auth-redirect.ts#createOrganizationUrl`,
    the DM free-plan checkout `ibl.ai/join` resolves to) with a return through the
-   Auth SPA, which signs them in to the organization it created. Cancelling lands
+   Auth SPA, which signs them in to the organization it created; the signed-in
+   email is passed along so Checkout prefills it (once the DM accepts `email`). Cancelling lands
    on `/join`. The deployed origin must be on the DM's checkout redirect allowlist
    (`STRIPE_CHECKOUT_ALLOWED_REDIRECT_DOMAINS`); localhost always is.
+   A user who switches to an organization whose CRM data they cannot see (not its
+   admin, no `can_view_crm_*` flag) is switched back to the one they came from, or
+   to one they administer, with a toast saying so.
 
 The CRM API (`lib/crm/api.ts`) sends `Authorization: Token <dm_token>` to
 `https://api.iblai.app/dm/api/crm/…`; the platform infers the organization

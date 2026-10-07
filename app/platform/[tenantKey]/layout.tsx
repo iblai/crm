@@ -37,19 +37,19 @@ export default function TenantLayout({ children }: { children: ReactNode }) {
       <TooltipProvider>
         <CommandPaletteProvider>
           <BreadcrumbProvider>
-            <div className="flex h-dvh flex-col overflow-hidden bg-white">
+            <div className="flex min-h-dvh flex-col bg-white md:h-dvh md:overflow-hidden">
               <SidebarProvider defaultOpen={sidebarOpen} className="min-h-0 flex-1">
                 <AppSidebar />
                 <SidebarInset
                   asChild
-                  className="flex min-h-0 w-full flex-1 flex-col overflow-hidden bg-[var(--sidebar-bg,#fafbfc)]"
+                  className="flex min-h-0 w-full flex-1 flex-col bg-[var(--sidebar-bg,#fafbfc)] md:overflow-hidden"
                 >
                   <div>
                     <TopBar />
                     <AdminGate>
                       <main
                         id="main-content"
-                        className="flex min-h-0 flex-1 flex-col overflow-hidden"
+                        className="flex min-h-0 flex-1 flex-col md:overflow-hidden"
                       >
                         {children}
                       </main>

@@ -16,11 +16,14 @@ export function NoticeCard({
   eyebrow,
   title,
   body,
+  stacked = false,
   children,
 }: {
   eyebrow?: string;
   title: string;
   body: string;
+  /** Actions in a column instead of a row. */
+  stacked?: boolean;
   children?: ReactNode;
 }) {
   return (
@@ -42,7 +45,11 @@ export function NoticeCard({
           {title}
         </h1>
         <p className="text-muted-foreground mt-2 text-sm">{body}</p>
-        {children ? <div className="mt-6 flex justify-center gap-3">{children}</div> : null}
+        {children ? (
+          <div className={cn("mt-6 flex justify-center gap-3", stacked && "flex-col items-center")}>
+            {children}
+          </div>
+        ) : null}
       </div>
     </div>
   );

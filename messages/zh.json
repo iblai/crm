@@ -963,8 +963,15 @@
       "userId": "用户 #{id}"
     },
     "organization": "组织",
+    "switchedBack": "您无法查看 {from} 的 CRM 数据，因此现在您位于 {to}。",
     "toggleSidebar": "切换侧边栏",
     "toggleSidebarHint": "折叠或展开侧边栏（⌘B）"
+  },
+  "start": {
+    "body": "为您的 ibl.ai 组织管理联系人、组织、商机和活动。",
+    "logIn": "已有账户？在此登录。",
+    "signUp": "注册",
+    "title": "CRM"
   },
   "tags": {
     "card": {

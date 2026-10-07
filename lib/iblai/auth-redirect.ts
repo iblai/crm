@@ -14,10 +14,12 @@ export function isAuthSpaUrl(target: string, authUrl: string = config.authUrl())
  * come back: the Auth SPA signs the new organization's admin in and lands on
  * `/sso-login-complete`; a cancelled checkout lands on `/join`.
  */
-export function createOrganizationUrl(origin: string): string {
+export function createOrganizationUrl(origin: string, email = ""): string {
   const login =
     `${config.authUrl()}/login?app=${encodeURIComponent(config.iblPlatform())}` +
     `&redirect-to=${encodeURIComponent(origin)}`;
   const params = new URLSearchParams({ redirect_url: login, cancel_url: `${origin}/join` });
+  // Prefills (and locks) the Checkout email, so the new organization attaches to this account.
+  if (email) params.set("email", email);
   return `${config.dmUrl()}/api/service/stripe/checkout/redirect/credits-free-plan/?${params}`;
 }

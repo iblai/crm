@@ -11,6 +11,7 @@ import {
 } from "@iblai/iblai-js/web-utils";
 
 import config from "./config";
+import { readCurrentTenantKey } from "./tenant";
 
 export const LOCAL_STORAGE_KEYS = {
   CURRENT_TENANT: "current_tenant",
@@ -25,6 +26,9 @@ export const LOCAL_STORAGE_KEYS = {
   REDIRECT_TO: "redirect-to",
   VISITING_TENANT: "visiting_tenant",
 } as const;
+
+/** The organization a switch leaves, kept for this tab so the gate can send the user back. */
+export const SWITCH_FROM = "crm_switch_from";
 
 export const QUERY_PARAMS = {
   APP: "app",
@@ -111,6 +115,8 @@ export function handleLogout() {
  * user to `/platform/<new org>`.
  */
 export async function handleTenantSwitch(tenantKey: string, saveRedirect = false) {
+  const from = readCurrentTenantKey();
+  if (from) sessionStorage.setItem(SWITCH_FROM, from);
   await sdkHandleTenantSwitch(tenantKey, {
     authUrl: config.authUrl(),
     redirectPathStorageKey: LOCAL_STORAGE_KEYS.REDIRECT_TO,

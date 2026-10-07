@@ -963,8 +963,15 @@
       "userId": "Usuario #{id}"
     },
     "organization": "Organización",
+    "switchedBack": "No puedes ver los datos del CRM en {from}, así que ahora estás en {to}.",
     "toggleSidebar": "Mostrar u ocultar la barra lateral",
     "toggleSidebarHint": "Contrae o expande la barra lateral (⌘B)"
+  },
+  "start": {
+    "body": "Personas, organizaciones, oportunidades y actividades para tu organización de ibl.ai.",
+    "logIn": "¿Ya tienes una cuenta? Inicia sesión aquí.",
+    "signUp": "Registrarse",
+    "title": "CRM"
   },
   "tags": {
     "card": {

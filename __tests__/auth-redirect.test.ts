@@ -38,4 +38,11 @@ describe("createOrganizationUrl", () => {
   it("encodes the login URL once more inside redirect_url", () => {
     expect(createOrganizationUrl(origin)).toContain("redirect-to%3Dhttps%253A%252F%252F");
   });
+
+  it("carries the signed-in email for the Checkout prefill, and nothing when there is none", () => {
+    expect(new URL(createOrganizationUrl(origin, "jane@x.io")).searchParams.get("email")).toBe(
+      "jane@x.io",
+    );
+    expect(new URL(createOrganizationUrl(origin)).searchParams.has("email")).toBe(false);
+  });
 });

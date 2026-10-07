@@ -2,6 +2,12 @@
   "version": 1,
   "checkpoints": [
     {
+      "id": "A0",
+      "journey": "auth",
+      "name": "a signed-out visitor sees Sign up and Log in on /",
+      "spec": "journeys/start.journey.spec.ts"
+    },
+    {
       "id": "A1",
       "journey": "auth",
       "name": "authenticated user lands on their organization's home",
@@ -125,6 +131,12 @@
       "id": "M3",
       "journey": "responsive",
       "name": "a tall dialog scrolls to its submit button on a short screen",
+      "spec": "journeys/responsive.journey.spec.ts"
+    },
+    {
+      "id": "M4",
+      "journey": "responsive",
+      "name": "the home page scrolls as one document under a touch on its header",
       "spec": "journeys/responsive.journey.spec.ts"
     }
   ]
