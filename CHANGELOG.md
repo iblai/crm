@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.5](https://github.com/iblai/crm/compare/v1.0.4...v1.0.5) (2026-10-06)
+
+### Bug Fixes
+
+* regular Next output on Vercel, framework preset pinned, standalone run steps in the README ([7e56f94](https://github.com/iblai/crm/commit/7e56f9422e084e6f6a07d28f47b63f2487a52452))
+
 ## [1.0.4](https://github.com/iblai/crm/compare/v1.0.3...v1.0.4) (2026-10-06)
 
 ### Documentation
