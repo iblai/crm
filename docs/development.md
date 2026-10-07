@@ -32,7 +32,7 @@ Nothing is required against hosted `iblai.app`. Copy `.env.example` to
    `AuthProvider` → `TenantProvider`.
 2. `AuthProvider` checks for a non-expired `dm_token`; without one it calls
    `redirectToAuthSpa()` (`lib/iblai/auth-utils.ts`) which goes through
-   `/api/auth-redirect` to `login.<domain>/login?app=mentor&redirect-to=<origin>`, adding
+   `/api/auth-redirect` to `login.<domain>/login?app=custom&redirect-to=<origin>`, adding
    `&tenant=<org>` only when the URL or the session names one — otherwise the Auth SPA
    picks the user's current organization.
 3. The Auth SPA returns to `/sso-login-complete?data=…`; the SDK's `SsoLogin`

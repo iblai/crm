@@ -93,8 +93,8 @@ const config = {
   /** The community organization — the default when nothing else resolves. */
   mainTenantKey: () => getEnv("NEXT_PUBLIC_MAIN_TENANT_KEY", "main"),
 
-  /** `app=` sent to the Auth SPA — same as the OS so every org signs in. */
-  iblPlatform: () => getEnv("NEXT_PUBLIC_IBL_PLATFORM", "mentor"),
+  /** `app=` sent to the Auth SPA — the CRM is a custom SPA. */
+  iblPlatform: () => getEnv("NEXT_PUBLIC_IBL_PLATFORM", "custom"),
 
   tauriCustomScheme: () => getEnv("NEXT_PUBLIC_TAURI_CUSTOM_SCHEME", "iblai-crm"),
   platformBaseDomain: () => domain(),

@@ -57,9 +57,9 @@ describe("hosted iblai.app defaults", () => {
     expect(config.mainTenantKey()).toBe("main");
   });
 
-  it("signs in as the `mentor` app", async () => {
+  it("signs in as a `custom` app", async () => {
     const config = await loadConfig();
-    expect(config.iblPlatform()).toBe("mentor");
+    expect(config.iblPlatform()).toBe("custom");
   });
 
   it("fills in the remaining product defaults", async () => {
