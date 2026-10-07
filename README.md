@@ -294,7 +294,7 @@ User → React pages → RTK Query (lib/crm/api.ts) → https://api.iblai.app/dm
                            └── /data-layer       platform users · org metadata
 ```
 
-Sign-in is the platform's hosted round trip (`login.<domain>/login?app=mentor&redirect-to=<origin>&tenant=<org>` → `/sso-login-complete?data=…`). `TenantProvider` compares the organization in the URL with the one the session is scoped to and re-authenticates when they differ, handing back an org-scoped token pair. The CRM API infers the organization from that token — there is no `?platform_key=` — so every record you see belongs to the organization in the URL. Details: [`docs/development.md`](docs/development.md).
+Sign-in is the platform's hosted round trip (`login.<domain>/login?app=mentor&redirect-to=<origin>&tenant=<org>` → `/sso-login-complete?data=…`). `TenantProvider` compares the organization in the URL with the one the session is scoped to and re-authenticates when they differ, handing back an org-scoped token pair. The CRM API infers the organization from that token — there is no `?platform_key=` — so every record you see belongs to A signed-in user who administers no organization and holds no CRM role in the one they entered is sent to ibl.ai registration (the free plan `ibl.ai/join` resolves to) and comes back signed in to the organization it created. the organization in the URL. Details: [`docs/development.md`](docs/development.md).
 
 ### The CRM API
 

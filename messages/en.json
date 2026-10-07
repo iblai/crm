@@ -670,6 +670,12 @@
     "emptyTitle": "No history yet",
     "system": "System"
   },
+  "join": {
+    "body": "The CRM lives inside an ibl.ai organization you administer. Creating one is free and takes a minute.",
+    "create": "Create your organization",
+    "signOut": "Sign out",
+    "title": "Create your organization"
+  },
   "language": {
     "hint": "Language for this and the other ibl.ai apps",
     "label": "Language"

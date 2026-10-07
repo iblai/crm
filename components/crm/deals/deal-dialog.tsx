@@ -171,7 +171,7 @@ export function DealDialog({
           <DialogDescription>{t("dialog.description")}</DialogDescription>
         </DialogHeader>
 
-        <div className="grid max-h-[60vh] gap-3 overflow-y-auto pr-0.5 sm:grid-cols-2">
+        <div className="grid max-h-[60dvh] gap-3 overflow-y-auto pr-0.5 sm:grid-cols-2">
           <div className="grid gap-1.5 sm:col-span-2">
             <Label htmlFor="deal-title">{t("fields.title")}</Label>
             <Input

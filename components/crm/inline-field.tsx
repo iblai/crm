@@ -111,7 +111,7 @@ export function InlineText({
           {value ? (render ? render(value) : value) : (placeholder ?? tc("empty"))}
         </span>
         {!disabled ? (
-          <Pencil className="mt-0.5 size-3 shrink-0 text-gray-300 opacity-0 transition-opacity group-hover/field:opacity-100" />
+          <Pencil className="mt-0.5 size-3 shrink-0 text-gray-300 opacity-0 transition-opacity group-hover/field:opacity-100 pointer-coarse:opacity-100" />
         ) : null}
       </button>
     );

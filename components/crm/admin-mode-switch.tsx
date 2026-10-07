@@ -26,7 +26,6 @@ export function AdminModeSwitch({ className }: { className?: string }) {
         <TooltipTrigger
           render={
             <Switch
-              id="admin-mode"
               checked={adminMode}
               onCheckedChange={(on: boolean) => {
                 setAdminMode(on);

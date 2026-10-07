@@ -670,6 +670,12 @@
     "emptyTitle": "暂无历史",
     "system": "系统"
   },
+  "join": {
+    "body": "CRM 运行在您管理的 ibl.ai 组织中。创建组织免费，只需一分钟。",
+    "create": "创建您的组织",
+    "signOut": "退出登录",
+    "title": "创建您的组织"
+  },
   "language": {
     "hint": "此应用及其他 ibl.ai 应用的语言",
     "label": "语言"

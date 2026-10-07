@@ -670,6 +670,12 @@
     "emptyTitle": "Pas encore d’historique",
     "system": "Système"
   },
+  "join": {
+    "body": "Le CRM fonctionne au sein d’une organisation ibl.ai que vous administrez. En créer une est gratuit et prend une minute.",
+    "create": "Créer votre organisation",
+    "signOut": "Se déconnecter",
+    "title": "Créez votre organisation"
+  },
   "language": {
     "hint": "Langue de cette application et des autres applications ibl.ai",
     "label": "Langue"

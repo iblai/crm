@@ -96,7 +96,6 @@ function CommandPalette({
       onOpenChange={onOpenChange}
       title={tc("search")}
       description={t("description")}
-      className="max-w-xl"
     >
       <Command shouldFilter={false} className="rounded-xl">
         <CommandInput

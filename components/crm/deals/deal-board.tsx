@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   DndContext,
   DragOverlay,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   pointerWithin,
   useDroppable,
   useSensor,
@@ -65,7 +66,11 @@ export function DealBoard({
     });
   }, [deals]);
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
+  // A swipe on a card must scroll; a held finger drags.
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } }),
+  );
 
   const stageOf = (deal: Deal) => pending[deal.id] ?? deal.stage;
 

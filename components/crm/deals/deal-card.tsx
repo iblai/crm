@@ -80,7 +80,7 @@ export function DealCard({
       ref={nodeRef}
       style={style}
       className={cn(
-        "group/card relative touch-none",
+        "group/card relative touch-manipulation",
         dragging && "opacity-40",
         overlay && "rotate-2",
       )}
@@ -95,7 +95,7 @@ export function DealCard({
         )}
       >
         <span className="flex items-start gap-1.5">
-          <GripVertical className="mt-0.5 size-3.5 shrink-0 text-gray-300 opacity-0 transition-opacity group-hover/card:opacity-100" />
+          <GripVertical className="mt-0.5 size-3.5 shrink-0 text-gray-300 opacity-0 transition-opacity group-hover/card:opacity-100 pointer-coarse:opacity-100" />
           <span
             className={cn(
               "line-clamp-2 min-w-0 flex-1 text-sm leading-snug font-medium text-gray-900",
@@ -185,7 +185,7 @@ export function DealCard({
                         variant="ghost"
                         size="icon-xs"
                         aria-label={t("card.moveLabel")}
-                        className="text-gray-400 opacity-0 group-hover/card:opacity-100 aria-expanded:opacity-100"
+                        className="text-gray-400 opacity-0 group-hover/card:opacity-100 focus-visible:opacity-100 aria-expanded:opacity-100 pointer-coarse:opacity-100"
                       />
                     }
                     onPointerDown={(e) => e.stopPropagation()}

@@ -24,8 +24,10 @@ import {
 } from "@iblai/iblai-js/web-containers/next";
 import { InviteUserDialog } from "@iblai/iblai-js/web-containers";
 import { useAdminMode, useCanManageCrm } from "@/components/crm/admin-mode";
+import { AdminModeSwitch } from "@/components/crm/admin-mode-switch";
 import { useCommandPalette } from "@/components/crm/command-palette";
 import { FavoritesSection } from "@/components/crm/favorites-section";
+import { LanguageMenu } from "@/components/crm/language-menu";
 import { NavRow } from "@/components/crm/nav-row";
 import { useSession } from "@/hooks/use-session";
 import config from "@/lib/iblai/config";
@@ -110,7 +112,24 @@ export function AppSidebar() {
     });
   }
 
+  // The top bar's switch and language menu are desktop-only; the sheet carries them on phones.
+  if (isMobile) {
+    sections.push({ type: "divider", id: "preferences-divider" });
+    sections.push({
+      type: "custom",
+      id: "preferences",
+      render: () => (
+        <div className="flex items-center justify-between gap-3 px-2 py-1">
+          <LanguageMenu className="flex items-center gap-1" />
+          <AdminModeSwitch />
+        </div>
+      ),
+    });
+  }
+
+  // The SDK closes the sheet only for its own navigation; dialogs opened from here must close it first.
   const onFooterAction = (id: PlatformSidebarFooterActionId) => {
+    if (isMobile) setOpenMobile(false);
     if (id === "notifications") go("/notifications");
     else if (id === "management") go("/admin/users");
     else if (id === "invites") setInviteOpen(true);
@@ -132,7 +151,14 @@ export function AppSidebar() {
             <span className="text-muted-foreground text-[11px]">/crm</span>
           </span>
         }
-        primaryAction={{ label: t("search"), icon: Search, onClick: openPalette }}
+        primaryAction={{
+          label: t("search"),
+          icon: Search,
+          onClick: () => {
+            if (isMobile) setOpenMobile(false);
+            openPalette();
+          },
+        }}
         sections={sections}
         footer={{
           isAdmin,

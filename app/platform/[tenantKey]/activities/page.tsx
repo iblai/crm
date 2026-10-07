@@ -391,7 +391,7 @@ function RowShell({
         <button
           type="button"
           onClick={() => onEdit(activity)}
-          className="absolute top-2 right-20 rounded-md px-2 py-0.5 text-[11px] font-medium text-[#0058cc] opacity-0 transition-opacity group-hover/row:opacity-100 hover:bg-[#eef6fc]"
+          className="absolute top-2 right-20 rounded-md px-2 py-0.5 text-[11px] font-medium text-[#0058cc] opacity-0 transition-opacity group-hover/row:opacity-100 hover:bg-[#eef6fc] focus-visible:opacity-100 pointer-coarse:opacity-100"
         >
           {tc("edit")}
         </button>

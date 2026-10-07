@@ -237,7 +237,7 @@ export function ViewBar({
           </div>
         ) : null}
 
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-1">
           {/* --------------------------------------------------------- filter */}
           <DropdownMenu>
             <DropdownMenuTrigger render={<Button variant="ghost" size="sm" />}>
@@ -558,7 +558,7 @@ function FilterChip({
   }
 
   return (
-    <div className="flex items-center gap-1 rounded-md border border-[var(--border-color,#e5e7eb)] bg-white py-0.5 pr-0.5 pl-2 text-xs">
+    <div className="flex max-w-full flex-wrap items-center gap-1 rounded-md border border-[var(--border-color,#e5e7eb)] bg-white py-0.5 pr-0.5 pl-2 text-xs">
       <span className="font-medium text-gray-700">{label}</span>
       <SimpleSelect
         value={filter.op}

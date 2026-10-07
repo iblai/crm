@@ -67,5 +67,16 @@ export default defineConfig({
       dependencies: ["setup-webkit"],
       testMatch: ["journeys/**/*.spec.ts"],
     },
+
+    // Phone layout — Chromium with a Pixel profile, reusing the Chromium sign-in
+    {
+      name: "mobile",
+      use: {
+        ...devices["Pixel 7"],
+        storageState: "playwright/.auth/user-setup-chromium.json",
+      },
+      dependencies: ["setup-chromium"],
+      testMatch: ["journeys/responsive.journey.spec.ts"],
+    },
   ],
 });

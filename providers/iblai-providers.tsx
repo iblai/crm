@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Provider as ReduxProvider, useDispatch } from "react-redux";
+import { Provider as ReduxProvider, useDispatch, useSelector } from "react-redux";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { initializeDataLayer, type TokenResponse } from "@iblai/iblai-js/data-layer";
 import {
@@ -24,7 +24,9 @@ import {
   useTenantSwitchSync,
   refreshTenantSwitchLock,
   isTenantSwitchInProgress,
+  clearCurrentTenantCookie,
   deleteCookieOnAllDomains,
+  selectRbacPermissions,
   updateRbacPermissions,
   type Tenant,
 } from "@iblai/iblai-js/web-utils";
@@ -35,7 +37,14 @@ import { LoadingScreen } from "@/components/loading-screen";
 import { iblaiStore } from "@/store/iblai-store";
 import { LocalStorageService } from "@/lib/iblai/storage-service";
 import config from "@/lib/iblai/config";
-import { readCurrentTenantKey, readUsername, resolveDefaultTenant } from "@/lib/iblai/tenant";
+import { needsOrganization } from "@/lib/crm/permissions";
+import { createOrganizationUrl } from "@/lib/iblai/auth-redirect";
+import {
+  readCurrentTenantKey,
+  readTenants,
+  readUsername,
+  resolveDefaultTenant,
+} from "@/lib/iblai/tenant";
 import { redirectToAuthSpa, handleTenantSwitch, LOCAL_STORAGE_KEYS } from "@/lib/iblai/auth-utils";
 
 const storageService = LocalStorageService.getInstance();
@@ -46,7 +55,21 @@ const PUBLIC_ROUTES = new Map<RegExp, () => Promise<boolean>>([
   [new RegExp("^/mobile-sso-login"), async () => false],
   [new RegExp("^/error/([0-9]+)"), async () => false],
   [new RegExp("^/version"), async () => false],
+  [new RegExp("^/join$"), async () => false],
 ]);
+
+/** One retry of the sign-in without an organization, when a remembered one refused the user. */
+const REAUTH_WITHOUT_ORG = "crm_reauth_without_org";
+
+/** A signed-in user with no organization of their own goes to ibl.ai registration, then comes back here. */
+function OrganizationGate({ tenantKey, children }: { tenantKey: string; children: ReactNode }) {
+  const permissions = useSelector(selectRbacPermissions);
+  const blocked = needsOrganization(readTenants(), permissions, tenantKey);
+  useEffect(() => {
+    if (blocked) window.location.replace(createOrganizationUrl(window.location.origin));
+  }, [blocked]);
+  return blocked ? <LoadingScreen /> : <>{children}</>;
+}
 
 function Providers({ children }: { children: ReactNode }) {
   const pathname = usePathname() ?? "/";
@@ -93,7 +116,8 @@ function Providers({ children }: { children: ReactNode }) {
     pathname.startsWith("/sso-login") ||
     pathname.startsWith("/mobile-sso-login") ||
     pathname.startsWith("/error/") ||
-    pathname.startsWith("/version");
+    pathname.startsWith("/version") ||
+    pathname === "/join";
 
   // Cross-SPA cookie sync mirrors the session into `ibl_*` cookies on the
   // parent domain so sibling apps (os.ibl.ai, lms.ibl.ai, crm.ibl.ai) notice a
@@ -161,6 +185,20 @@ function Providers({ children }: { children: ReactNode }) {
           }}
           onAuthFailure={(reason: string) => {
             console.error("[TenantProvider] Auth failure:", reason);
+            // The community org was remembered, not chosen: sign in again
+            // with no org and let the Auth SPA pick the user's own. Once.
+            if (
+              !routeTenant &&
+              requestedTenant === config.mainTenantKey() &&
+              !sessionStorage.getItem(REAUTH_WITHOUT_ORG)
+            ) {
+              sessionStorage.setItem(REAUTH_WITHOUT_ORG, "1");
+              localStorage.removeItem(LOCAL_STORAGE_KEYS.TENANT);
+              localStorage.removeItem(LOCAL_STORAGE_KEYS.CURRENT_TENANT);
+              clearCurrentTenantCookie();
+              void redirectToAuthSpa(undefined, undefined, true);
+              return;
+            }
             router.push("/error/403");
           }}
           onLoadPlatformPermissions={(permissions) => {
@@ -178,7 +216,11 @@ function Providers({ children }: { children: ReactNode }) {
           }}
           fallback={LOADING}
         >
-          {children}
+          {isPublicRoute ? (
+            children
+          ) : (
+            <OrganizationGate tenantKey={requestedTenant}>{children}</OrganizationGate>
+          )}
         </TenantProvider>
       </AuthProvider>
     </>

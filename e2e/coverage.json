@@ -108,6 +108,24 @@
       "journey": "crm",
       "name": "⌘K finds the person through server search",
       "spec": "journeys/crm.journey.spec.ts"
+    },
+    {
+      "id": "M1",
+      "journey": "responsive",
+      "name": "dashboard actions are in view on a phone and open their dialog",
+      "spec": "journeys/responsive.journey.spec.ts"
+    },
+    {
+      "id": "M2",
+      "journey": "responsive",
+      "name": "sidebar opens as a sheet on a phone and yields to the search palette",
+      "spec": "journeys/responsive.journey.spec.ts"
+    },
+    {
+      "id": "M3",
+      "journey": "responsive",
+      "name": "a tall dialog scrolls to its submit button on a short screen",
+      "spec": "journeys/responsive.journey.spec.ts"
     }
   ]
 }

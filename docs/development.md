@@ -4,7 +4,7 @@
 
 - Node.js 22+ (25.x works; the `dev` script disables Node's experimental web storage)
 - pnpm 12 — `corepack enable` installs the version pinned in `package.json`
-- An ibl.ai account — [ibl.ai/join](https://ibl.ai/join) — that belongs to at least one organization
+- An ibl.ai account — [ibl.ai/join](https://ibl.ai/join). Without an organization of your own the app sends you to registration and back (see below)
 - For native builds: the Rust toolchain ([rustup](https://rustup.rs)); Xcode for iOS; Android Studio + NDK for Android
 
 ## Run
@@ -30,11 +30,14 @@ Nothing is required against hosted `iblai.app`. Copy `.env.example` to
 
 1. `providers/iblai-providers.tsx` initializes the SDK data layer and mounts
    `AuthProvider` → `TenantProvider`.
-2. `AuthProvider` checks for a non-expired `axd_token`; without one it calls
+2. `AuthProvider` checks for a non-expired `dm_token`; without one it calls
    `redirectToAuthSpa()` (`lib/iblai/auth-utils.ts`) which goes through
-   `/api/auth-redirect` to `login.<domain>/login?app=mentor&redirect-to=<origin>&tenant=<org>`.
+   `/api/auth-redirect` to `login.<domain>/login?app=mentor&redirect-to=<origin>`, adding
+   `&tenant=<org>` only when the URL or the session names one — otherwise the Auth SPA
+   picks the user's current organization.
 3. The Auth SPA returns to `/sso-login-complete?data=…`; the SDK's `SsoLogin`
-   stores `axd_token`, `dm_token`, `userData`, `tenants`, `current_tenant`.
+   stores `axd_token`, `dm_token`, `userData`, `current_tenant` (the organization
+   list comes later, from `TenantProvider`).
    `lib/iblai/sso-redirect.ts` sanitizes the landing path and resets it to `/`
    when it names another organization.
 4. `/` resolves the session's org (`lib/iblai/tenant.ts#resolveDefaultTenant`)
@@ -42,9 +45,15 @@ Nothing is required against hosted `iblai.app`. Copy `.env.example` to
 5. `TenantProvider` gets `requestedTenant` from the route and `currentTenant`
    from storage. When they differ it re-authenticates against the requested
    org and hands back a fresh org-scoped token pair (`saveUserTokens`).
-6. Switching orgs (`OrgSwitcher`, or the SDK profile dropdown) calls the SDK's
+6. Switching orgs (the SDK profile dropdown) calls the SDK's
    `handleTenantSwitch`, which clears storage, broadcasts to other tabs and
    re-enters the Auth SPA with `tenant=<new>`.
+7. A user who administers no organization and holds no CRM permission in the one
+   being entered is sent to ibl.ai registration (`lib/iblai/auth-redirect.ts#createOrganizationUrl`,
+   the DM free-plan checkout `ibl.ai/join` resolves to) with a return through the
+   Auth SPA, which signs them in to the organization it created. Cancelling lands
+   on `/join`. The deployed origin must be on the DM's checkout redirect allowlist
+   (`STRIPE_CHECKOUT_ALLOWED_REDIRECT_DOMAINS`); localhost always is.
 
 The CRM API (`lib/crm/api.ts`) sends `Authorization: Token <dm_token>` to
 `https://api.iblai.app/dm/api/crm/…`; the platform infers the organization

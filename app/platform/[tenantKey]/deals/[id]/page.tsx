@@ -242,7 +242,7 @@ export default function DealDetailPage() {
               </div>
             </div>
 
-            <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <FavoriteButton target={{ deal: deal.id }} />
               {closed ? (
                 <Tooltip>
