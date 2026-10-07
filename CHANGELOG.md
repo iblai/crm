@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1](https://github.com/iblai/crm/compare/v1.1.0...v1.1.1) (2026-10-07)
+
+### Bug Fixes
+
+* sign in to the Auth SPA as a custom app ([ea1b788](https://github.com/iblai/crm/commit/ea1b788dc2406b2dd07d1817e3c1a9a12e2880b0))
+
 ## [1.1.0](https://github.com/iblai/crm/compare/v1.0.6...v1.1.0) (2026-10-07)
 
 ### Features
