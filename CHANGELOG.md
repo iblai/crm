@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/iblai/crm/compare/v1.0.6...v1.1.0) (2026-10-07)
+
+### Features
+
+* registration for users without an organization, sign in to the current org, phone layout fixes ([112dd02](https://github.com/iblai/crm/commit/112dd028140e75589dfa42f19330f344774471ac))
+* start page with Sign up and Log in, switch back from organizations without CRM access, phones scroll as a page ([fbe6ccb](https://github.com/iblai/crm/commit/fbe6ccbbaaa13ed5ec55e9fd19950aff8d5a7f8c))
+
 ## [1.0.6](https://github.com/iblai/crm/compare/v1.0.5...v1.0.6) (2026-10-07)
 
 ### Documentation
