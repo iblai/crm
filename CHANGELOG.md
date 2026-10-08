@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.0](https://github.com/iblai/crm/compare/v1.1.1...v1.2.0) (2026-10-08)
+
+### Features
+
+* sign in via the Auth SPA crm app, no start page, vibe agent favicon, Auth SPA returns ([50880f3](https://github.com/iblai/crm/commit/50880f37fdbe5b2a9228edbe1db57fd2737bee7d))
+
 ## [1.1.1](https://github.com/iblai/crm/compare/v1.1.0...v1.1.1) (2026-10-07)
 
 ### Bug Fixes
