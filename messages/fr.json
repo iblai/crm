@@ -967,12 +967,6 @@
     "toggleSidebar": "Afficher ou masquer la barre latérale",
     "toggleSidebarHint": "Réduire ou développer la barre latérale (⌘B)"
   },
-  "start": {
-    "body": "Personnes, organisations, affaires et activités pour votre organisation ibl.ai.",
-    "logIn": "Vous avez déjà un compte ? Connectez-vous ici.",
-    "signUp": "S’inscrire",
-    "title": "CRM"
-  },
   "tags": {
     "card": {
       "changeColor": "Changer la couleur de {name}",

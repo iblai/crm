@@ -23,7 +23,7 @@ describe("isAuthSpaUrl", () => {
 describe("createOrganizationUrl", () => {
   const origin = "https://crm.example.test";
 
-  it("sends the DM checkout back through the Auth SPA login, and a cancel to /join", () => {
+  it("returns through the Auth SPA login: success to the origin, cancel to /join", () => {
     const url = new URL(createOrganizationUrl(origin));
     expect(`${url.origin}${url.pathname}`).toBe(
       `${config.dmUrl()}/api/service/stripe/checkout/redirect/credits-free-plan/`,
@@ -32,7 +32,10 @@ describe("createOrganizationUrl", () => {
     expect(`${login.origin}${login.pathname}`).toBe(`${config.authUrl()}/login`);
     expect(login.searchParams.get("app")).toBe(config.iblPlatform());
     expect(login.searchParams.get("redirect-to")).toBe(origin);
-    expect(url.searchParams.get("cancel_url")).toBe(`${origin}/join`);
+    const cancel = new URL(url.searchParams.get("cancel_url")!);
+    expect(`${cancel.origin}${cancel.pathname}`).toBe(`${config.authUrl()}/login`);
+    expect(cancel.searchParams.get("app")).toBe(config.iblPlatform());
+    expect(cancel.searchParams.get("redirect-to")).toBe(`${origin}/join`);
   });
 
   it("encodes the login URL once more inside redirect_url", () => {

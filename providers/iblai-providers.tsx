@@ -67,7 +67,6 @@ const PUBLIC_ROUTES = new Map<RegExp, () => Promise<boolean>>([
   [new RegExp("^/error/([0-9]+)"), async () => false],
   [new RegExp("^/version"), async () => false],
   [new RegExp("^/join$"), async () => false],
-  [new RegExp("^/$"), async () => false],
 ]);
 
 /** One retry of the sign-in without an organization, when a remembered one refused the user. */
@@ -174,18 +173,18 @@ function Providers({ children }: { children: ReactNode }) {
     pathname.startsWith("/mobile-sso-login") ||
     pathname.startsWith("/error/") ||
     pathname.startsWith("/version") ||
-    pathname === "/join" ||
-    pathname === "/";
+    pathname === "/join";
 
   // Cross-SPA cookie sync mirrors the session into `ibl_*` cookies on the
   // parent domain so sibling apps (os.ibl.ai, lms.ibl.ai, crm.ibl.ai) notice a
   // sign-in or sign-out. On localhost cookies are shared by every dev server on
   // the machine regardless of port, so another app's session would be read as
   // "logged out elsewhere" and force a logout loop — keep the sync for real
-  // hosts only.
+  // hosts only, and off on the shared vibe zone (*.iblai.me), where the parent
+  // domain's cookies belong to unrelated apps.
   const enableStorageSync =
     typeof window !== "undefined" &&
-    !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname);
+    !/^(localhost|127\.0\.0\.1|\[::1\])$|\.iblai\.me$/.test(window.location.hostname);
 
   const LOADING = <LoadingScreen />;
   if (!isInitialized || !mounted) return LOADING;

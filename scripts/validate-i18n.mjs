@@ -30,7 +30,6 @@ const SAME_OK = new Set([
   "PDF",
   "CSS",
   "HTML",
-  "CRM",
 ]);
 
 function flatten(obj, prefix = "", out = {}) {

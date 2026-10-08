@@ -13,9 +13,7 @@ PORT=3000 pnpm start          # or: docker build -t iblai-crm . && docker run -p
 
 Set `NEXT_PUBLIC_API_BASE_URL` / `NEXT_PUBLIC_AUTH_URL` /
 `NEXT_PUBLIC_PLATFORM_BASE_DOMAIN` in the environment when the platform is
-self-hosted. Register the deployed origin as an allowed redirect origin, and on
-the DM's checkout redirect allowlist (`STRIPE_CHECKOUT_ALLOWED_REDIRECT_DOMAINS`)
-so registration can bring a new organization's admin back.
+self-hosted. Register the deployed origin as an allowed redirect origin.
 
 ## 2. Point the shells at it
 

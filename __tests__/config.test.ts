@@ -57,9 +57,9 @@ describe("hosted iblai.app defaults", () => {
     expect(config.mainTenantKey()).toBe("main");
   });
 
-  it("signs in as a `custom` app", async () => {
+  it("signs in as the `crm` app", async () => {
     const config = await loadConfig();
-    expect(config.iblPlatform()).toBe("custom");
+    expect(config.iblPlatform()).toBe("crm");
   });
 
   it("fills in the remaining product defaults", async () => {
@@ -96,10 +96,10 @@ describe("build-time env overrides", () => {
 
   it("honors the community org key and the sign-in app", async () => {
     process.env.NEXT_PUBLIC_MAIN_TENANT_KEY = "community";
-    process.env.NEXT_PUBLIC_IBL_PLATFORM = "crm";
+    process.env.NEXT_PUBLIC_IBL_PLATFORM = "mentor";
     const config = await loadConfig();
     expect(config.mainTenantKey()).toBe("community");
-    expect(config.iblPlatform()).toBe("crm");
+    expect(config.iblPlatform()).toBe("mentor");
   });
 
   it("reads the boolean flags", async () => {

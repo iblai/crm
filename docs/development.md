@@ -14,8 +14,8 @@ pnpm install --ignore-scripts
 pnpm dev
 ```
 
-`/` is a start page: Sign up goes to registration and back, Log in to
-`login.iblai.app`; after sign-in you land on `/platform/<org>`. `http://localhost:3000` must be an allowed redirect origin
+`/` signs you in through the Auth SPA (`app=crm`: CRM copy, Sign Up goes to
+registration and back); after sign-in you land on `/platform/<org>`. `http://localhost:3000` must be an allowed redirect origin
 of the organization you sign in to (it is for ibl.ai's own organizations; ask
 your operator otherwise).
 
@@ -32,7 +32,7 @@ Nothing is required against hosted `iblai.app`. Copy `.env.example` to
    `AuthProvider` → `TenantProvider`.
 2. `AuthProvider` checks for a non-expired `dm_token`; without one it calls
    `redirectToAuthSpa()` (`lib/iblai/auth-utils.ts`) which goes through
-   `/api/auth-redirect` to `login.<domain>/login?app=custom&redirect-to=<origin>`, adding
+   `/api/auth-redirect` to `login.<domain>/login?app=crm&redirect-to=<origin>`, adding
    `&tenant=<org>` only when the URL or the session names one — otherwise the Auth SPA
    picks the user's current organization.
 3. The Auth SPA returns to `/sso-login-complete?data=…`; the SDK's `SsoLogin`
@@ -53,8 +53,8 @@ Nothing is required against hosted `iblai.app`. Copy `.env.example` to
    the DM free-plan checkout `ibl.ai/join` resolves to) with a return through the
    Auth SPA, which signs them in to the organization it created; the signed-in
    email is passed along so Checkout prefills it (once the DM accepts `email`). Cancelling lands
-   on `/join`. The deployed origin must be on the DM's checkout redirect allowlist
-   (`STRIPE_CHECKOUT_ALLOWED_REDIRECT_DOMAINS`); localhost always is.
+   on `/join`, back through the Auth SPA as well — both return URLs sit on the Auth SPA, so
+   the app's own host needs no entry on the DM's checkout redirect allowlist.
    A user who switches to an organization whose CRM data they cannot see (not its
    admin, no `can_view_crm_*` flag) is switched back to the one they came from, or
    to one they administer, with a toast saying so.

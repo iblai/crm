@@ -967,12 +967,6 @@
     "toggleSidebar": "Mostrar u ocultar la barra lateral",
     "toggleSidebarHint": "Contrae o expande la barra lateral (⌘B)"
   },
-  "start": {
-    "body": "Personas, organizaciones, oportunidades y actividades para tu organización de ibl.ai.",
-    "logIn": "¿Ya tienes una cuenta? Inicia sesión aquí.",
-    "signUp": "Registrarse",
-    "title": "CRM"
-  },
   "tags": {
     "card": {
       "changeColor": "Cambiar el color de {name}",

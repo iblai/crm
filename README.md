@@ -153,7 +153,7 @@ pnpm install --ignore-scripts
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Sign up (registration at ibl.ai, which brings you back) or log in at [login.iblai.app](https://login.iblai.app); you come back to `/platform/<your-org>` — the CRM of the organization your session is scoped to. Use the switcher in the profile menu to move between organizations.
+Open [http://localhost:3000](http://localhost:3000). It sends you to [login.iblai.app](https://login.iblai.app), where Sign Up creates an organization at ibl.ai and brings you back signed in; you land on `/platform/<your-org>` — the CRM of the organization your session is scoped to. Use the switcher in the profile menu to move between organizations.
 
 No configuration is required against hosted `iblai.app`: the service URLs default in [`lib/iblai/config.ts`](lib/iblai/config.ts). Copy `.env.example` to `.env.local` only to point at a self-hosted platform or to change the community org (`NEXT_PUBLIC_MAIN_TENANT_KEY`, default `main`).
 
@@ -239,16 +239,16 @@ IBL_TENANT=acme pnpm tauri build   # a build meant for the "acme" organization
 
 All app config is `NEXT_PUBLIC_*` and optional against hosted `iblai.app`. Defaults live in [`lib/iblai/config.ts`](lib/iblai/config.ts).
 
-| Variable                           | Default                   | Description                                                             |
-| ---------------------------------- | ------------------------- | ----------------------------------------------------------------------- |
-| `NEXT_PUBLIC_API_BASE_URL`         | `https://api.iblai.app`   | Consolidated API; `/dm` (CRM), `/lms`, `/axd` are derived from it       |
-| `NEXT_PUBLIC_AUTH_URL`             | `https://login.iblai.app` | The hosted Auth SPA                                                     |
-| `NEXT_PUBLIC_PLATFORM_BASE_DOMAIN` | `iblai.app`               | Base domain; with no API base, services resolve to their own subdomains |
-| `NEXT_PUBLIC_MAIN_TENANT_KEY`      | `main`                    | The community organization — the default when nothing else resolves     |
-| `NEXT_PUBLIC_IBL_PLATFORM`         | `custom`                  | `app=` sent to the Auth SPA (the CRM is a custom SPA)                   |
-| `NEXT_PUBLIC_TAURI_CUSTOM_SCHEME`  | `iblai-crm`               | Deep-link scheme the native shells return through after SSO             |
-| `NEXT_PUBLIC_DEFAULT_CURRENCY`     | `USD`                     | Currency preselected on new deals                                       |
-| `NEXT_PUBLIC_ENABLE_RBAC`          | `false`                   | Gate SDK admin surfaces on RBAC policies as well as the admin flag      |
+| Variable                           | Default                   | Description                                                                         |
+| ---------------------------------- | ------------------------- | ----------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_BASE_URL`         | `https://api.iblai.app`   | Consolidated API; `/dm` (CRM), `/lms`, `/axd` are derived from it                   |
+| `NEXT_PUBLIC_AUTH_URL`             | `https://login.iblai.app` | The hosted Auth SPA                                                                 |
+| `NEXT_PUBLIC_PLATFORM_BASE_DOMAIN` | `iblai.app`               | Base domain; with no API base, services resolve to their own subdomains             |
+| `NEXT_PUBLIC_MAIN_TENANT_KEY`      | `main`                    | The community organization — the default when nothing else resolves                 |
+| `NEXT_PUBLIC_IBL_PLATFORM`         | `crm`                     | `app=` sent to the Auth SPA (its `crm` app: CRM copy, Sign Up goes to registration) |
+| `NEXT_PUBLIC_TAURI_CUSTOM_SCHEME`  | `iblai-crm`               | Deep-link scheme the native shells return through after SSO                         |
+| `NEXT_PUBLIC_DEFAULT_CURRENCY`     | `USD`                     | Currency preselected on new deals                                                   |
+| `NEXT_PUBLIC_ENABLE_RBAC`          | `false`                   | Gate SDK admin surfaces on RBAC policies as well as the admin flag                  |
 
 ---
 
@@ -294,7 +294,7 @@ User → React pages → RTK Query (lib/crm/api.ts) → https://api.iblai.app/dm
                            └── /data-layer       platform users · org metadata
 ```
 
-Sign-in is the platform's hosted round trip (`login.<domain>/login?app=custom&redirect-to=<origin>&tenant=<org>` → `/sso-login-complete?data=…`). `TenantProvider` compares the organization in the URL with the one the session is scoped to and re-authenticates when they differ, handing back an org-scoped token pair. The CRM API infers the organization from that token — there is no `?platform_key=` — so every record you see belongs to the organization in the URL. A signed-in user who administers no organization and holds no CRM role in the one they entered is sent to ibl.ai registration (the free plan `ibl.ai/join` resolves to) and comes back signed in to the organization it created. A user who switches to an organization whose CRM data they cannot see is switched back. Details: [`docs/development.md`](docs/development.md).
+Sign-in is the platform's hosted round trip (`login.<domain>/login?app=crm&redirect-to=<origin>&tenant=<org>` → `/sso-login-complete?data=…`). `TenantProvider` compares the organization in the URL with the one the session is scoped to and re-authenticates when they differ, handing back an org-scoped token pair. The CRM API infers the organization from that token — there is no `?platform_key=` — so every record you see belongs to the organization in the URL. A signed-in user who administers no organization and holds no CRM role in the one they entered is sent to ibl.ai registration (the free plan `ibl.ai/join` resolves to) and comes back signed in to the organization it created. A user who switches to an organization whose CRM data they cannot see is switched back. Details: [`docs/development.md`](docs/development.md).
 
 ### The CRM API
 

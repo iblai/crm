@@ -967,12 +967,6 @@
     "toggleSidebar": "Toggle sidebar",
     "toggleSidebarHint": "Collapse or expand the sidebar (⌘B)"
   },
-  "start": {
-    "body": "People, organizations, deals and activities for your ibl.ai organization.",
-    "logIn": "Already have an account? Log in here.",
-    "signUp": "Sign up",
-    "title": "CRM"
-  },
   "tags": {
     "card": {
       "changeColor": "Change the color of {name}",

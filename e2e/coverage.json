@@ -2,12 +2,6 @@
   "version": 1,
   "checkpoints": [
     {
-      "id": "A0",
-      "journey": "auth",
-      "name": "a signed-out visitor sees Sign up and Log in on /",
-      "spec": "journeys/start.journey.spec.ts"
-    },
-    {
       "id": "A1",
       "journey": "auth",
       "name": "authenticated user lands on their organization's home",
