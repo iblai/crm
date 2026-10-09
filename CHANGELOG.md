@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.0](https://github.com/iblai/crm/compare/v1.2.0...v1.3.0) (2026-10-09)
+
+### Features
+
+* Open Sans and the platform logo at the top left, as in the LMS ([69a0d22](https://github.com/iblai/crm/commit/69a0d22277da9b0cd40e30837e407c8bb5097bc7))
+
 ## [1.2.0](https://github.com/iblai/crm/compare/v1.1.1...v1.2.0) (2026-10-08)
 
 ### Features
