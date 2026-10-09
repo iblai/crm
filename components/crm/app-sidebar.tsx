@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -31,6 +32,7 @@ import { LanguageMenu } from "@/components/crm/language-menu";
 import { NavRow } from "@/components/crm/nav-row";
 import { useSession } from "@/hooks/use-session";
 import config from "@/lib/iblai/config";
+import { tenantDisplayName } from "@/lib/iblai/tenant";
 
 /**
  * The SDK's cross-SPA sidebar shell with this app's content: Search as the
@@ -140,16 +142,21 @@ export function AppSidebar() {
     <>
       <PlatformSidebar
         logo={
-          <span className="flex items-center gap-1.5 px-1">
+          <Link
+            href={href()}
+            aria-label={t("home")}
+            onClick={() => isMobile && setOpenMobile(false)}
+          >
+            {/* The platform's logo; the DM serves ibl.ai's when the platform has none. */}
             <Image
-              src="/images/iblai-logo.png"
-              alt="ibl.ai"
-              width={60}
-              height={20}
-              className="h-4 w-auto"
+              src={`${config.dmUrl()}/api/core/orgs/${encodeURIComponent(tenantKey)}/logo/`}
+              alt={tenantDisplayName(currentTenant)}
+              width={120}
+              height={40}
+              unoptimized
+              className="h-8 w-auto max-w-full object-contain"
             />
-            <span className="text-muted-foreground text-[11px]">/crm</span>
-          </span>
+          </Link>
         }
         primaryAction={{
           label: t("search"),

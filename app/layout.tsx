@@ -1,9 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import { Open_Sans } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 import { WebContainersLocaleProvider } from "@/components/web-containers-locale-provider";
 import { IblaiProviders } from "@/providers/iblai-providers";
+
+const openSans = Open_Sans({ subsets: ["latin"], variable: "--font-open-sans" });
 
 // The proxy's nonce-based CSP requires per-request rendering.
 export const dynamic = "force-dynamic";
@@ -30,7 +33,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const locale = await getLocale();
   const messages = await getMessages();
   return (
-    <html lang={locale} className="h-full antialiased">
+    <html lang={locale} className={`${openSans.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <WebContainersLocaleProvider>
