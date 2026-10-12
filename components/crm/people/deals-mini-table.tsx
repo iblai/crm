@@ -15,7 +15,7 @@ import { useListDealsQuery, useListPipelinesQuery } from "@/lib/crm/api";
 import { formatCurrency, formatDate } from "@/lib/crm/format";
 
 const th =
-  "h-9 whitespace-nowrap px-4 text-left text-xs font-medium tracking-wide text-muted-foreground";
+  "h-9 whitespace-nowrap px-4 text-left text-[11px] font-semibold tracking-wide text-muted-foreground uppercase";
 const td = "border-b border-gray-100 px-4 py-2 align-middle";
 
 /**

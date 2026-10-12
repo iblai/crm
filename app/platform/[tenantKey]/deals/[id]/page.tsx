@@ -271,7 +271,7 @@ export default function DealDetailPage() {
                       render={
                         <Button
                           size="sm"
-                          className="bg-emerald-600 text-white hover:bg-emerald-700"
+                          className="ibl-button-primary"
                           onClick={() => setConfirmWon(true)}
                           disabled={winning}
                         />
@@ -287,7 +287,6 @@ export default function DealDetailPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-rose-200 text-rose-700 hover:bg-rose-50"
                           onClick={() => {
                             setLostStage(null);
                             setLostOpen(true);

@@ -109,7 +109,7 @@ export function PersonDialog({
           }}
         >
           <div className="grid gap-1.5">
-            <Label htmlFor="person-name" className="text-muted-foreground text-xs">
+            <Label htmlFor="person-name">
               {tc("name")} <span className="text-destructive">*</span>
             </Label>
             <Input
@@ -123,9 +123,7 @@ export function PersonDialog({
           </div>
 
           <div className="grid gap-1.5">
-            <Label htmlFor="person-email" className="text-muted-foreground text-xs">
-              {tc("email")}
-            </Label>
+            <Label htmlFor="person-email">{tc("email")}</Label>
             <Input
               id="person-email"
               type="email"
@@ -136,9 +134,7 @@ export function PersonDialog({
           </div>
 
           <div className="grid gap-1.5">
-            <Label htmlFor="person-title" className="text-muted-foreground text-xs">
-              {t("fields.jobTitle")}
-            </Label>
+            <Label htmlFor="person-title">{t("fields.jobTitle")}</Label>
             <Input
               id="person-title"
               value={jobTitle}
@@ -148,7 +144,7 @@ export function PersonDialog({
           </div>
 
           <div className="grid gap-1.5">
-            <Label className="text-muted-foreground text-xs">{t("fields.organization")}</Label>
+            <Label>{t("fields.organization")}</Label>
             <SearchPicker
               kind="organization"
               value={organization || null}
@@ -159,7 +155,7 @@ export function PersonDialog({
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="grid gap-1.5">
-              <Label className="text-muted-foreground text-xs">{t("fields.lifecycleStage")}</Label>
+              <Label>{t("fields.lifecycleStage")}</Label>
               <SimpleSelect
                 value={lifecycle}
                 onChange={(v) => setLifecycle((v || "lead") as LifecycleStage)}
@@ -168,7 +164,7 @@ export function PersonDialog({
               />
             </div>
             <div className="grid gap-1.5">
-              <Label className="text-muted-foreground text-xs">{tc("owner")}</Label>
+              <Label>{tc("owner")}</Label>
               <OwnerSelect value={owner} onChange={setOwner} />
             </div>
           </div>

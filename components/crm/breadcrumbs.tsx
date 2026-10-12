@@ -44,8 +44,6 @@ const SECTION_KEYS = {
   tags: "nav.tags",
   settings: "nav.settings",
   notifications: "breadcrumbs.notifications",
-  admin: "breadcrumbs.admin",
-  users: "breadcrumbs.users",
 } as const;
 
 const isSection = (seg: string): seg is keyof typeof SECTION_KEYS =>

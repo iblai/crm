@@ -131,7 +131,7 @@ export function DealCard({
                   render={
                     <span
                       className={cn(
-                        "inline-flex cursor-default items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium",
+                        "inline-flex cursor-default items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium",
                         overdue ? "bg-rose-50 text-rose-600" : "bg-gray-100 text-gray-600",
                       )}
                     />
@@ -151,7 +151,7 @@ export function DealCard({
               <Tooltip>
                 <TooltipTrigger
                   render={
-                    <span className="inline-flex cursor-default items-center gap-1 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700" />
+                    <span className="inline-flex cursor-default items-center gap-1 rounded-md bg-gray-100 px-1.5 py-0.5 text-[11px] font-medium text-gray-600" />
                   }
                 >
                   <Clock className="size-3" /> {t("card.stale")}

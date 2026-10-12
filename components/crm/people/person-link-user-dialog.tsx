@@ -91,7 +91,7 @@ export function PersonLinkUserDialog({
           }}
         >
           <div className="grid gap-1.5">
-            <Label className="text-muted-foreground text-xs">{tc("member")}</Label>
+            <Label>{tc("member")}</Label>
             <SimpleSelect
               value={selected}
               onChange={(v) => {
@@ -109,9 +109,7 @@ export function PersonLinkUserDialog({
           </div>
 
           <div className="grid gap-1.5">
-            <Label htmlFor="link-user-id" className="text-muted-foreground text-xs">
-              {t("linkUser.manualLabel")}
-            </Label>
+            <Label htmlFor="link-user-id">{t("linkUser.manualLabel")}</Label>
             <Input
               id="link-user-id"
               inputMode="numeric"

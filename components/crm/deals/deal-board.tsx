@@ -237,7 +237,7 @@ function BoardColumn({
           {stage.name}
         </h2>
         {typeof stage.probability === "number" && !stage.is_won && !stage.is_lost ? (
-          <span className="flex shrink-0 items-center gap-1 rounded-full bg-gray-100 px-1.5 py-px text-[10px] font-medium text-gray-500">
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-gray-100 px-1.5 py-px text-[11px] font-medium text-gray-500">
             {stage.probability}%
             <InfoTip
               label={t("board.probabilityLabel", { probability: stage.probability })}
@@ -250,7 +250,7 @@ function BoardColumn({
         <Tooltip>
           <TooltipTrigger
             render={
-              <span className="shrink-0 cursor-default rounded-full bg-gray-100 px-1.5 py-px text-[10px] font-medium text-gray-600 tabular-nums" />
+              <span className="shrink-0 cursor-default rounded-full bg-gray-100 px-1.5 py-px text-[11px] font-medium text-gray-600 tabular-nums" />
             }
           >
             {column.count}

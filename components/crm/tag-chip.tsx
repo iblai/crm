@@ -22,7 +22,7 @@ export function TagChip({
     <span
       className={cn(
         "inline-flex max-w-full items-center gap-1 rounded-full border font-medium whitespace-nowrap",
-        size === "xs" ? "px-1.5 py-px text-[10px]" : "px-2 py-0.5 text-xs",
+        size === "xs" ? "px-1.5 py-px text-[11px]" : "px-2 py-0.5 text-xs",
         className,
       )}
       style={tagStyle(tag)}

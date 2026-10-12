@@ -66,12 +66,12 @@ from that token.
 ## Roles
 
 Four roles are seeded per organization: **CRM Viewer**, **CRM User**,
-**CRM Manager**, **CRM Inviter**. Assign them on `/platform/<org>/admin/users`
-(the SDK's Management surface, Roles + Policies tabs). Organization admins
-hold every permission. The app shows every affordance and surfaces a
-permission error from the API as a toast; `/admin/*` is for organization
-admins in Admin mode, and `/settings` opens to them and to CRM Managers (the
-DM's `can_write_crm_pipelines` flag).
+**CRM Manager**, **CRM Inviter**. Assign them from the sidebar footer's
+Management (the SDK's Management dialog, Roles + Policies tabs). Organization
+admins hold every permission. The app shows every affordance and surfaces a
+permission error from the API as a toast; `/settings` opens to organization
+admins in Admin mode and to CRM Managers (the DM's `can_write_crm_pipelines`
+flag).
 
 ## Project layout
 

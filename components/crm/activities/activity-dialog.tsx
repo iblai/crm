@@ -228,9 +228,7 @@ export function ActivityDialog({
           </div>
 
           <div className="grid gap-1.5 sm:col-span-2">
-            <Label htmlFor="activity-title" className="text-muted-foreground text-xs">
-              {t("dialog.titleLabel")}
-            </Label>
+            <Label htmlFor="activity-title">{t("dialog.titleLabel")}</Label>
             <Input
               id="activity-title"
               value={draft.title}
@@ -240,12 +238,12 @@ export function ActivityDialog({
               aria-invalid={touched && titleMissing}
             />
             {touched && titleMissing ? (
-              <p className="text-xs text-rose-600">{t("dialog.titleRequired")}</p>
+              <p className="text-xs text-red-500">{t("dialog.titleRequired")}</p>
             ) : null}
           </div>
 
           <div className="grid gap-1.5">
-            <Label className="text-muted-foreground text-xs">
+            <Label>
               <UserRound className="size-3" /> {t("dialog.person")}
             </Label>
             <SearchPicker
@@ -264,7 +262,7 @@ export function ActivityDialog({
           </div>
 
           <div className="grid gap-1.5">
-            <Label className="text-muted-foreground text-xs">
+            <Label>
               <Briefcase className="size-3" /> {t("dialog.deal")}
             </Label>
             <SimpleSelect
@@ -278,12 +276,12 @@ export function ActivityDialog({
               aria-label={t("dialog.deal")}
             />
             {dealMismatch ? (
-              <p className="text-xs text-rose-600">{t("dialog.dealMismatch")}</p>
+              <p className="text-xs text-red-500">{t("dialog.dealMismatch")}</p>
             ) : null}
           </div>
 
           <div className="grid gap-1.5">
-            <Label className="text-muted-foreground text-xs">
+            <Label>
               <Building2 className="size-3" /> {t("dialog.organization")}
             </Label>
             <SearchPicker
@@ -297,7 +295,7 @@ export function ActivityDialog({
           </div>
 
           {touched && linkMissing ? (
-            <p className="-mt-1 text-xs text-rose-600 sm:col-span-2">{t("dialog.linkRequired")}</p>
+            <p className="-mt-1 text-xs text-red-500 sm:col-span-2">{t("dialog.linkRequired")}</p>
           ) : (
             <p className="text-muted-foreground -mt-1 text-[11px] sm:col-span-2">
               {t("dialog.linkHint")}
@@ -322,9 +320,7 @@ export function ActivityDialog({
           </div>
 
           <div className="grid gap-1.5">
-            <Label htmlFor="activity-to" className="text-muted-foreground text-xs">
-              {t("dialog.ends")}
-            </Label>
+            <Label htmlFor="activity-to">{t("dialog.ends")}</Label>
             <Input
               id="activity-to"
               type="datetime-local"
@@ -336,9 +332,7 @@ export function ActivityDialog({
           </div>
 
           <div className="grid gap-1.5 sm:col-span-2">
-            <Label htmlFor="activity-location" className="text-muted-foreground text-xs">
-              {t("location")}
-            </Label>
+            <Label htmlFor="activity-location">{t("location")}</Label>
             <Input
               id="activity-location"
               value={draft.location}
@@ -349,9 +343,7 @@ export function ActivityDialog({
           </div>
 
           <div className="grid gap-1.5 sm:col-span-2">
-            <Label htmlFor="activity-comment" className="text-muted-foreground text-xs">
-              {tc("details")}
-            </Label>
+            <Label htmlFor="activity-comment">{tc("details")}</Label>
             <Textarea
               id="activity-comment"
               value={draft.comment}
@@ -388,9 +380,7 @@ export function ActivityDialog({
               checked={draft.isDone}
               onCheckedChange={(checked) => set("isDone", checked === true)}
             />
-            <Label htmlFor="activity-done" className="text-sm text-gray-700">
-              {t("dialog.alreadyDone")}
-            </Label>
+            <Label htmlFor="activity-done">{t("dialog.alreadyDone")}</Label>
           </div>
         </div>
 

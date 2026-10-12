@@ -97,7 +97,7 @@ export function OrganizationDialog({
           }}
         >
           <div className="grid gap-1.5">
-            <Label htmlFor="org-name" className="text-muted-foreground text-xs">
+            <Label htmlFor="org-name">
               {tc("name")} <span className="text-destructive">*</span>
             </Label>
             <Input
@@ -111,9 +111,7 @@ export function OrganizationDialog({
           </div>
 
           <div className="grid gap-1.5">
-            <Label htmlFor="org-street" className="text-muted-foreground text-xs">
-              {t("address.street")}
-            </Label>
+            <Label htmlFor="org-street">{t("address.street")}</Label>
             <Input
               id="org-street"
               value={address.street}
@@ -124,9 +122,7 @@ export function OrganizationDialog({
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="grid gap-1.5">
-              <Label htmlFor="org-city" className="text-muted-foreground text-xs">
-                {t("address.city")}
-              </Label>
+              <Label htmlFor="org-city">{t("address.city")}</Label>
               <Input
                 id="org-city"
                 value={address.city}
@@ -135,9 +131,7 @@ export function OrganizationDialog({
               />
             </div>
             <div className="grid gap-1.5">
-              <Label htmlFor="org-state" className="text-muted-foreground text-xs">
-                {t("address.state")}
-              </Label>
+              <Label htmlFor="org-state">{t("address.state")}</Label>
               <Input
                 id="org-state"
                 value={address.state}
@@ -146,9 +140,7 @@ export function OrganizationDialog({
               />
             </div>
             <div className="grid gap-1.5">
-              <Label htmlFor="org-postal" className="text-muted-foreground text-xs">
-                {t("address.postalCode")}
-              </Label>
+              <Label htmlFor="org-postal">{t("address.postalCode")}</Label>
               <Input
                 id="org-postal"
                 value={address.postal_code}
@@ -157,9 +149,7 @@ export function OrganizationDialog({
               />
             </div>
             <div className="grid gap-1.5">
-              <Label htmlFor="org-country" className="text-muted-foreground text-xs">
-                {t("address.country")}
-              </Label>
+              <Label htmlFor="org-country">{t("address.country")}</Label>
               <Input
                 id="org-country"
                 value={address.country}
@@ -170,7 +160,7 @@ export function OrganizationDialog({
           </div>
 
           <div className="grid gap-1.5">
-            <Label className="text-muted-foreground text-xs">{tc("owner")}</Label>
+            <Label>{tc("owner")}</Label>
             <OwnerSelect value={owner} onChange={setOwner} />
           </div>
 

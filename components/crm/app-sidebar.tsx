@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,14 +15,12 @@ import {
   Users,
 } from "lucide-react";
 import {
-  PlatformAccountSheet,
   PlatformSidebar,
   useSidebar,
-  type PlatformAccountTab,
   type PlatformSidebarFooterActionId,
   type PlatformSidebarSectionConfig,
 } from "@iblai/iblai-js/web-containers/next";
-import { InviteUserDialog } from "@iblai/iblai-js/web-containers";
+import { useAccountSheet } from "@/components/crm/account-sheet";
 import { useAdminMode, useCanManageCrm } from "@/components/crm/admin-mode";
 import { AdminModeSwitch } from "@/components/crm/admin-mode-switch";
 import { useCommandPalette } from "@/components/crm/command-palette";
@@ -42,14 +39,13 @@ import { tenantDisplayName } from "@/lib/iblai/tenant";
 export function AppSidebar() {
   const t = useTranslations("nav");
   const router = useRouter();
-  const { tenantKey, username, email, isAdmin, currentTenant, href } = useSession();
+  const { tenantKey, isAdmin, currentTenant, href } = useSession();
   const { adminMode } = useAdminMode();
   const { isMobile, setOpenMobile } = useSidebar();
   const { open: openPalette } = useCommandPalette();
+  const { openTab, openInvite } = useAccountSheet();
   const isLiveAdmin = isAdmin && adminMode;
   const canManage = useCanManageCrm();
-  const [accountTab, setAccountTab] = useState<PlatformAccountTab | null>(null);
-  const [inviteOpen, setInviteOpen] = useState(false);
 
   const go = (path: string) => {
     router.push(href(path));
@@ -133,73 +129,49 @@ export function AppSidebar() {
   const onFooterAction = (id: PlatformSidebarFooterActionId) => {
     if (isMobile) setOpenMobile(false);
     if (id === "notifications") go("/notifications");
-    else if (id === "management") go("/admin/users");
-    else if (id === "invites") setInviteOpen(true);
-    else setAccountTab(id);
+    else if (id === "invites") openInvite();
+    else openTab(id);
   };
 
   return (
-    <>
-      <PlatformSidebar
-        logo={
-          <Link
-            href={href()}
-            aria-label={t("home")}
-            onClick={() => isMobile && setOpenMobile(false)}
-          >
-            {/* The platform's logo; the DM serves ibl.ai's when the platform has none. */}
-            <Image
-              src={`${config.dmUrl()}/api/core/orgs/${encodeURIComponent(tenantKey)}/logo/`}
-              alt={tenantDisplayName(currentTenant)}
-              width={120}
-              height={40}
-              unoptimized
-              className="h-8 w-auto max-w-full object-contain"
-            />
-          </Link>
-        }
-        primaryAction={{
-          label: t("search"),
-          icon: Search,
-          onClick: () => {
-            if (isMobile) setOpenMobile(false);
-            openPalette();
-          },
-        }}
-        sections={sections}
-        footer={{
-          isAdmin,
-          isLiveAdmin,
-          enableRbac: false,
-          rbacPermissions: {},
-          tenantKey,
-          currentTenant: {
-            key: tenantKey,
-            enable_monetization: currentTenant?.enable_monetization ?? false,
-          },
-          notificationsAllowed: true,
-          invitesUserTypeAllowed: true,
-          supportUrl: config.documentationUrl(),
-          onAction: onFooterAction,
-        }}
-      />
-      <PlatformAccountSheet
-        tab={accountTab}
-        onClose={() => setAccountTab(null)}
-        tenantKey={tenantKey}
-        username={username}
-        email={email}
-        onInviteClick={() => setInviteOpen(true)}
-        mainPlatformKey={config.mainTenantKey()}
-        authUrl={config.authUrl()}
-        currentSpa="crm"
-        platformBaseDomain={config.platformBaseDomain()}
-      />
-      <InviteUserDialog
-        tenant={tenantKey}
-        isOpen={inviteOpen}
-        onClose={() => setInviteOpen(false)}
-      />
-    </>
+    <PlatformSidebar
+      logo={
+        <Link href={href()} aria-label={t("home")} onClick={() => isMobile && setOpenMobile(false)}>
+          {/* The platform's logo; the DM serves ibl.ai's when the platform has none. */}
+          <Image
+            src={`${config.dmUrl()}/api/core/orgs/${encodeURIComponent(tenantKey)}/logo/`}
+            alt={tenantDisplayName(currentTenant)}
+            width={120}
+            height={40}
+            unoptimized
+            className="h-8 w-auto max-w-full object-contain"
+          />
+        </Link>
+      }
+      primaryAction={{
+        label: t("search"),
+        icon: Search,
+        onClick: () => {
+          if (isMobile) setOpenMobile(false);
+          openPalette();
+        },
+      }}
+      sections={sections}
+      footer={{
+        isAdmin,
+        isLiveAdmin,
+        enableRbac: false,
+        rbacPermissions: {},
+        tenantKey,
+        currentTenant: {
+          key: tenantKey,
+          enable_monetization: currentTenant?.enable_monetization ?? false,
+        },
+        notificationsAllowed: true,
+        invitesUserTypeAllowed: true,
+        supportUrl: config.documentationUrl(),
+        onAction: onFooterAction,
+      }}
+    />
   );
 }

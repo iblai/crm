@@ -10,7 +10,6 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
-import { ACTIVITY_TONES } from "@/components/crm/badges";
 import type { ActivityType } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +23,9 @@ export const ACTIVITY_ICONS: Record<ActivityType, LucideIcon> = {
   deadline: CalendarClock,
 };
 
+/** One grey tile for every type; the icon carries the type. */
+export const ACTIVITY_TONE = "bg-gray-100 text-gray-600";
+
 export function ActivityIcon({
   type,
   className,
@@ -34,13 +36,12 @@ export function ActivityIcon({
   size?: "sm" | "md";
 }) {
   const Icon = ACTIVITY_ICONS[type] ?? MessageSquareText;
-  const tone = ACTIVITY_TONES[type] ?? ACTIVITY_TONES.note;
   return (
     <span
       className={cn(
         "flex shrink-0 items-center justify-center rounded-full",
         size === "sm" ? "size-6 [&_svg]:size-3" : "size-8 [&_svg]:size-4",
-        tone.className,
+        ACTIVITY_TONE,
         className,
       )}
     >

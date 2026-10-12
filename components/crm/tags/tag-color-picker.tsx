@@ -75,9 +75,7 @@ export function TagColorSwatches({
         ))}
       </div>
       <div className="grid gap-1.5">
-        <Label htmlFor="tag-hex" className="text-muted-foreground text-xs">
-          {t("colorPicker.customHex")}
-        </Label>
+        <Label htmlFor="tag-hex">{t("colorPicker.customHex")}</Label>
         <Input
           id="tag-hex"
           value={hex}
@@ -91,9 +89,7 @@ export function TagColorSwatches({
           aria-invalid={!hexValid}
           className="h-8 font-mono text-sm"
         />
-        {!hexValid ? (
-          <p className="text-[11px] text-rose-600">{t("colorPicker.invalidHex")}</p>
-        ) : null}
+        {!hexValid ? <p className="text-xs text-red-500">{t("colorPicker.invalidHex")}</p> : null}
       </div>
     </div>
   );

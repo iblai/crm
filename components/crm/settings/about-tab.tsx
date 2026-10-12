@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
   BookOpen,
@@ -22,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAccountSheet } from "@/components/crm/account-sheet";
 import { useAdminMode } from "@/components/crm/admin-mode";
 import { useSession } from "@/hooks/use-session";
 import { isUnnamedTenant, tenantDisplayName } from "@/lib/iblai/tenant";
@@ -29,17 +29,18 @@ import config from "@/lib/iblai/config";
 
 // `name` is the platform's seeded role name, so it stays untranslated.
 const ROLES = [
-  { id: "viewer", name: "CRM Viewer", icon: Eye, tone: "bg-gray-100 text-gray-600" },
-  { id: "user", name: "CRM User", icon: Users, tone: "bg-[#eef6fc] text-[#0058cc]" },
-  { id: "manager", name: "CRM Manager", icon: ShieldCheck, tone: "bg-violet-50 text-violet-600" },
-  { id: "inviter", name: "CRM Inviter", icon: Mail, tone: "bg-amber-50 text-amber-600" },
+  { id: "viewer", name: "CRM Viewer", icon: Eye },
+  { id: "user", name: "CRM User", icon: Users },
+  { id: "manager", name: "CRM Manager", icon: ShieldCheck },
+  { id: "inviter", name: "CRM Inviter", icon: Mail },
 ] as const;
 
 export function AboutTab() {
   const t = useTranslations("settings.about");
   const tc = useTranslations("common");
+  const { openTab } = useAccountSheet();
   const ts = useTranslations("shell");
-  const { tenantKey, currentTenant, href } = useSession();
+  const { tenantKey, currentTenant } = useSession();
   const { adminMode } = useAdminMode();
   const apiBase = `${config.dmUrl()}/api/crm/`;
 
@@ -112,7 +113,7 @@ export function AboutTab() {
             {t("rolesTitle")}
           </h3>
           {adminMode ? (
-            <Button variant="outline" size="sm" render={<Link href={href("/admin/users")} />}>
+            <Button variant="outline" size="sm" onClick={() => openTab("management")}>
               <ShieldCheck data-icon="inline-start" /> {t("manageRoles")}
             </Button>
           ) : null}
@@ -120,8 +121,8 @@ export function AboutTab() {
         <Table>
           <TableHeader>
             <TableRow className="bg-[#fafbfc]">
-              <TableHead className="text-muted-foreground text-xs">{t("role")}</TableHead>
-              <TableHead className="text-muted-foreground text-xs">{t("mandate")}</TableHead>
+              <TableHead>{t("role")}</TableHead>
+              <TableHead>{t("mandate")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -129,9 +130,7 @@ export function AboutTab() {
               <TableRow key={role.name}>
                 <TableCell className="py-2 align-top">
                   <span className="flex items-center gap-2 text-sm font-medium whitespace-nowrap text-gray-900">
-                    <span
-                      className={`flex size-6 items-center justify-center rounded-md ${role.tone}`}
-                    >
+                    <span className="flex size-6 items-center justify-center rounded-md bg-gray-100 text-gray-600">
                       <role.icon className="size-3.5" strokeWidth={1.75} />
                     </span>
                     {role.name}

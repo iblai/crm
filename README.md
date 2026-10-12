@@ -123,7 +123,7 @@ The native apps are [Tauri 2](https://tauri.app) WebView shells around the hoste
 **🏢 Operate & scale**
 
 - **Multi-organization** — the organization is in the URL (`/platform/<org>/…`); switch between every organization you belong to from the profile menu
-- **SSO & roles** — ibl.ai sign-in; CRM Viewer / User / Manager / Inviter roles assigned on the Users & roles page (the SDK's Management surface)
+- **SSO & roles** — ibl.ai sign-in; CRM Viewer / User / Manager / Inviter roles assigned in the sidebar's Management dialog (the SDK's Management surface)
 - **Notifications** — person created, deal stage changed, person linked to user — in the bell and the notifications center
 - **⌘K** — one server-side search across people, organizations and deals; jump anywhere; create anything
 - **Native shells** — macOS, Windows, Linux and iOS via Tauri 2; Android and published builds coming soon
@@ -265,8 +265,7 @@ crm/
 │   │   ├── deals/                        # kanban · table · deal page
 │   │   ├── activities/ · tags/           # timeline work · labels
 │   │   ├── settings/                     # pipelines · stages · lead sources
-│   │   ├── notifications/[[...id]]/      # SDK NotificationDisplay
-│   │   └── admin/users/                  # SDK Account → Management (roles)
+│   │   └── notifications/[[...id]]/      # SDK NotificationDisplay
 │   ├── sso-login-complete/               # SSO landing (outside the providers)
 │   ├── mobile-sso-login/                 # native deep-link landing
 │   └── api/auth-redirect/                # same-origin hop to the Auth SPA

@@ -50,6 +50,12 @@
       "spec": "journeys/shell.journey.spec.ts"
     },
     {
+      "id": "S6",
+      "journey": "shell",
+      "name": "footer Management opens the Management dialog, not a page",
+      "spec": "journeys/shell.journey.spec.ts"
+    },
+    {
       "id": "C1",
       "journey": "crm",
       "name": "create a person and open its page",

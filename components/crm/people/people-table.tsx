@@ -18,7 +18,7 @@ export type PersonColumn = "organization" | "job_title" | "owner" | "tags" | "cr
 const ALL_COLUMNS: PersonColumn[] = ["organization", "job_title", "owner", "tags", "created"];
 
 const th =
-  "h-9 whitespace-nowrap px-4 text-left text-xs font-medium tracking-wide text-muted-foreground";
+  "h-9 whitespace-nowrap px-4 text-left text-[11px] font-semibold tracking-wide text-muted-foreground uppercase";
 const td = "px-4 py-2 align-middle";
 
 /**

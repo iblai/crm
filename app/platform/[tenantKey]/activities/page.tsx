@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CalendarCheck2, ChevronDown, ChevronRight, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Spinner } from "@iblai/iblai-js/web-containers";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -252,9 +253,7 @@ function ActivitiesView() {
               aria-label={t("list.rangeLabel")}
             />
 
-            {isFetching && !isLoading ? (
-              <span className="text-muted-foreground text-xs">{t("list.refreshing")}</span>
-            ) : null}
+            {isFetching && !isLoading ? <Spinner size="sm" /> : null}
           </>
         }
       />

@@ -17,20 +17,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TagChip } from "@/components/crm/tag-chip";
+import { TAG_PALETTE } from "@/components/crm/tags/tag-color-picker";
 import { errorMessage, useCreateTagMutation, useListTagsQuery } from "@/lib/crm/api";
 import type { TagChip as TagChipType } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
-
-const NEW_TAG_COLORS = [
-  "#0058cc",
-  "#00b0ef",
-  "#7c3aed",
-  "#db2777",
-  "#ea580c",
-  "#059669",
-  "#0891b2",
-  "#f59e0b",
-];
 
 /**
  * Tag chips for a record plus a picker to attach existing tags or create a
@@ -75,7 +65,7 @@ export function TagPicker({
     const name = query.trim();
     if (!name) return;
     try {
-      const color = NEW_TAG_COLORS[all.length % NEW_TAG_COLORS.length];
+      const color = TAG_PALETTE[all.length % TAG_PALETTE.length];
       const tag = await createTag({ name, color }).unwrap();
       await onAttach(tag.id);
       setQuery("");

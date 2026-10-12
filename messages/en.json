@@ -64,7 +64,6 @@
       "openHint": "Open — still to do",
       "paginationLabel": "activities",
       "rangeLabel": "Date range",
-      "refreshing": "Refreshing…",
       "scopeLabel": "Owner scope",
       "statusLabel": "Status"
     },
@@ -120,22 +119,12 @@
     "typeHint": "Notes are logged as done; calls, meetings and tasks can be scheduled",
     "typeLabel": "Activity type"
   },
-  "admin": {
-    "users": {
-      "description": "Members, groups, roles and policies of this organization — including the CRM Viewer, User, Manager and Inviter roles",
-      "invite": "Invite user",
-      "pendingInvites": "Pending invites",
-      "title": "Users & roles"
-    }
-  },
   "auth": {
     "completingSignIn": "Completing sign-in…"
   },
   "breadcrumbs": {
-    "admin": "Admin",
     "label": "Breadcrumb",
-    "notifications": "Notifications",
-    "users": "Users & roles"
+    "notifications": "Notifications"
   },
   "common": {
     "admin": "Admin",

@@ -64,7 +64,6 @@
       "openHint": "进行中：尚待完成",
       "paginationLabel": "活动",
       "rangeLabel": "日期范围",
-      "refreshing": "刷新中…",
       "scopeLabel": "负责人范围",
       "statusLabel": "状态"
     },
@@ -120,22 +119,12 @@
     "typeHint": "备注记录为已完成；电话、会议和任务可以安排时间",
     "typeLabel": "活动类型"
   },
-  "admin": {
-    "users": {
-      "description": "本组织的成员、群组、角色和策略，包括 CRM Viewer、User、Manager 和 Inviter 角色",
-      "invite": "邀请用户",
-      "pendingInvites": "待处理的邀请",
-      "title": "用户与角色"
-    }
-  },
   "auth": {
     "completingSignIn": "正在完成登录…"
   },
   "breadcrumbs": {
-    "admin": "管理",
     "label": "面包屑导航",
-    "notifications": "通知",
-    "users": "用户与角色"
+    "notifications": "通知"
   },
   "common": {
     "admin": "管理员",

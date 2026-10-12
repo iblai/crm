@@ -12,7 +12,7 @@ import type { Address, Organization } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
 
 const th =
-  "h-9 whitespace-nowrap px-4 text-left text-xs font-medium tracking-wide text-muted-foreground border-b border-[var(--border-color,#e5e7eb)]";
+  "h-9 whitespace-nowrap px-4 text-left text-[11px] font-semibold tracking-wide text-muted-foreground uppercase border-b border-[var(--border-color,#e5e7eb)]";
 const td = "border-b border-gray-100 px-4 py-2 align-middle";
 
 /** "City, Country" — the one-line location we show in the grid. */

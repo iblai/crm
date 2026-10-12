@@ -97,7 +97,7 @@ export function StageStepper({
               {typeof stage.probability === "number" && !terminalWon && !terminalLost ? (
                 <span
                   className={cn(
-                    "text-[10px] tabular-nums",
+                    "text-[11px] tabular-nums",
                     isCurrent ? "text-white/70" : "text-gray-400",
                   )}
                 >

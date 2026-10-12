@@ -64,7 +64,6 @@
       "openHint": "Abierto: aún pendiente",
       "paginationLabel": "actividades",
       "rangeLabel": "Rango de fechas",
-      "refreshing": "Actualizando…",
       "scopeLabel": "Ámbito del responsable",
       "statusLabel": "Estado"
     },
@@ -120,22 +119,12 @@
     "typeHint": "Las notas se registran como hechas; las llamadas, reuniones y tareas se pueden programar",
     "typeLabel": "Tipo de actividad"
   },
-  "admin": {
-    "users": {
-      "description": "Miembros, grupos, roles y políticas de esta organización, incluidos los roles CRM Viewer, User, Manager e Inviter",
-      "invite": "Invitar usuario",
-      "pendingInvites": "Invitaciones pendientes",
-      "title": "Usuarios y roles"
-    }
-  },
   "auth": {
     "completingSignIn": "Completando el inicio de sesión…"
   },
   "breadcrumbs": {
-    "admin": "Administración",
     "label": "Ruta de navegación",
-    "notifications": "Notificaciones",
-    "users": "Usuarios y roles"
+    "notifications": "Notificaciones"
   },
   "common": {
     "admin": "Administrador",

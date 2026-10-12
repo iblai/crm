@@ -12,6 +12,17 @@ async function gotoHome(page: import("@playwright/test").Page) {
   return decodeURIComponent(page.url().match(/\/platform\/([^/?#]+)/)![1]);
 }
 
+function isAdminOf(page: import("@playwright/test").Page, org: string) {
+  return page.evaluate((key) => {
+    try {
+      return !!JSON.parse(localStorage.getItem("tenants") ?? "[]").find((t: any) => t.key === key)
+        ?.is_admin;
+    } catch {
+      return false;
+    }
+  }, org);
+}
+
 test.describe("shell journey", () => {
   test("S1 · the sidebar reaches every workspace object", async ({ page }) => {
     const org = await gotoHome(page);
@@ -76,14 +87,7 @@ test.describe("shell journey", () => {
 
   test("S4 · a member (or an admin in User mode) never sees Settings", async ({ page }) => {
     const org = await gotoHome(page);
-    const isAdmin = await page.evaluate((key) => {
-      try {
-        return !!JSON.parse(localStorage.getItem("tenants") ?? "[]").find((t: any) => t.key === key)
-          ?.is_admin;
-      } catch {
-        return false;
-      }
-    }, org);
+    const isAdmin = await isAdminOf(page, org);
     if (isAdmin) {
       await expect(page.getByRole("button", { name: "Settings", exact: true })).toBeVisible({
         timeout: 10_000,
@@ -100,5 +104,18 @@ test.describe("shell journey", () => {
         timeout: 15_000,
       },
     );
+  });
+
+  test("S6 · the footer's Management opens the Management dialog, not a page", async ({ page }) => {
+    const org = await gotoHome(page);
+    test.skip(!(await isAdminOf(page, org)), "the Management row is admin-only");
+    await page.getByRole("button", { name: "Management", exact: true }).click();
+    await expect(
+      page.getByRole("dialog").getByRole("heading", { name: "Management", exact: true }),
+    ).toBeVisible({ timeout: 15_000 });
+    expect(new URL(page.url()).pathname.replace(/\/$/, "")).toBe(
+      `/platform/${encodeURIComponent(org)}`,
+    );
+    await page.keyboard.press("Escape");
   });
 });

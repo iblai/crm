@@ -178,7 +178,7 @@ export function PipelinesTab() {
                     {p.name}
                   </span>
                   {p.is_default ? (
-                    <span className="rounded-full bg-[#0058cc]/10 px-1.5 py-px text-[10px] font-semibold text-[#0058cc]">
+                    <span className="rounded-full bg-[#0058cc]/10 px-1.5 py-px text-[11px] font-semibold text-[#0058cc]">
                       {t("pipelines.default")}
                     </span>
                   ) : null}
@@ -686,9 +686,7 @@ function PipelineDialog({
 
         <div className="grid gap-3.5 px-4 pb-4">
           <div className="grid gap-1.5">
-            <Label htmlFor="pipeline-name" className="text-muted-foreground text-xs">
-              {tc("name")}
-            </Label>
+            <Label htmlFor="pipeline-name">{tc("name")}</Label>
             <Input
               id="pipeline-name"
               value={name}
@@ -702,9 +700,7 @@ function PipelineDialog({
             />
           </div>
           <div className="grid gap-1.5">
-            <Label htmlFor="pipeline-code" className="text-muted-foreground text-xs">
-              {t("code")}
-            </Label>
+            <Label htmlFor="pipeline-code">{t("code")}</Label>
             <Input
               id="pipeline-code"
               value={code}
@@ -830,9 +826,7 @@ function AddStageDialog({
 
         <div className="grid gap-3.5 px-4 pb-4">
           <div className="grid gap-1.5">
-            <Label htmlFor="stage-name" className="text-muted-foreground text-xs">
-              {tc("name")}
-            </Label>
+            <Label htmlFor="stage-name">{tc("name")}</Label>
             <Input
               id="stage-name"
               value={name}
@@ -846,9 +840,7 @@ function AddStageDialog({
             />
           </div>
           <div className="grid gap-1.5">
-            <Label htmlFor="stage-code" className="text-muted-foreground text-xs">
-              {t("code")}
-            </Label>
+            <Label htmlFor="stage-code">{t("code")}</Label>
             <Input
               id="stage-code"
               value={code}
@@ -863,9 +855,7 @@ function AddStageDialog({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1.5">
-              <Label htmlFor="stage-probability" className="text-muted-foreground text-xs">
-                {t("stages.probability")}
-              </Label>
+              <Label htmlFor="stage-probability">{t("stages.probability")}</Label>
               <Input
                 id="stage-probability"
                 type="number"
@@ -877,7 +867,7 @@ function AddStageDialog({
               />
             </div>
             <div className="grid gap-1.5">
-              <Label className="text-muted-foreground text-xs">{t("stages.outcome")}</Label>
+              <Label>{t("stages.outcome")}</Label>
               <SimpleSelect
                 value={terminal}
                 onChange={(v) => setTerminal(v as Terminal)}

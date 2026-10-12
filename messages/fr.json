@@ -64,7 +64,6 @@
       "openHint": "Ouvert — encore à faire",
       "paginationLabel": "activités",
       "rangeLabel": "Plage de dates",
-      "refreshing": "Actualisation…",
       "scopeLabel": "Portée par responsable",
       "statusLabel": "Statut"
     },
@@ -120,22 +119,12 @@
     "typeHint": "Les notes sont consignées comme terminées ; les appels, réunions et tâches peuvent être planifiés",
     "typeLabel": "Type d’activité"
   },
-  "admin": {
-    "users": {
-      "description": "Membres, groupes, rôles et politiques de cette organisation — y compris les rôles CRM Viewer, User, Manager et Inviter",
-      "invite": "Inviter un utilisateur",
-      "pendingInvites": "Invitations en attente",
-      "title": "Utilisateurs et rôles"
-    }
-  },
   "auth": {
     "completingSignIn": "Finalisation de la connexion…"
   },
   "breadcrumbs": {
-    "admin": "Administration",
     "label": "Fil d’Ariane",
-    "notifications": "Notifications",
-    "users": "Utilisateurs et rôles"
+    "notifications": "Notifications"
   },
   "common": {
     "admin": "Administrateur",

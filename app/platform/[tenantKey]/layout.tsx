@@ -4,11 +4,12 @@ import { useEffect, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { SidebarInset, SidebarProvider } from "@iblai/iblai-js/web-containers/next";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AccountSheetProvider } from "@/components/crm/account-sheet";
 import { AppSidebar } from "@/components/crm/app-sidebar";
 import { TopBar } from "@/components/crm/top-bar";
 import { BreadcrumbProvider } from "@/components/crm/breadcrumbs";
 import { CommandPaletteProvider } from "@/components/crm/command-palette";
-import { AdminModeProvider, useAdminMode, useCanManageCrm } from "@/components/crm/admin-mode";
+import { AdminModeProvider, useCanManageCrm } from "@/components/crm/admin-mode";
 import { LanguagePreferenceSync } from "@/components/language-preference-sync";
 import { LoadingScreen } from "@/components/loading-screen";
 import { useSession } from "@/hooks/use-session";
@@ -35,48 +36,45 @@ export default function TenantLayout({ children }: { children: ReactNode }) {
     <AdminModeProvider isAdmin={isAdmin}>
       <LanguagePreferenceSync />
       <TooltipProvider>
-        <CommandPaletteProvider>
-          <BreadcrumbProvider>
-            <div className="flex min-h-dvh flex-col bg-white md:h-dvh md:overflow-hidden">
-              <SidebarProvider defaultOpen={sidebarOpen} className="min-h-0 flex-1">
-                <AppSidebar />
-                <SidebarInset
-                  asChild
-                  className="flex min-h-0 w-full flex-1 flex-col bg-[var(--sidebar-bg,#fafbfc)] md:overflow-hidden"
-                >
-                  <div>
-                    <TopBar />
-                    <AdminGate>
-                      <main
-                        id="main-content"
-                        className="flex min-h-0 flex-1 flex-col md:overflow-hidden"
-                      >
-                        {children}
-                      </main>
-                    </AdminGate>
-                  </div>
-                </SidebarInset>
-              </SidebarProvider>
-            </div>
-          </BreadcrumbProvider>
-        </CommandPaletteProvider>
+        <AccountSheetProvider>
+          <CommandPaletteProvider>
+            <BreadcrumbProvider>
+              <div className="flex min-h-dvh flex-col bg-white md:h-dvh md:overflow-hidden">
+                <SidebarProvider defaultOpen={sidebarOpen} className="min-h-0 flex-1">
+                  <AppSidebar />
+                  <SidebarInset
+                    asChild
+                    className="flex min-h-0 w-full flex-1 flex-col bg-[var(--sidebar-bg,#fafbfc)] md:overflow-hidden"
+                  >
+                    <div>
+                      <TopBar />
+                      <AdminGate>
+                        <main
+                          id="main-content"
+                          className="flex min-h-0 flex-1 flex-col md:overflow-hidden"
+                        >
+                          {children}
+                        </main>
+                      </AdminGate>
+                    </div>
+                  </SidebarInset>
+                </SidebarProvider>
+              </div>
+            </BreadcrumbProvider>
+          </CommandPaletteProvider>
+        </AccountSheetProvider>
       </TooltipProvider>
     </AdminModeProvider>
   );
 }
 
-/** `/admin/*` is for org admins in Admin mode; `/settings` also opens to CRM Managers. */
+/** `/settings` opens to org admins in Admin mode and to CRM Managers. */
 function AdminGate({ children }: { children: ReactNode }) {
-  const { adminMode } = useAdminMode();
   const canManage = useCanManageCrm();
   const pathname = usePathname() ?? "";
   const router = useRouter();
   const { href } = useSession();
-  const allowed = /\/platform\/[^/]+\/admin(\/|$)/.test(pathname)
-    ? adminMode
-    : /\/platform\/[^/]+\/settings(\/|$)/.test(pathname)
-      ? canManage
-      : true;
+  const allowed = /\/platform\/[^/]+\/settings(\/|$)/.test(pathname) ? canManage : true;
 
   useEffect(() => {
     if (!allowed) router.replace(href());

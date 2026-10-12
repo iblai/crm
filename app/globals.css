@@ -84,3 +84,8 @@
     @apply font-sans;
   }
 }
+
+/* Lucide's default stroke renders at the house 1.75; explicit widths stay. */
+.lucide[stroke-width="2"] {
+  stroke-width: 1.75;
+}

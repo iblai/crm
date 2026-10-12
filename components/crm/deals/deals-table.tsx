@@ -68,13 +68,7 @@ export function DealsTable({
         <TableHeader>
           <TableRow className="bg-gray-50/70 hover:bg-gray-50/70">
             {HEAD.map((h) => (
-              <TableHead
-                key={h}
-                className={cn(
-                  "text-[11px] font-semibold tracking-wide text-muted-foreground uppercase",
-                  h === "value" && "text-right",
-                )}
-              >
+              <TableHead key={h} className={h === "value" ? "text-right" : undefined}>
                 {h === "owner" || h === "tags" || h === "created" ? tc(h) : t(`fields.${h}`)}
               </TableHead>
             ))}

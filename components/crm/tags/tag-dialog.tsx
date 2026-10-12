@@ -76,9 +76,7 @@ export function TagDialog({
 
         <div className="grid gap-4 px-4 pb-4">
           <div className="grid gap-1.5">
-            <Label htmlFor="tag-name" className="text-muted-foreground text-xs">
-              {tc("name")}
-            </Label>
+            <Label htmlFor="tag-name">{tc("name")}</Label>
             <Input
               id="tag-name"
               value={name}
@@ -94,12 +92,12 @@ export function TagDialog({
               aria-invalid={touched && nameMissing}
             />
             {touched && nameMissing ? (
-              <p className="text-[11px] text-rose-600">{t("dialog.nameRequired")}</p>
+              <p className="text-xs text-red-500">{t("dialog.nameRequired")}</p>
             ) : null}
           </div>
 
           <div className="grid gap-2">
-            <Label className="text-muted-foreground text-xs">{t("dialog.colorLabel")}</Label>
+            <Label>{t("dialog.colorLabel")}</Label>
             <TagColorSwatches color={color} onChange={setPicked} />
           </div>
 
