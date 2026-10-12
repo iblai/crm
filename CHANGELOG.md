@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.0](https://github.com/iblai/crm/compare/v1.3.0...v1.4.0) (2026-10-12)
+
+### Features
+
+* Management in the account dialog as in the OS, and the vibe house style ([4de006d](https://github.com/iblai/crm/commit/4de006d6289bd7854f261ec7f10b2d56baded5dd))
+
 ## [1.3.0](https://github.com/iblai/crm/compare/v1.2.0...v1.3.0) (2026-10-09)
 
 ### Features
