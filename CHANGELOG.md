@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.5.0](https://github.com/iblai/crm/compare/v1.4.0...v1.5.0) (2026-10-27)
+
+### Features
+
+* OS-shaped e2e with generated accounts and 17 journeys; User mode kept per organization ([2959dd4](https://github.com/iblai/crm/commit/2959dd4d8d557402ae790b30081dd3a6c08bf2c5))
+
 ## [1.4.0](https://github.com/iblai/crm/compare/v1.3.0...v1.4.0) (2026-10-12)
 
 ### Features
