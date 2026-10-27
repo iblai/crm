@@ -945,7 +945,7 @@
   },
   "shell": {
     "adminMode": "管理员模式",
-    "adminModeHint": "管理员模式会显示“设置”和“用户与角色”；用户模式即成员看到的界面",
+    "adminModeHint": "管理员模式会显示“设置”和“管理”；用户模式即成员看到的界面",
     "members": {
       "unassigned": "未分配",
       "user": "用户 {id}",

@@ -945,7 +945,7 @@
   },
   "shell": {
     "adminMode": "Mode administrateur",
-    "adminModeHint": "Le mode administrateur affiche Paramètres et Utilisateurs et rôles ; le mode utilisateur correspond à ce que voient les membres",
+    "adminModeHint": "Le mode administrateur affiche Paramètres et Gestion ; le mode utilisateur correspond à ce que voient les membres",
     "members": {
       "unassigned": "Non attribué",
       "user": "Utilisateur {id}",

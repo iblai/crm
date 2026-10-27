@@ -1,143 +1,814 @@
 {
-  "version": 1,
-  "checkpoints": [
+  "version": 2,
+  "lastUpdated": "2026-10-28",
+  "summary": {
+    "totalCheckpoints": 105,
+    "coveredCheckpoints": 105,
+    "pendingCheckpoints": 0,
+    "deprecatedCheckpoints": 0,
+    "percent": 100,
+    "totalJourneys": 17,
+    "activeJourneys": 17
+  },
+  "journeys": [
     {
-      "id": "A1",
-      "journey": "auth",
-      "name": "authenticated user lands on their organization's home",
-      "spec": "journeys/auth.journey.spec.ts"
+      "id": "authentication",
+      "name": "Authentication",
+      "spec": "01-authentication.spec.ts",
+      "sourceFiles": [
+        "app/page.tsx",
+        "app/join/page.tsx",
+        "app/error/[code]/page.tsx",
+        "app/mobile-sso-login/page.tsx",
+        "app/api/auth-redirect/route.ts",
+        "providers/iblai-providers.tsx",
+        "lib/iblai/auth-utils.ts",
+        "lib/iblai/auth-redirect.ts",
+        "lib/iblai/tenant.ts",
+        "components/notice-card.tsx"
+      ],
+      "checkpoints": [
+        {
+          "id": "auth-01",
+          "description": "admin opens the app root and lands on the organization's home",
+          "status": "covered"
+        },
+        {
+          "id": "auth-02",
+          "description": "the sign-in stored both tokens and the organization list",
+          "status": "covered"
+        },
+        {
+          "id": "auth-03",
+          "description": "the URL's organization is the session's current organization",
+          "status": "covered"
+        },
+        {
+          "id": "auth-04",
+          "description": "a visitor without a session is sent to the Auth SPA with a way back",
+          "status": "covered"
+        },
+        {
+          "id": "auth-05",
+          "description": "/join shows the create-your-organization notice",
+          "status": "covered"
+        },
+        {
+          "id": "auth-06",
+          "description": "the 403 and 404 pages name the problem and offer a way home",
+          "status": "covered"
+        },
+        {
+          "id": "auth-07",
+          "description": "an unknown error code falls back to the generic title",
+          "status": "covered"
+        },
+        {
+          "id": "auth-08",
+          "description": "the auth-redirect hop refuses any target but the Auth SPA",
+          "status": "covered"
+        },
+        {
+          "id": "auth-09",
+          "description": "a malformed native sign-in payload lands on the 400 page",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "A2",
-      "journey": "auth",
-      "name": "auth tokens and the organization list are stored",
-      "spec": "journeys/auth.journey.spec.ts"
+      "id": "shell-navigation",
+      "name": "Shell and Navigation",
+      "spec": "02-shell-navigation.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/layout.tsx",
+        "components/crm/app-sidebar.tsx",
+        "components/crm/nav-row.tsx",
+        "components/crm/top-bar.tsx",
+        "components/crm/breadcrumbs.tsx",
+        "components/crm/user-menu.tsx",
+        "components/crm/language-menu.tsx",
+        "components/crm/admin-mode.tsx",
+        "components/crm/admin-mode-switch.tsx",
+        "components/crm/account-sheet.tsx",
+        "components/crm/page-header.tsx",
+        "components/language-preference-sync.tsx",
+        "lib/locale-cookie.ts"
+      ],
+      "checkpoints": [
+        {
+          "id": "nav-01",
+          "description": "admin clicks every sidebar row and reaches its page",
+          "status": "covered"
+        },
+        {
+          "id": "nav-02",
+          "description": "the breadcrumb roots at the organization and ends at the page",
+          "status": "covered"
+        },
+        {
+          "id": "nav-03",
+          "description": "admin collapses the sidebar to the rail and expands it back",
+          "status": "covered"
+        },
+        {
+          "id": "nav-04",
+          "description": "the profile menu offers Profile, Account and Log Out",
+          "status": "covered"
+        },
+        {
+          "id": "nav-05",
+          "description": "admin switches the language to Spanish and back",
+          "status": "covered"
+        },
+        {
+          "id": "nav-06",
+          "description": "User mode hides Settings and Management, survives a reload and bounces /settings home",
+          "status": "covered"
+        },
+        {
+          "id": "nav-07",
+          "description": "the footer's Management opens the Management dialog, not a page",
+          "status": "covered"
+        },
+        {
+          "id": "nav-08",
+          "description": "the footer's Integrations and Advanced open their dialogs and Support links out",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "A3",
-      "journey": "auth",
-      "name": "URL organization matches the session organization",
-      "spec": "journeys/auth.journey.spec.ts"
+      "id": "command-palette",
+      "name": "Command Palette",
+      "spec": "03-command-palette.spec.ts",
+      "sourceFiles": ["components/crm/command-palette.tsx"],
+      "checkpoints": [
+        {
+          "id": "pal-01",
+          "description": "⌘K opens the palette with the search focused",
+          "status": "covered"
+        },
+        {
+          "id": "pal-02",
+          "description": "the Go to group reaches People",
+          "status": "covered"
+        },
+        {
+          "id": "pal-03",
+          "description": "the New person item opens the dialog, which creates the person",
+          "status": "covered"
+        },
+        {
+          "id": "pal-04",
+          "description": "typing a name finds the person through server search and opens it",
+          "status": "covered"
+        },
+        {
+          "id": "pal-05",
+          "description": "a query that matches nothing lists no record groups",
+          "status": "covered"
+        },
+        {
+          "id": "pal-06",
+          "description": "Escape closes the palette",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "S1",
-      "journey": "shell",
-      "name": "sidebar reaches every workspace object",
-      "spec": "journeys/shell.journey.spec.ts"
+      "id": "people",
+      "name": "People",
+      "spec": "04-people.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/people/page.tsx",
+        "app/platform/[tenantKey]/people/[id]/page.tsx",
+        "components/crm/people/people-table.tsx",
+        "components/crm/people/person-dialog.tsx",
+        "components/crm/people/person-invite-dialog.tsx",
+        "components/crm/people/person-link-user-dialog.tsx",
+        "components/crm/people/person-merge-dialog.tsx",
+        "components/crm/people/deals-mini-table.tsx",
+        "components/crm/people/crm-error.ts",
+        "components/crm/inline-field.tsx",
+        "components/crm/history-tab.tsx",
+        "components/crm/favorite-button.tsx",
+        "components/crm/favorites-section.tsx",
+        "components/crm/tag-picker.tsx",
+        "components/crm/tag-chip.tsx",
+        "components/crm/pagination-bar.tsx",
+        "components/crm/confirm-dialog.tsx",
+        "components/crm/badges.tsx",
+        "components/crm/entity-avatar.tsx",
+        "components/crm/owner-select.tsx"
+      ],
+      "checkpoints": [
+        {
+          "id": "ppl-01",
+          "description": "admin creates a person and lands on the record",
+          "status": "covered"
+        },
+        {
+          "id": "ppl-02",
+          "description": "the People list finds the person and its row opens the record",
+          "status": "covered"
+        },
+        {
+          "id": "ppl-03",
+          "description": "an inline edit of the job title shows up in the History tab",
+          "status": "covered"
+        },
+        {
+          "id": "ppl-04",
+          "description": "starring the person lists it under the sidebar's Favorites",
+          "status": "covered"
+        },
+        {
+          "id": "ppl-05",
+          "description": "the lifecycle select moves the person to Qualified",
+          "status": "covered"
+        },
+        {
+          "id": "ppl-06",
+          "description": "the tag picker creates a tag and attaches it",
+          "status": "covered"
+        },
+        {
+          "id": "ppl-07",
+          "description": "Invite to platform needs an email, then opens the invitation confirm",
+          "status": "covered"
+        },
+        {
+          "id": "ppl-08",
+          "description": "More actions offers link, merge and delete; Link to user opens its dialog",
+          "status": "covered"
+        },
+        {
+          "id": "ppl-09",
+          "description": "merging a duplicate folds it into the person",
+          "status": "covered"
+        },
+        {
+          "id": "ppl-10",
+          "description": "a person with a deal cannot be deleted until the deal goes",
+          "status": "covered"
+        },
+        {
+          "id": "ppl-11",
+          "description": "the pagination bar counts the matching people",
+          "status": "covered"
+        },
+        {
+          "id": "ppl-12",
+          "description": "admin deletes the person and the list no longer finds them",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "S2",
-      "journey": "shell",
-      "name": "⌘K opens the command palette",
-      "spec": "journeys/shell.journey.spec.ts"
+      "id": "organizations",
+      "name": "Organizations",
+      "spec": "05-organizations.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/organizations/page.tsx",
+        "app/platform/[tenantKey]/organizations/[id]/page.tsx",
+        "components/crm/organizations/organization-dialog.tsx",
+        "components/crm/organizations/organizations-table.tsx",
+        "components/crm/activity-timeline.tsx",
+        "components/crm/search-picker.tsx"
+      ],
+      "checkpoints": [
+        {
+          "id": "org-01",
+          "description": "admin creates an organization and lands on the record",
+          "status": "covered"
+        },
+        {
+          "id": "org-02",
+          "description": "the Organizations list finds it and its row opens the record",
+          "status": "covered"
+        },
+        {
+          "id": "org-03",
+          "description": "Add person creates a contact attached to the organization",
+          "status": "covered"
+        },
+        {
+          "id": "org-04",
+          "description": "a timeline note lands in the history and the History tab lists the creation",
+          "status": "covered"
+        },
+        {
+          "id": "org-05",
+          "description": "the street is edited inline",
+          "status": "covered"
+        },
+        {
+          "id": "org-06",
+          "description": "the Deals tab opens a deal for the organization's contact and lists it",
+          "status": "covered"
+        },
+        {
+          "id": "org-07",
+          "description": "admin deletes the organization",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "S3",
-      "journey": "shell",
-      "name": "profile menu names the current organization and switches",
-      "spec": "journeys/shell.journey.spec.ts"
+      "id": "deals",
+      "name": "Deals",
+      "spec": "06-deals.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/deals/page.tsx",
+        "app/platform/[tenantKey]/deals/[id]/page.tsx",
+        "components/crm/deals/deal-dialog.tsx",
+        "components/crm/deals/deal-board.tsx",
+        "components/crm/deals/deal-card.tsx",
+        "components/crm/deals/deals-table.tsx",
+        "components/crm/deals/lost-dialog.tsx",
+        "components/crm/deals/stage-stepper.tsx",
+        "components/crm/deals/owner-avatar.tsx",
+        "components/crm/deals/owner-filter.tsx",
+        "components/crm/deals/use-lookups.ts"
+      ],
+      "checkpoints": [
+        {
+          "id": "deal-01",
+          "description": "admin creates a deal for a person from the Deals page",
+          "status": "covered"
+        },
+        {
+          "id": "deal-02",
+          "description": "the board shows the new deal in the first stage",
+          "status": "covered"
+        },
+        {
+          "id": "deal-03",
+          "description": "the card's menu moves the deal to the next stage",
+          "status": "covered"
+        },
+        {
+          "id": "deal-04",
+          "description": "the Table layout lists the deal and the choice survives a reload",
+          "status": "covered"
+        },
+        {
+          "id": "deal-05",
+          "description": "the deal page moves, loses, reopens and wins the deal",
+          "status": "covered"
+        },
+        {
+          "id": "deal-06",
+          "description": "the Activity tab logs a call on the deal",
+          "status": "covered"
+        },
+        {
+          "id": "deal-07",
+          "description": "the History tab records the stage changes",
+          "status": "covered"
+        },
+        {
+          "id": "deal-08",
+          "description": "the board's owner filter narrows the request",
+          "status": "covered"
+        },
+        {
+          "id": "deal-09",
+          "description": "admin deletes the deal",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "S4",
-      "journey": "shell",
-      "name": "Settings hidden outside Admin mode; /settings redirects home",
-      "spec": "journeys/shell.journey.spec.ts"
+      "id": "activities",
+      "name": "Activities",
+      "spec": "07-activities.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/activities/page.tsx",
+        "components/crm/activities/activity-dialog.tsx",
+        "components/crm/activity-icon.tsx",
+        "lib/crm/activities.ts"
+      ],
+      "checkpoints": [
+        {
+          "id": "act-01",
+          "description": "admin schedules a task for a person from the Activities page",
+          "status": "covered"
+        },
+        {
+          "id": "act-02",
+          "description": "the task is listed under Upcoming for tomorrow",
+          "status": "covered"
+        },
+        {
+          "id": "act-03",
+          "description": "the owner scope switches between Mine and Everyone",
+          "status": "covered"
+        },
+        {
+          "id": "act-04",
+          "description": "the status filter asks for done, open or every activity",
+          "status": "covered"
+        },
+        {
+          "id": "act-05",
+          "description": "the date range narrows the schedule window",
+          "status": "covered"
+        },
+        {
+          "id": "act-06",
+          "description": "the dashboard's Up next lists the task",
+          "status": "covered"
+        },
+        {
+          "id": "act-07",
+          "description": "the row's Edit button renames the task",
+          "status": "covered"
+        },
+        {
+          "id": "act-08",
+          "description": "Mark as done moves the task to the Done section",
+          "status": "covered"
+        },
+        {
+          "id": "act-09",
+          "description": "admin deletes the task",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "S5",
-      "journey": "shell",
-      "name": "home period select asks the overview for that window",
-      "spec": "journeys/shell.journey.spec.ts"
+      "id": "tags",
+      "name": "Tags",
+      "spec": "08-tags.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/tags/page.tsx",
+        "components/crm/tags/tag-dialog.tsx",
+        "components/crm/tags/tag-color-picker.tsx"
+      ],
+      "checkpoints": [
+        {
+          "id": "tag-01",
+          "description": "admin creates a tag from the Tags page",
+          "status": "covered"
+        },
+        {
+          "id": "tag-02",
+          "description": "the search finds the tag and says when nothing matches",
+          "status": "covered"
+        },
+        {
+          "id": "tag-03",
+          "description": "the colour picker recolours the tag",
+          "status": "covered"
+        },
+        {
+          "id": "tag-04",
+          "description": "the People list filters by the tag",
+          "status": "covered"
+        },
+        {
+          "id": "tag-05",
+          "description": "admin deletes the tag",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "S6",
-      "journey": "shell",
-      "name": "footer Management opens the Management dialog, not a page",
-      "spec": "journeys/shell.journey.spec.ts"
+      "id": "saved-views",
+      "name": "Saved Views",
+      "spec": "09-saved-views.spec.ts",
+      "sourceFiles": [
+        "components/crm/view-bar.tsx",
+        "components/crm/simple-select.tsx",
+        "lib/crm/views.ts"
+      ],
+      "checkpoints": [
+        {
+          "id": "view-01",
+          "description": "admin sorts by name and saves the list as a view",
+          "status": "covered"
+        },
+        {
+          "id": "view-02",
+          "description": "switching to All clears the sort and the view brings it back",
+          "status": "covered"
+        },
+        {
+          "id": "view-03",
+          "description": "a lifecycle filter is saved into the view",
+          "status": "covered"
+        },
+        {
+          "id": "view-04",
+          "description": "the Columns picker hides the job title column",
+          "status": "covered"
+        },
+        {
+          "id": "view-05",
+          "description": "Clear filters drops the filter chips",
+          "status": "covered"
+        },
+        {
+          "id": "view-06",
+          "description": "admin deletes the view",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "C1",
-      "journey": "crm",
-      "name": "create a person and open its page",
-      "spec": "journeys/crm.journey.spec.ts"
+      "id": "settings",
+      "name": "Settings",
+      "spec": "10-settings.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/settings/page.tsx",
+        "components/crm/settings/pipelines-tab.tsx",
+        "components/crm/settings/lead-sources-tab.tsx",
+        "components/crm/settings/about-tab.tsx",
+        "components/crm/settings/utils.ts",
+        "lib/crm/permissions.ts"
+      ],
+      "checkpoints": [
+        {
+          "id": "set-01",
+          "description": "the tabs switch with the ?tab= query",
+          "status": "covered"
+        },
+        {
+          "id": "set-02",
+          "description": "admin creates a pipeline and adds two stages",
+          "status": "covered"
+        },
+        {
+          "id": "set-03",
+          "description": "Make default marks the pipeline and the original is restored",
+          "status": "covered"
+        },
+        {
+          "id": "set-04",
+          "description": "admin deletes a stage",
+          "status": "covered"
+        },
+        {
+          "id": "set-05",
+          "description": "admin deletes the pipeline",
+          "status": "covered"
+        },
+        {
+          "id": "set-06",
+          "description": "admin creates and deletes a lead source",
+          "status": "covered"
+        },
+        {
+          "id": "set-07",
+          "description": "About shows the organization key and the CRM roles, and Manage roles opens Management",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "C2",
-      "journey": "crm",
-      "name": "create an organization and see it in the list",
-      "spec": "journeys/crm.journey.spec.ts"
+      "id": "dashboard",
+      "name": "Home Dashboard",
+      "spec": "11-dashboard.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/page.tsx",
+        "components/crm/dashboard/deals-by-stage-chart.tsx",
+        "components/crm/dashboard/onboarding-card.tsx",
+        "components/crm/dashboard/panel.tsx",
+        "components/crm/dashboard/recent-lists.tsx",
+        "components/crm/dashboard/up-next-list.tsx",
+        "components/crm/dashboard/use-dashboard-data.ts",
+        "components/crm/dashboard/won-lost-chart.tsx",
+        "components/crm/stat-card.tsx",
+        "components/crm/info-tip.tsx"
+      ],
+      "checkpoints": [
+        {
+          "id": "dash-01",
+          "description": "admin sees the six stat cards",
+          "status": "covered"
+        },
+        {
+          "id": "dash-02",
+          "description": "the period select asks the overview for that window",
+          "status": "covered"
+        },
+        {
+          "id": "dash-03",
+          "description": "the header actions open the deal, activity and person dialogs",
+          "status": "covered"
+        },
+        {
+          "id": "dash-04",
+          "description": "the panels render with their links",
+          "status": "covered"
+        },
+        {
+          "id": "dash-05",
+          "description": "an organization without records gets the onboarding card",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "C3",
-      "journey": "crm",
-      "name": "create a deal, see it on the kanban, mark it won",
-      "spec": "journeys/crm.journey.spec.ts"
+      "id": "notifications",
+      "name": "Notifications",
+      "spec": "12-notifications.spec.ts",
+      "sourceFiles": ["app/platform/[tenantKey]/notifications/[[...id]]/page.tsx"],
+      "checkpoints": [
+        {
+          "id": "notif-01",
+          "description": "the footer's Notifications opens the inbox page with the SDK panel",
+          "status": "covered"
+        },
+        {
+          "id": "notif-02",
+          "description": "the bell's dropdown links to the inbox",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "C4",
-      "journey": "crm",
-      "name": "log an activity on a person and mark it done",
-      "spec": "journeys/crm.journey.spec.ts"
+      "id": "member-view",
+      "name": "Member View",
+      "spec": "13-member-view.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/layout.tsx",
+        "components/crm/admin-mode-switch.tsx",
+        "lib/crm/permissions.ts"
+      ],
+      "checkpoints": [
+        {
+          "id": "mem-01",
+          "description": "member lands on home with the six rows",
+          "status": "covered"
+        },
+        {
+          "id": "mem-02",
+          "description": "member sees no Settings, no Admin mode switch and no Management",
+          "status": "covered"
+        },
+        {
+          "id": "mem-03",
+          "description": "/settings sends the member home",
+          "status": "covered"
+        },
+        {
+          "id": "mem-04",
+          "description": "member creates and deletes a person",
+          "status": "covered"
+        },
+        {
+          "id": "mem-05",
+          "description": "the member's profile menu has no Account item",
+          "status": "covered"
+        },
+        {
+          "id": "mem-06",
+          "description": "⌘K's Settings item bounces the member home",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "C5",
-      "journey": "crm",
-      "name": "create and delete a tag",
-      "spec": "journeys/crm.journey.spec.ts"
+      "id": "mobile-view",
+      "name": "Mobile View",
+      "spec": "14-mobile-view.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/page.tsx",
+        "app/platform/[tenantKey]/people/page.tsx",
+        "app/platform/[tenantKey]/organizations/page.tsx",
+        "app/platform/[tenantKey]/deals/page.tsx",
+        "app/platform/[tenantKey]/activities/page.tsx",
+        "app/platform/[tenantKey]/tags/page.tsx",
+        "app/platform/[tenantKey]/settings/page.tsx",
+        "app/platform/[tenantKey]/notifications/[[...id]]/page.tsx",
+        "components/crm/app-sidebar.tsx",
+        "components/crm/top-bar.tsx",
+        "components/crm/organizations/organization-dialog.tsx"
+      ],
+      "checkpoints": [
+        {
+          "id": "mob-01",
+          "description": "every page fits a phone without sideways overflow",
+          "status": "covered"
+        },
+        {
+          "id": "mob-02",
+          "description": "the sidebar sheet reaches People and closes",
+          "status": "covered"
+        },
+        {
+          "id": "mob-03",
+          "description": "the sheet's Search gives way to the search palette",
+          "status": "covered"
+        },
+        {
+          "id": "mob-04",
+          "description": "the dashboard actions are in view and open their dialog",
+          "status": "covered"
+        },
+        {
+          "id": "mob-05",
+          "description": "a tall dialog scrolls to its submit button on a short screen",
+          "status": "covered"
+        },
+        {
+          "id": "mob-06",
+          "description": "the home page scrolls as one document under a touch on its header",
+          "status": "covered"
+        },
+        {
+          "id": "mob-07",
+          "description": "the sheet carries the language select and the Admin mode switch",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "C6",
-      "journey": "crm",
-      "name": "log a note on an organization's timeline",
-      "spec": "journeys/crm.journey.spec.ts"
+      "id": "error-states",
+      "name": "Error States",
+      "spec": "15-error-states.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/people/[id]/page.tsx",
+        "app/platform/[tenantKey]/organizations/[id]/page.tsx",
+        "app/platform/[tenantKey]/deals/[id]/page.tsx",
+        "components/crm/empty-state.tsx",
+        "components/crm/load-error.tsx",
+        "lib/crm/api.ts",
+        "lib/crm/errors.ts"
+      ],
+      "checkpoints": [
+        {
+          "id": "err-01",
+          "description": "an unknown person shows the not-found state",
+          "status": "covered"
+        },
+        {
+          "id": "err-02",
+          "description": "an unknown organization shows the not-found state",
+          "status": "covered"
+        },
+        {
+          "id": "err-03",
+          "description": "an unknown deal shows Deal not found",
+          "status": "covered"
+        },
+        {
+          "id": "err-04",
+          "description": "a failing list and a refused write surface their messages",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "C7",
-      "journey": "crm",
-      "name": "star a person and find it under Favorites",
-      "spec": "journeys/crm.journey.spec.ts"
+      "id": "ui-render-console-errors",
+      "name": "UI Render Console Errors",
+      "spec": "16-ui-render-console-errors.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/page.tsx",
+        "app/platform/[tenantKey]/people/page.tsx",
+        "app/platform/[tenantKey]/organizations/page.tsx",
+        "app/platform/[tenantKey]/deals/page.tsx",
+        "app/platform/[tenantKey]/activities/page.tsx",
+        "app/platform/[tenantKey]/tags/page.tsx",
+        "app/platform/[tenantKey]/settings/page.tsx",
+        "app/platform/[tenantKey]/notifications/[[...id]]/page.tsx"
+      ],
+      "checkpoints": [
+        {
+          "id": "con-01",
+          "description": "every page renders for the admin without console errors",
+          "status": "covered"
+        },
+        {
+          "id": "con-02",
+          "description": "every page renders for the member without console errors",
+          "status": "covered"
+        }
+      ]
     },
     {
-      "id": "C8",
-      "journey": "crm",
-      "name": "save a People view and reopen it",
-      "spec": "journeys/crm.journey.spec.ts"
-    },
-    {
-      "id": "C9",
-      "journey": "crm",
-      "name": "a person's History tab lists a field change",
-      "spec": "journeys/crm.journey.spec.ts"
-    },
-    {
-      "id": "C10",
-      "journey": "crm",
-      "name": "⌘K finds the person through server search",
-      "spec": "journeys/crm.journey.spec.ts"
-    },
-    {
-      "id": "M1",
-      "journey": "responsive",
-      "name": "dashboard actions are in view on a phone and open their dialog",
-      "spec": "journeys/responsive.journey.spec.ts"
-    },
-    {
-      "id": "M2",
-      "journey": "responsive",
-      "name": "sidebar opens as a sheet on a phone and yields to the search palette",
-      "spec": "journeys/responsive.journey.spec.ts"
-    },
-    {
-      "id": "M3",
-      "journey": "responsive",
-      "name": "a tall dialog scrolls to its submit button on a short screen",
-      "spec": "journeys/responsive.journey.spec.ts"
-    },
-    {
-      "id": "M4",
-      "journey": "responsive",
-      "name": "the home page scrolls as one document under a touch on its header",
-      "spec": "journeys/responsive.journey.spec.ts"
+      "id": "accessibility-wcag",
+      "name": "Accessibility",
+      "spec": "17-accessibility-wcag.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/page.tsx",
+        "app/platform/[tenantKey]/people/page.tsx",
+        "app/platform/[tenantKey]/organizations/page.tsx",
+        "app/platform/[tenantKey]/deals/page.tsx",
+        "app/platform/[tenantKey]/activities/page.tsx",
+        "app/platform/[tenantKey]/tags/page.tsx",
+        "app/platform/[tenantKey]/settings/page.tsx",
+        "app/platform/[tenantKey]/notifications/[[...id]]/page.tsx"
+      ],
+      "checkpoints": [
+        {
+          "id": "a11y-01",
+          "description": "every page has no serious or critical axe violations",
+          "status": "covered"
+        }
+      ]
     }
   ]
 }

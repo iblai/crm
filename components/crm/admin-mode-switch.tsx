@@ -29,7 +29,7 @@ export function AdminModeSwitch({ className }: { className?: string }) {
               checked={adminMode}
               onCheckedChange={(on: boolean) => {
                 setAdminMode(on);
-                if (!on && /\/(admin|settings)(\/|$)/.test(pathname)) router.push(href());
+                if (!on && /\/settings(\/|$)/.test(pathname)) router.push(href());
               }}
               aria-label={t("adminMode")}
               className="data-[checked]:bg-[#0058cc]"

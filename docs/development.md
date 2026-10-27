@@ -101,8 +101,22 @@ under `lib/` at 85 % lines (`vitest.config.ts`).
 
 Then open the page you touched and take a screenshot for the PR.
 `pnpm screenshots` regenerates the README captures in `docs/images/` from the
-Playwright session (`pnpm exec playwright test --config e2e/playwright.config.ts --project=setup-chromium` once,
-with your credentials in `e2e/.env.development`).
+Playwright session (`pnpm e2e:accounts`, then
+`pnpm exec playwright test --config e2e/playwright.config.ts --project=setup-chromium` once).
+
+## E2E journeys
+
+The Playwright suite (`e2e/`, see [its README](../e2e/README.md)) has the OS's shape:
+numbered journeys, page objects, a coverage registry with a checker, two signed-in
+accounts. The accounts live in a **throwaway organization, never `main`**: run
+`/iblai-vibe-connect` from an empty directory with `--origin http://localhost:3000`
+(from this root it would rewrite `NEXT_PUBLIC_MAIN_TENANT_KEY`), pick the organization
+on the connect page, move its `iblai.env` here, then `pnpm e2e:accounts` once and
+`pnpm test:e2e` against `pnpm dev`. The member account holds the CRM User role, which
+the accounts script grants: without it the CRM sends a member to registration. Every
+record the journeys create is `E2E`-prefixed and `e2e/utils/residue.ts` deletes them
+when the run ends. `pnpm e2e:coverage` fails on a page no journey names and on a
+checkpoint id that is in `e2e/coverage.json` but heads no test, or the reverse.
 
 ## Release
 

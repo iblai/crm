@@ -945,7 +945,7 @@
   },
   "shell": {
     "adminMode": "Admin mode",
-    "adminModeHint": "Admin mode shows Settings and Users & roles; User mode is what members see",
+    "adminModeHint": "Admin mode shows Settings and Management; User mode is what members see",
     "members": {
       "unassigned": "Unassigned",
       "user": "User {id}",

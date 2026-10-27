@@ -2,7 +2,7 @@
 /**
  * Capture the README screenshots (docs/images/*.png) from a signed-in session.
  *
- * 1. Put your credentials in e2e/.env.development (copy the example).
+ * 1. pnpm e2e:accounts — once; it creates the test accounts in the throwaway organization iblai.env names.
  * 2. Run the auth setup once:  pnpm exec playwright test --config e2e/playwright.config.ts --project=setup-chromium
  * 3. pnpm screenshots --org <demo-org-key> [--host http://localhost:3000]
  *

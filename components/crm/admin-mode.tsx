@@ -23,18 +23,26 @@ const AdminModeContext = createContext<AdminMode>({
   setAdminMode: () => {},
 });
 
+/** The User choice is kept per organization so a reload does not flip back to Admin. */
+const userModeKey = (tenantKey: string) => `crm:user-mode:${tenantKey}`;
+
 export function AdminModeProvider({
   isAdmin,
+  tenantKey,
   children,
 }: {
   isAdmin: boolean;
+  tenantKey: string;
   children: ReactNode;
 }) {
-  const [mode, setMode] = useState(true);
+  const [mode, setMode] = useState(() => localStorage.getItem(userModeKey(tenantKey)) !== "1");
+  const setAdminMode = (on: boolean) => {
+    setMode(on);
+    if (on) localStorage.removeItem(userModeKey(tenantKey));
+    else localStorage.setItem(userModeKey(tenantKey), "1");
+  };
   return (
-    <AdminModeContext.Provider
-      value={{ isAdmin, adminMode: isAdmin && mode, setAdminMode: setMode }}
-    >
+    <AdminModeContext.Provider value={{ isAdmin, adminMode: isAdmin && mode, setAdminMode }}>
       {children}
     </AdminModeContext.Provider>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Handshake } from "lucide-react";
 import { useTranslations, type Messages } from "next-intl";
@@ -87,9 +87,16 @@ export function DealDialog({
     skip: !open || !defaultPerson,
   });
 
-  // Reset to the defaults each time the dialog opens.
+  // Reset to the defaults once per opening: the defaults settle after the lookups
+  // arrive, and a second reset would wipe what the user has typed since.
+  const reset = useRef(false);
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      reset.current = false;
+      return;
+    }
+    if (reset.current) return;
+    reset.current = true;
     setTitle("");
     setPersonId(defaultPerson ?? "");
     setOrganizationId(defaultOrganization ?? "");

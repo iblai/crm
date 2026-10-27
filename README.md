@@ -175,7 +175,9 @@ Node.js 22+ and pnpm 12 (`corepack enable` picks the pinned version up from `pac
 | `pnpm format`        | oxfmt (`pnpm format:check` in CI)                                                                       |
 | `pnpm i18n:check`    | Same keys in the four catalogs; no “tenant”, no “company”, no ASCII apostrophe                          |
 | `pnpm test`          | Vitest unit tests (`pnpm test:coverage` in CI: 85 % lines on `lib/`)                                    |
-| `pnpm test:e2e`      | Playwright journeys (needs `e2e/.env.development`)                                                      |
+| `pnpm test:e2e`      | Playwright journeys, Chromium and a phone (`pnpm test:e2e:all` for every browser)                       |
+| `pnpm e2e:accounts`  | Once: the two e2e test accounts in the throwaway organization `iblai.env` names                         |
+| `pnpm e2e:coverage`  | The journey registry (`e2e/coverage.json`) against the specs and the app's pages                        |
 | `pnpm release`       | release-it: version from the commits, CHANGELOG, tag, GitHub Release (CI runs it on every push to main) |
 | `pnpm tauri dev`     | Desktop shell in dev mode (needs Rust)                                                                  |
 | `pnpm tauri build`   | Desktop installer for the current platform                                                              |
@@ -307,11 +309,13 @@ Ten Platform-scoped resources under `/dm/api/crm/`: persons, organizations, pipe
 pnpm test            # Vitest — formatting, saved views, tenant resolution, SSO landing, config
 pnpm i18n:check      # en / es / fr / zh catalogs carry the same keys and the house vocabulary
 pnpm test:coverage   # the unit tests with the coverage gate CI runs
-pnpm test:e2e        # Playwright journeys (copy e2e/.env.development.example first)
+pnpm e2e:accounts    # once: an admin and a CRM User member in the throwaway organization iblai.env names
+pnpm test:e2e        # Playwright journeys, Chromium + a phone (pnpm test:e2e:all for every browser)
 pnpm test:e2e:ui     # interactive UI mode
+pnpm e2e:coverage    # the journey registry against the specs and the app's pages
 ```
 
-The Playwright suite signs in once through the real Auth SPA (`e2e/auth.setup.ts`) and reuses the session across the journeys in `e2e/journeys/`.
+The Playwright suite has the OS's shape — numbered journeys in `e2e/journeys/`, page objects, a coverage registry (`e2e/coverage.json`, `e2e/COVERAGE.md`) with a checker — and signs in once per browser through the real Auth SPA (`e2e/auth.setup.ts`) as the two accounts `pnpm e2e:accounts` creates in a throwaway organization, never `main`. Get that organization's `iblai.env` from `/iblai-vibe-connect` run from an empty directory with `--origin http://localhost:3000` and move it here. Every record the journeys create is `E2E`-prefixed and swept at the end of the run. See [`e2e/README.md`](e2e/README.md).
 
 ---
 
