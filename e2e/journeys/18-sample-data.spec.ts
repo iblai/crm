@@ -144,7 +144,7 @@ test.describe("Journey 18: Sample Data — the community organization", () => {
     // Answered here, so the run never reaches the checkout.
     await memberPage.route(/credits-free-plan/, (route) => {
       checkout = route.request().url();
-      return route.fulfill({ status: 204, body: "" });
+      return route.fulfill({ contentType: "text/html", body: "<title>checkout stub</title>" });
     });
     await onMain(memberPage);
     await memberPage

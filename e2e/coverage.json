@@ -2,8 +2,8 @@
   "version": 2,
   "lastUpdated": "2026-10-30",
   "summary": {
-    "totalCheckpoints": 112,
-    "coveredCheckpoints": 112,
+    "totalCheckpoints": 113,
+    "coveredCheckpoints": 113,
     "pendingCheckpoints": 0,
     "deprecatedCheckpoints": 0,
     "percent": 100,
@@ -76,6 +76,11 @@
         {
           "id": "auth-10",
           "description": "/join's Create your organization opens the $0 checkout that returns to this app",
+          "status": "covered"
+        },
+        {
+          "id": "auth-11",
+          "description": "back from the $0 checkout on the community organization's session, the SDK moves the admin to their own",
           "status": "covered"
         }
       ]

@@ -1,6 +1,6 @@
 # ibl.ai/crm E2E coverage — user journey checklist
 
-> Last updated: 2026-10-30 | 112 checkpoints (112 covered, 0 pending, 0 deprecated) | 18 journeys | 100% covered | Auth: admin + member storageState
+> Last updated: 2026-10-30 | 113 checkpoints (113 covered, 0 pending, 0 deprecated) | 18 journeys | 100% covered | Auth: admin + member storageState
 
 ## How this works
 
@@ -22,7 +22,7 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 
 ---
 
-## Journey 1: Authentication (10 checkpoints) — `journeys/01-authentication.spec.ts`
+## Journey 1: Authentication (11 checkpoints) — `journeys/01-authentication.spec.ts`
 
 **Source files:** `app/page.tsx`, `app/join/page.tsx`, `app/error/[code]/page.tsx`, `app/mobile-sso-login/page.tsx`, `app/api/auth-redirect/route.ts`, `providers/iblai-providers.tsx`, `lib/iblai/auth-utils.ts`, `lib/iblai/auth-redirect.ts`, `lib/iblai/tenant.ts`, `components/notice-card.tsx`
 
@@ -36,6 +36,7 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 - [x] auth-08 the auth-redirect hop refuses any target but the Auth SPA
 - [x] auth-09 a malformed native sign-in payload lands on the 400 page
 - [x] auth-10 /join's Create your organization opens the $0 checkout that returns to this app
+- [x] auth-11 back from the $0 checkout on the community organization's session, the SDK moves the admin to their own
 
 ---
 

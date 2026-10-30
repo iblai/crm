@@ -9,6 +9,10 @@ import { test, expect } from "../fixtures/crm-test";
 import { APP_HOST } from "../fixtures/test-data";
 import { gotoHome, orgFromUrl } from "../utils/app";
 
+const MAIN = process.env.NEXT_PUBLIC_MAIN_TENANT_KEY || "main";
+// Answers a navigation the test only inspects; a 204 never commits, and a click waits for it.
+const stub = { contentType: "text/html", body: "<title>stub</title>" };
+
 test.describe("Journey 1: Authentication — Admin", () => {
   test("auth-01: admin opens the app root and lands on the organization's home", async ({
     page,
@@ -67,6 +71,27 @@ test.describe("Journey 1: Authentication — Admin", () => {
     await page.waitForURL(/\/error\/400/, { timeout: 30_000 });
     await expect(page.getByRole("heading", { level: 1, name: "Bad request" })).toBeVisible();
   });
+
+  test("auth-11: back from the $0 checkout on the community organization's session, the SDK moves the admin to their own", async ({
+    page,
+  }) => {
+    await page.route(/\/login\/complete\?/, (route) => route.fulfill(stub));
+    const own = await gotoHome(page);
+    const keys = await page.evaluate(() =>
+      (JSON.parse(localStorage.getItem("tenants") ?? "[]") as { key: string }[]).map((t) => t.key),
+    );
+    // The SDK's two-organization rule: a user holding exactly [main, X] is moved to X.
+    expect(keys.sort()).toEqual([MAIN, own].sort());
+    await page.evaluate((main) => {
+      const entry = { key: main, org: main, platform_name: "ibl.ai", is_admin: false };
+      localStorage.setItem("tenant", main);
+      localStorage.setItem("current_tenant", JSON.stringify(entry));
+      localStorage.setItem("tenants", JSON.stringify([entry]));
+    }, MAIN);
+    await page.goto(APP_HOST);
+    await page.waitForURL(/\/login\/complete\?/, { timeout: 30_000 });
+    expect(new URL(page.url()).searchParams.get("tenant")).toBe(own);
+  });
 });
 
 test.describe("Journey 1: Authentication — Unauthenticated", () => {
@@ -101,7 +126,7 @@ test.describe("Journey 1: Authentication — Unauthenticated", () => {
     // Answered here, so the run never reaches the checkout.
     await page.route(/credits-free-plan/, (route) => {
       checkout = route.request().url();
-      return route.fulfill({ status: 204, body: "" });
+      return route.fulfill(stub);
     });
     await page.goto(`${APP_HOST}/join`);
     await page.getByRole("button", { name: "Create your organization" }).click();
