@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.1](https://github.com/iblai/crm/compare/v1.6.0...v1.6.1) (2026-10-30)
+
+### Tests
+
+* page stubs for the checkouts and auth-11 for the checkout's return ([38cd23d](https://github.com/iblai/crm/commit/38cd23dfbae8b2c6e862abfd3621361950fd77e8))
+
 ## [1.6.0](https://github.com/iblai/crm/compare/v1.5.0...v1.6.0) (2026-10-30)
 
 ### Features
