@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.7.0](https://github.com/iblai/crm/compare/v1.6.1...v1.7.0) (2026-10-30)
+
+### Features
+
+* add the SIS's house journeys and main's sample for everyone, with crm/main's open fixes ([9488f75](https://github.com/iblai/crm/commit/9488f755c3070aad8f2969cc9871a83930069e51))
+
 ## [1.6.1](https://github.com/iblai/crm/compare/v1.6.0...v1.6.1) (2026-10-30)
 
 ### Tests
