@@ -1,5 +1,4 @@
 # ibl.ai/crm E2E coverage — user journey checklist
-
 > Last updated: 2026-10-31 | 130 checkpoints (130 covered, 0 pending, 0 deprecated) | 19 journeys | 100% covered | Auth: admin + member storageState
 
 ## How this works
