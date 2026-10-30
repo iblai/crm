@@ -163,7 +163,7 @@ export default function OrganizationsPage() {
               page={page}
               pageSize={PAGE_SIZE}
               onPageChange={setPage}
-              label={t("list.paginationLabel")}
+              label={t("list.paginationLabel", { count: data?.count ?? 0 })}
             />
           </div>
         )}

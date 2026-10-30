@@ -10,19 +10,22 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { UserMenu } from "@/components/crm/user-menu";
 import { AdminModeSwitch } from "@/components/crm/admin-mode-switch";
+import { useAdminMode } from "@/components/crm/admin-mode";
+import { CreditBadge } from "@/components/house/credit-badge";
 import { LanguageMenu } from "@/components/crm/language-menu";
 import { Breadcrumbs } from "@/components/crm/breadcrumbs";
 import { useSession } from "@/hooks/use-session";
 
 /**
  * The top bar — the OS's navbar shape (h-16, white, `#D0E0FF` hairline):
- * sidebar toggle + breadcrumbs on the left; Admin switch, the SDK
- * notification bell and the SDK profile dropdown on the right.
+ * sidebar toggle + breadcrumbs on the left; the credit badge, Admin switch,
+ * the SDK notification bell and the SDK profile dropdown on the right.
  */
 export function TopBar() {
   const t = useTranslations("shell");
   const router = useRouter();
   const { tenantKey, username, isAdmin, href } = useSession();
+  const { adminMode } = useAdminMode();
   const { toggleSidebar, isMobile } = useSidebar();
 
   const handleViewNotifications = useCallback(
@@ -33,7 +36,7 @@ export function TopBar() {
   );
 
   return (
-    <header className="z-10 flex h-14 shrink-0 items-center justify-between border-b border-[#D0E0FF] bg-white pr-3 pl-2 md:h-16 md:pr-4">
+    <header className="z-10 flex h-14 shrink-0 items-center justify-between gap-3 border-b border-[#D0E0FF] bg-white pr-3 pl-2 md:h-16 md:pr-4">
       <div className="flex min-w-0 items-center gap-1">
         <Tooltip>
           <TooltipTrigger
@@ -54,6 +57,11 @@ export function TopBar() {
         <Breadcrumbs />
       </div>
       <div className="flex items-center gap-3 md:gap-5">
+        <CreditBadge
+          org={tenantKey}
+          isLiveAdmin={isAdmin && adminMode}
+          className="hidden md:flex"
+        />
         <AdminModeSwitch className="hidden md:flex" />
         <LanguageMenu className="hidden items-center gap-1 md:flex" />
         {tenantKey && username ? (

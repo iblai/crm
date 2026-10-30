@@ -276,7 +276,7 @@ function DealsPageContent() {
             page={page}
             pageSize={PAGE_SIZE}
             onPageChange={setPage}
-            label={t("list.paginationLabel")}
+            label={t("list.paginationLabel", { count: tableDeals?.count ?? 0 })}
           />
         </div>
       )}

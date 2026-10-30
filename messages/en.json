@@ -62,7 +62,7 @@
       "mineHint": "Mine — activities you own",
       "newHint": "Log a call or note, or schedule a task or meeting",
       "openHint": "Open — still to do",
-      "paginationLabel": "activities",
+      "paginationLabel": "{count, plural, one {activity} other {activities}}",
       "rangeLabel": "Date range",
       "scopeLabel": "Owner scope",
       "statusLabel": "Status"
@@ -236,7 +236,7 @@
       "emptyTitle": "No organizations yet",
       "noMatchFilters": "No organizations match these filters",
       "noMatchFiltersHint": "Try a different name, owner or tag.",
-      "paginationLabel": "organizations",
+      "paginationLabel": "{count, plural, one {organization} other {organizations}}",
       "searchLabel": "Search organizations",
       "searchPlaceholder": "Search organizations by name…"
     },
@@ -466,7 +466,7 @@
       "kanbanView": "Kanban view",
       "newHint": "Open a deal for a person; it starts in the first stage",
       "noMatches": "No deals match these filters.",
-      "paginationLabel": "deals",
+      "paginationLabel": "{count, plural, one {deal} other {deals}}",
       "searchLabel": "Search deals by title",
       "searchPlaceholder": "Search deals…",
       "tableView": "Table view",
@@ -801,7 +801,7 @@
       "noMatchFiltersHint": "Try a different lifecycle stage, owner or tag.",
       "noMatchSearch": "No one matches “{query}”",
       "noMatchSearchHint": "Search looks at every person’s name, email, title and external id. Try another spelling or clear the search.",
-      "paginationLabel": "people",
+      "paginationLabel": "{count, plural, one {person} other {people}}",
       "searchLabel": "Search people",
       "searchPlaceholder": "Search by name, email, title…"
     },
@@ -954,10 +954,7 @@
     "organization": "Organization",
     "switchedBack": "You can’t see CRM data in {from}, so you’re in {to} now.",
     "toggleSidebar": "Toggle sidebar",
-    "toggleSidebarHint": "Collapse or expand the sidebar (⌘B)",
-    "sample": {
-      "body": "You’re looking at sample data: fictional people, organizations and deals. Your own organization starts empty and is yours to run."
-    }
+    "toggleSidebarHint": "Collapse or expand the sidebar (⌘B)"
   },
   "tags": {
     "card": {
@@ -996,7 +993,7 @@
     },
     "newTag": "New tag",
     "newTagHint": "Create a label you can attach to people, organizations and deals",
-    "paginationLabel": "tags",
+    "paginationLabel": "{count, plural, one {tag} other {tags}}",
     "searchLabel": "Search tags",
     "searchPlaceholder": "Search tags…"
   },
@@ -1030,5 +1027,28 @@
     "updateView": "Update view",
     "updated": "View “{name}” updated",
     "yes": "Yes"
+  },
+  "houseJourneys": {
+    "preview": {
+      "body": "You’re not a member of {name} yet. Join it, or create a platform of your own.",
+      "join": "Join {name}",
+      "create": "Create Your Own Platform",
+      "back": "Back to My Platform"
+    },
+    "onboarding": {
+      "meetTitle": "Meet {name}",
+      "meetBody": "Your platform’s agent is ready whenever you are.",
+      "allSetTitle": "You’re All Set",
+      "allSetBody": "{workspace} is ready. Head in.",
+      "allSetMember": "Thanks — your platform has what it needs. Head in.",
+      "workspace": "Your Platform",
+      "continue": "Continue",
+      "complete": "Complete",
+      "back": "Back"
+    },
+    "sample": {
+      "body": "You’re looking at sample data: fictional people, organizations and deals. Your own platform starts empty and is yours to run.",
+      "create": "Create Your Platform"
+    }
   }
 }

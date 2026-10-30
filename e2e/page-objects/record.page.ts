@@ -155,10 +155,10 @@ export class RecordPage {
     await d.getByRole("button", { name: "Mark lost", exact: true }).click();
   }
 
-  /** Reopen a closed deal; it confirms with the stage dialog's "Move". */
+  /** Reopen a closed deal; the stage dialog confirms with "Reopen". */
   async reopenDeal() {
     await this.reopen.click();
-    await confirm(this.page, "Move");
+    await confirm(this.page, "Reopen");
   }
 
   async removeDeal() {

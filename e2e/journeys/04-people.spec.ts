@@ -173,7 +173,7 @@ test.describe("Journey 4: People — Admin", () => {
     const people = lists("people");
     await people.goto();
     await people.searchFor(name);
-    await expect(people.pagination).toHaveText(/^1–\d+ of \d+ people$/, { timeout: 30_000 });
+    await expect(people.pagination).toHaveText("1–1 of 1 person", { timeout: 30_000 });
     await expect(people.main.getByText(/^Page 1 of \d+$/)).toBeVisible();
   });
 

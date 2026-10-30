@@ -4,13 +4,19 @@ import { useLocale, useTranslations } from "next-intl";
 import { History } from "lucide-react";
 import { EmptyState } from "@/components/crm/empty-state";
 import { LoadError } from "@/components/crm/load-error";
+import { useDealLookups } from "@/components/crm/deals/use-lookups";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useMemberLabel, useMembers } from "@/hooks/use-members";
+import { useSession } from "@/hooks/use-session";
 import {
   useDealHistoryQuery,
+  useGetOrganizationQuery,
+  useGetPersonQuery,
   useOrganizationHistoryQuery,
   usePersonHistoryQuery,
 } from "@/lib/crm/api";
-import { formatDateTime, formatRelative } from "@/lib/crm/format";
+import { formatDateTime, formatHistoryValue, formatRelative } from "@/lib/crm/format";
+import { useCrmEnums } from "@/lib/crm/i18n";
 import type { HistoryEntry } from "@/lib/crm/types";
 
 type Props =
@@ -34,32 +40,54 @@ function useHistory(props: Props) {
 }
 
 type FieldNamespace = "persons" | "organizations" | "deals";
+type Names = Partial<Record<string, (value: string) => string | undefined>>;
+
+/** A linked person or organization by name, or its id once it is gone. */
+function LinkedName({ field, id }: { field: "person" | "organization"; id: string }) {
+  const person = useGetPersonQuery(id, { skip: field !== "person" });
+  const organization = useGetOrganizationQuery(id, { skip: field !== "organization" });
+  return <>{(field === "person" ? person.data?.name : organization.data?.name) ?? id}</>;
+}
+
+/** The DM keeps raw columns: codes, ids and UTC times read as the record shows them. */
+function Value({ field, value, names }: { field: string; value: string; names: Names }) {
+  const t = useTranslations("history");
+  const locale = useLocale();
+  const text = formatHistoryValue(value, locale, names[field]);
+  if (text === null) return <>{t("empty")}</>;
+  if (field === "person" || field === "organization")
+    return <LinkedName field={field} id={value} />;
+  return <>{text}</>;
+}
 
 function Diff({
   changes,
   ns,
+  names,
 }: {
   changes: NonNullable<HistoryEntry["changes"]>;
   ns: FieldNamespace;
+  names: Names;
 }) {
-  const t = useTranslations("history");
   const tf = useTranslations("fields");
   // The DM names columns; show the field label where one exists.
   const label = (field: string) => {
     const key = `${ns}.${field}` as never;
     return tf.has(key) ? tf(key) : field;
   };
-  // The DM renders a null as the string "None".
-  const show = (value: string) => (value && value !== "None" ? value : t("empty"));
   return (
     <dl className="mt-1 grid grid-cols-[minmax(0,10rem)_minmax(0,1fr)] gap-x-3 gap-y-0.5 text-xs">
       {Object.entries(changes).map(([field, [before, after]]) => (
         <div key={field} className="contents">
           <dt className="truncate text-[11px] text-gray-500">{label(field)}</dt>
           <dd className="min-w-0 text-gray-700">
-            <span className="text-gray-400 line-through">{show(before)}</span>{" "}
+            <span className="text-gray-400 line-through">
+              <Value field={field} value={before} names={names} />
+            </span>{" "}
             <span aria-hidden>→</span>{" "}
-            <span className="font-medium text-gray-900">{show(after)}</span>
+            <span className="font-medium text-gray-900">
+              <Value field={field} value={after} names={names} />
+            </span>
           </dd>
         </div>
       ))}
@@ -74,6 +102,19 @@ export function HistoryTab(props: Props) {
   const { data, isLoading, error } = useHistory(props);
   const ns: FieldNamespace =
     props.kind === "person" ? "persons" : props.kind === "organization" ? "organizations" : "deals";
+  const enums = useCrmEnums();
+  const { tenantKey } = useSession();
+  const lookups = useDealLookups({ skip: props.kind !== "deal" });
+  const { byId } = useMembers(tenantKey);
+  const memberLabel = useMemberLabel();
+  const names: Names = {
+    lifecycle_stage: enums.lifecycle,
+    status: enums.dealStatus,
+    stage: (v) => lookups.stageById.get(Number(v))?.name,
+    pipeline: (v) => lookups.pipelineById.get(Number(v))?.name,
+    source: (v) => lookups.sourceById.get(Number(v))?.name,
+    owner: (v) => memberLabel(byId.get(Number(v)), Number(v)),
+  };
 
   if (isLoading) {
     return (
@@ -110,7 +151,7 @@ export function HistoryTab(props: Props) {
             </time>
           </div>
           {entry.action === "update" && entry.changes ? (
-            <Diff changes={entry.changes} ns={ns} />
+            <Diff changes={entry.changes} ns={ns} names={names} />
           ) : null}
         </li>
       ))}

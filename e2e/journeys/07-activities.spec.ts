@@ -116,7 +116,8 @@ test.describe("Journey 7: Activities — Admin", () => {
       timeout: 20_000,
     });
     await activities.setStatus("Done");
-    await activities.doneToggle.click();
+    // Asking for Done opens the Done section.
+    await expect(activities.doneToggle).toHaveAttribute("aria-expanded", "true");
     await expect(
       activities.row(edited).getByRole("button", { name: "Mark as not done" }),
     ).toBeVisible({
@@ -127,7 +128,6 @@ test.describe("Journey 7: Activities — Admin", () => {
   test("act-09: admin deletes the task", async ({ activities, shell }) => {
     await activities.goto();
     await activities.setStatus("Done");
-    await activities.doneToggle.click();
     await activities.remove(edited);
     await expect(shell.toast("Activity deleted")).toBeVisible({ timeout: 20_000 });
     await expect(activities.row(edited)).toHaveCount(0);

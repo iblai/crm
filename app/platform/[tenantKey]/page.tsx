@@ -48,6 +48,8 @@ export default function HomePage() {
     value === undefined
       ? "—"
       : (compact ? formatCompactCurrency : formatCurrency)(Number(value), data.currency, locale);
+  // A panel shows its empty state only once its query has answered.
+  const panelSkeleton = <Skeleton className="h-40 w-full rounded-lg" />;
 
   return (
     <>
@@ -199,7 +201,11 @@ export default function HomePage() {
                   href={href("/deals")}
                   linkLabel={t("panels.byStage.link")}
                 >
-                  <DealsByStageChart data={data.stageBreakdown} currency={data.currency} />
+                  {data.isLoading ? (
+                    panelSkeleton
+                  ) : (
+                    <DealsByStageChart data={data.stageBreakdown} currency={data.currency} />
+                  )}
                 </Panel>
                 <Panel
                   title={t("panels.wonLost.title")}
@@ -207,7 +213,11 @@ export default function HomePage() {
                   info={t("panels.wonLost.info")}
                   description={t("panels.wonLost.description")}
                 >
-                  <WonLostChart data={data.wonLostByMonth} currency={data.currency} />
+                  {data.isLoading ? (
+                    panelSkeleton
+                  ) : (
+                    <WonLostChart data={data.wonLostByMonth} currency={data.currency} />
+                  )}
                 </Panel>
               </div>
 
@@ -220,7 +230,9 @@ export default function HomePage() {
                   description={t("panels.upNext.description")}
                   href={href("/activities")}
                 >
-                  {data.errors.upNext ? (
+                  {data.loading.upNext ? (
+                    panelSkeleton
+                  ) : data.errors.upNext ? (
                     <LoadError error={data.errors.upNext} />
                   ) : (
                     <UpNextList activities={data.upNext} />
@@ -228,14 +240,18 @@ export default function HomePage() {
                 </Panel>
                 <div className="grid min-w-0 gap-4">
                   <Panel title={t("panels.recentPeople.title")} href={href("/people")}>
-                    {data.errors.people ? (
+                    {data.loading.people ? (
+                      panelSkeleton
+                    ) : data.errors.people ? (
                       <LoadError error={data.errors.people} />
                     ) : (
                       <RecentPeopleList people={data.recentPeople} />
                     )}
                   </Panel>
                   <Panel title={t("panels.recentDeals.title")} href={href("/deals")}>
-                    {data.errors.deals ? (
+                    {data.loading.deals ? (
+                      panelSkeleton
+                    ) : data.errors.deals ? (
                       <LoadError error={data.errors.deals} />
                     ) : (
                       <RecentDealsList deals={data.recentDeals} />

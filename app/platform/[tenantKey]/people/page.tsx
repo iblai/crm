@@ -193,7 +193,7 @@ export default function PeoplePage() {
               page={page}
               pageSize={PAGE_SIZE}
               onPageChange={setPage}
-              label={t("list.paginationLabel")}
+              label={t("list.paginationLabel", { count: data?.count ?? 0 })}
             />
             {isFetching && !isLoading ? (
               <output className="sr-only">{t("list.loading")}</output>

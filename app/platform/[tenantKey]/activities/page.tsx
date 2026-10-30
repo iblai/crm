@@ -181,6 +181,8 @@ function ActivitiesView() {
               onValueChange={(v) => {
                 const next = (v[0] as Status) ?? status;
                 setStatus(next);
+                // Choosing Done opens the Done section; its header still folds it.
+                setShowDone(next === "done");
                 setPage(1);
               }}
               variant="outline"
@@ -316,7 +318,7 @@ function ActivitiesView() {
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}
-          label={t("list.paginationLabel")}
+          label={t("list.paginationLabel", { count: data?.count ?? 0 })}
         />
       </div>
 

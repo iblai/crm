@@ -25,11 +25,11 @@ const VIEW_FLAG = /^can_view_crm_/;
 export type Entry = "enter" | "sample" | "register" | { switchTo: string };
 
 /**
- * Where a signed-in user may work. `enter` while unknown (no organizations
- * stored, no flags for this platform) or when they can see CRM data here;
- * otherwise back to the organization they came from, or to one they
- * administer; with neither, ibl.ai registration — except on the community
- * organization `main`, where they browse the sample data instead.
+ * Where a signed-in user may work. On the community organization `main`
+ * everyone browses the sample data. Elsewhere `enter` while unknown (no
+ * organizations stored, no flags for this platform) or when they can see CRM
+ * data here; otherwise back to the organization they came from, or to one
+ * they administer; with neither, ibl.ai registration.
  */
 export function decideEntry(
   tenants: ReadonlyArray<{ key: string; is_admin?: boolean }>,
@@ -38,6 +38,7 @@ export function decideEntry(
   previous?: string | null,
   main?: string,
 ): Entry {
+  if (main && tenantKey === main) return "sample";
   const flags = (permissions as Record<string, Record<string, unknown> | undefined>)[
     `/platforms/${tenantKey}/`
   ];
@@ -49,9 +50,6 @@ export function decideEntry(
       ? previous
       : undefined;
   const target = back ?? tenants.find((t) => t.is_admin && t.key !== tenantKey)?.key;
-  if (main && tenantKey === main && !admin && !canView) {
-    return target ? { switchTo: target } : "sample";
-  }
   if (tenants.length === 0 || !flags || admin || canView) return "enter";
   return target ? { switchTo: target } : "register";
 }

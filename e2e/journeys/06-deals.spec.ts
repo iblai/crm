@@ -133,6 +133,10 @@ test.describe("Journey 6: Deals — Admin", () => {
     await expect(record.tabpanel.getByText("Stage", { exact: true }).first()).toBeVisible({
       timeout: 30_000,
     });
+    // The audit log keeps stage ids, status codes and UTC stamps; the tab reads them as the record does.
+    await expect(record.tabpanel).toContainText(`${stages[1]} → ${stages[0]}`);
+    await expect(record.tabpanel).toContainText("Open → Won");
+    await expect(record.tabpanel).not.toContainText(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/);
   });
 
   test("deal-08: the board's owner filter narrows the request", async ({ lists, page }) => {

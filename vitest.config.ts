@@ -17,6 +17,7 @@ export default defineConfig({
         "lib/crm/sample/respond.ts",
         "lib/crm/views.ts",
         "lib/iblai/tenant.ts",
+        "lib/iblai/house-journeys.ts",
         "lib/locale-cookie.ts",
         "i18n/config.ts",
       ],

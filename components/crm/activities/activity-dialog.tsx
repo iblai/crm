@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { format } from "date-fns";
 import { Briefcase, Building2, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -117,6 +117,7 @@ export function ActivityDialog({
   const saving = creating || updating;
 
   const [draft, setDraft] = useState<DraftState>(() => draftFrom(activity, userId));
+  const titleRef = useRef<HTMLInputElement>(null);
   const [touched, setTouched] = useState(false);
 
   useEffect(() => {
@@ -192,7 +193,10 @@ export function ActivityDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92dvh] gap-0 overflow-y-auto p-0 sm:max-w-xl">
+      <DialogContent
+        className="max-h-[92dvh] gap-0 overflow-y-auto p-0 sm:max-w-xl"
+        initialFocus={titleRef}
+      >
         <DialogHeader className="p-4 pb-3">
           <DialogTitle>{activity ? t("dialog.editTitle") : t("newActivity")}</DialogTitle>
           <DialogDescription>{t("dialog.description")}</DialogDescription>
@@ -231,6 +235,7 @@ export function ActivityDialog({
             <Label htmlFor="activity-title">{t("dialog.titleLabel")}</Label>
             <Input
               id="activity-title"
+              ref={titleRef}
               value={draft.title}
               onChange={(e) => set("title", e.target.value)}
               placeholder={t("dialog.titlePlaceholder")}

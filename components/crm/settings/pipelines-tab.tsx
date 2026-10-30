@@ -526,64 +526,70 @@ function StageRow({ stage, pipelineId }: { stage: PipelineStage; pipelineId: num
         />
       </div>
 
-      <span className="shrink-0 rounded-md bg-gray-100 px-1.5 py-0.5 font-mono text-[11px] text-gray-600">
-        {stage.code}
-      </span>
-
-      <div className="flex shrink-0 items-center gap-2">
-        <div className="w-14">
-          <InlineText
-            value={String(probability)}
-            type="number"
-            onSave={(v) => {
-              const n = Number(v);
-              if (!Number.isFinite(n)) return;
-              return patch({ probability: Math.max(0, Math.min(100, Math.round(n))) });
-            }}
-          />
-        </div>
-        <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
-          %<InfoTip label={t("stages.probabilityLabel")}>{t("stages.probabilityTip")}</InfoTip>
+      {/* The controls wrap as one group, so every row breaks at the same place. */}
+      <div className="ml-auto flex flex-wrap items-center justify-end gap-x-3 gap-y-2">
+        <span className="shrink-0 rounded-md bg-gray-100 px-1.5 py-0.5 font-mono text-[11px] text-gray-600">
+          {stage.code}
         </span>
-        <div className="h-1.5 w-20 overflow-hidden rounded-full bg-gray-100" aria-hidden>
-          <div className="h-full rounded-full bg-[#0058cc]" style={{ width: `${probability}%` }} />
-        </div>
-      </div>
 
-      <Tooltip>
-        <TooltipTrigger render={<div className="w-32 shrink-0" />}>
-          <SimpleSelect
-            value={terminal}
-            onChange={(v) => void patch(terminalBody(v as Terminal))}
-            options={terminalOptions}
-            size="sm"
-            aria-label={t("stages.outcomeOf", { name: stage.name })}
-          />
-        </TooltipTrigger>
-        <TooltipContent side="bottom">{t("stages.outcomeHint")}</TooltipContent>
-      </Tooltip>
-
-      <span className="hidden w-5 shrink-0 sm:block">
-        {terminal === "won" ? <CheckCircle2 className="size-4 text-emerald-500" /> : null}
-        {terminal === "lost" ? <XCircle className="size-4 text-rose-500" /> : null}
-      </span>
-
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="shrink-0 text-gray-400 hover:text-rose-600"
-              onClick={() => setConfirm(true)}
-              aria-label={t("stages.deleteLabel", { name: stage.name })}
+        <div className="flex shrink-0 items-center gap-2">
+          <div className="w-14">
+            <InlineText
+              value={String(probability)}
+              type="number"
+              onSave={(v) => {
+                const n = Number(v);
+                if (!Number.isFinite(n)) return;
+                return patch({ probability: Math.max(0, Math.min(100, Math.round(n))) });
+              }}
             />
-          }
-        >
-          <Trash2 />
-        </TooltipTrigger>
-        <TooltipContent side="left">{t("stages.deleteHint")}</TooltipContent>
-      </Tooltip>
+          </div>
+          <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
+            %<InfoTip label={t("stages.probabilityLabel")}>{t("stages.probabilityTip")}</InfoTip>
+          </span>
+          <div className="h-1.5 w-20 overflow-hidden rounded-full bg-gray-100" aria-hidden>
+            <div
+              className="h-full rounded-full bg-[#0058cc]"
+              style={{ width: `${probability}%` }}
+            />
+          </div>
+        </div>
+
+        <Tooltip>
+          <TooltipTrigger render={<div className="w-32 shrink-0" />}>
+            <SimpleSelect
+              value={terminal}
+              onChange={(v) => void patch(terminalBody(v as Terminal))}
+              options={terminalOptions}
+              size="sm"
+              aria-label={t("stages.outcomeOf", { name: stage.name })}
+            />
+          </TooltipTrigger>
+          <TooltipContent side="bottom">{t("stages.outcomeHint")}</TooltipContent>
+        </Tooltip>
+
+        <span className="hidden w-5 shrink-0 sm:block">
+          {terminal === "won" ? <CheckCircle2 className="size-4 text-emerald-500" /> : null}
+          {terminal === "lost" ? <XCircle className="size-4 text-rose-500" /> : null}
+        </span>
+
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="shrink-0 text-gray-400 hover:text-rose-600"
+                onClick={() => setConfirm(true)}
+                aria-label={t("stages.deleteLabel", { name: stage.name })}
+              />
+            }
+          >
+            <Trash2 />
+          </TooltipTrigger>
+          <TooltipContent side="left">{t("stages.deleteHint")}</TooltipContent>
+        </Tooltip>
+      </div>
 
       <ConfirmDialog
         open={confirm}

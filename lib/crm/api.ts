@@ -13,7 +13,7 @@ import { createApi, fetchBaseQuery, type FetchBaseQueryError } from "@reduxjs/to
 import config from "@/lib/iblai/config";
 import { LOCAL_STORAGE_KEYS } from "@/lib/iblai/auth-utils";
 import { readCurrentTenantKey, tenantMismatch } from "@/lib/iblai/tenant";
-import { selectRbacPermissions, setOpenPricingModal } from "@iblai/iblai-js/web-utils";
+import { setOpenPricingModal } from "@iblai/iblai-js/web-utils";
 import { sampleSession, sampleVisitor } from "./sample/mode";
 import { NOT_FOUND, sampleResponse } from "./sample/respond";
 import { detailFromBody } from "./errors";
@@ -122,10 +122,7 @@ const baseQuery: typeof rawBaseQuery = async (args, api, extra) => {
     return { error };
   }
   // The community organization runs on the sample: reads answer locally, a write upgrades.
-  if (
-    typeof window !== "undefined" &&
-    sampleSession(selectRbacPermissions(api.getState() as never), window.location.pathname)
-  ) {
+  if (typeof window !== "undefined" && sampleSession(window.location.pathname)) {
     const request = typeof args === "string" ? { url: args } : args;
     const data = sampleResponse(request.method ?? "GET", request.url, request.params, {
       now: new Date(),

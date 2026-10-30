@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 import { useTranslations } from "next-intl";
 import {
   Building2,
@@ -20,6 +21,7 @@ import {
   type PlatformSidebarFooterActionId,
   type PlatformSidebarSectionConfig,
 } from "@iblai/iblai-js/web-containers/next";
+import { setOpenPricingModal } from "@iblai/iblai-js/web-utils";
 import { useAccountSheet } from "@/components/crm/account-sheet";
 import { useAdminMode, useCanManageCrm } from "@/components/crm/admin-mode";
 import { AdminModeSwitch } from "@/components/crm/admin-mode-switch";
@@ -30,6 +32,7 @@ import { NavRow } from "@/components/crm/nav-row";
 import { useSession } from "@/hooks/use-session";
 import config from "@/lib/iblai/config";
 import { tenantDisplayName } from "@/lib/iblai/tenant";
+import { isTrialUser } from "@/lib/iblai/house-journeys";
 
 /**
  * The SDK's cross-SPA sidebar shell with this app's content: Search as the
@@ -39,11 +42,15 @@ import { tenantDisplayName } from "@/lib/iblai/tenant";
 export function AppSidebar() {
   const t = useTranslations("nav");
   const router = useRouter();
-  const { tenantKey, isAdmin, currentTenant, href } = useSession();
+  const { tenantKey, isAdmin, currentTenant, href, tenants } = useSession();
+  const dispatch = useDispatch();
+  // On the community organization the admin cluster is shown and every click upgrades.
+  const trial = isTrialUser(tenantKey, tenants);
   const { adminMode } = useAdminMode();
   const { isMobile, setOpenMobile } = useSidebar();
   const { open: openPalette } = useCommandPalette();
   const { openTab, openInvite } = useAccountSheet();
+  // The SDK footer below keeps the session's own role; this app's rows follow the admin-mode context.
   const isLiveAdmin = isAdmin && adminMode;
   const canManage = useCanManageCrm();
 
@@ -128,6 +135,10 @@ export function AppSidebar() {
   // The SDK closes the sheet only for its own navigation; dialogs opened from here must close it first.
   const onFooterAction = (id: PlatformSidebarFooterActionId) => {
     if (isMobile) setOpenMobile(false);
+    if (trial) {
+      dispatch(setOpenPricingModal(true));
+      return;
+    }
     if (id === "notifications") go("/notifications");
     else if (id === "invites") openInvite();
     else openTab(id);
@@ -160,6 +171,7 @@ export function AppSidebar() {
       footer={{
         isAdmin,
         isLiveAdmin,
+        showTrialGatedAdminMenu: trial,
         enableRbac: false,
         rbacPermissions: {},
         tenantKey,

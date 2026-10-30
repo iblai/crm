@@ -8,6 +8,7 @@ import {
   formatCurrency,
   formatDate,
   formatDateTime,
+  formatHistoryValue,
   formatRelative,
   initials,
   scheduleState,
@@ -116,6 +117,32 @@ describe("formatDate / formatDateTime / formatRelative", () => {
     expect(formatRelative("2026-09-03T14:00:00.000Z", "en-US", now)).toBe("in 2 hours");
     expect(formatRelative("2026-09-03T12:00:10.000Z", "en-US", now)).toBe("now");
     expect(formatRelative("2026-08-31T12:00:00.000Z", "es-ES", now)).toBe("hace 3 días");
+  });
+});
+
+describe("formatHistoryValue", () => {
+  it("reads the audit log's zoneless stamp as UTC, shown in the reader's zone", () => {
+    const tz = process.env.TZ;
+    process.env.TZ = "Asia/Singapore";
+    try {
+      // 18:38 UTC is 02:38 the next day in Singapore; read as local it would stay Oct 30.
+      expect(formatHistoryValue("2026-10-30 18:38:05.243985", "en-US")).toContain("Oct 31, 2026");
+    } finally {
+      if (tz === undefined) delete process.env.TZ;
+      else process.env.TZ = tz;
+    }
+  });
+
+  it("keeps a date a date, names codes and ids, and leaves the rest as written", () => {
+    expect(formatHistoryValue("2026-11-15", "en-US")).toBe("Nov 15, 2026");
+    expect(formatHistoryValue("qualified", "en-US", (v) => v.toUpperCase())).toBe("QUALIFIED");
+    expect(formatHistoryValue("8480", "en-US", () => undefined)).toBe("8480");
+    expect(formatHistoryValue("Bad timing", "en-US")).toBe("Bad timing");
+  });
+
+  it("reads None and an empty string as no value", () => {
+    expect(formatHistoryValue("None", "en-US")).toBeNull();
+    expect(formatHistoryValue("", "en-US")).toBeNull();
   });
 });
 

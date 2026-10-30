@@ -12,10 +12,15 @@ import { CommandPaletteProvider } from "@/components/crm/command-palette";
 import { AdminModeProvider, useCanManageCrm } from "@/components/crm/admin-mode";
 import { LanguagePreferenceSync } from "@/components/language-preference-sync";
 import { LoadingScreen } from "@/components/loading-screen";
-import { SampleNotice } from "@/components/crm/sample-notice";
-import { UpgradeModal } from "@/components/crm/upgrade-modal";
+import { FirstRunGate } from "@/components/house/first-run-gate";
+import { OrganizationPreview } from "@/components/house/organization-preview";
+import { SampleNotice } from "@/components/house/sample-notice";
+import { UpgradeModal } from "@/components/house/upgrade-modal";
 import { useSampleMode } from "@/hooks/use-sample-mode";
 import { useSession } from "@/hooks/use-session";
+import config from "@/lib/iblai/config";
+import { readStoredTenantKey } from "@/lib/iblai/tenant";
+import { decideEntry } from "@/lib/iblai/house-journeys";
 
 // The SDK sidebar remembers its desktop state in this cookie.
 function readSidebarOpen(): boolean {
@@ -28,18 +33,25 @@ function readSidebarOpen(): boolean {
  * Everything under `/platform/[tenantKey]` — the authenticated, org-scoped
  * CRM shell: the SDK sidebar and inset around the top bar and the page. The
  * providers above us have already verified the session and the membership.
+ * An organization the user does not belong to is previewed (/iblai-vibe-house-journeys).
  */
 export default function TenantLayout({ children }: { children: ReactNode }) {
-  const { isAdmin, tenantKey } = useSession();
+  const { isAdmin, tenantKey, tenants, href } = useSession();
   const [sidebarOpen] = useState(readSidebarOpen);
   const sample = useSampleMode();
 
   if (!tenantKey) return <LoadingScreen />;
+  const entry = decideEntry({ routeOrg: tenantKey, stored: readStoredTenantKey(), tenants });
+  if (entry.kind === "preview" && entry.preview) {
+    return <OrganizationPreview org={entry.preview} app={config.iblPlatform()} />;
+  }
 
+  // The community organization shows the sample to everyone as its admin; the SDK
+  // (sidebar footer, profile menu, first run) still sees the session's own role.
   return (
-    <AdminModeProvider isAdmin={isAdmin} tenantKey={tenantKey}>
+    <AdminModeProvider isAdmin={isAdmin || sample} tenantKey={tenantKey}>
       <LanguagePreferenceSync />
-      <UpgradeModal org={tenantKey} />
+      <UpgradeModal org={tenantKey} app={config.iblPlatform()} />
       <TooltipProvider>
         <AccountSheetProvider>
           <CommandPaletteProvider>
@@ -59,7 +71,13 @@ export default function TenantLayout({ children }: { children: ReactNode }) {
                           id="main-content"
                           className="flex min-h-0 flex-1 flex-col md:overflow-hidden"
                         >
-                          {children}
+                          <FirstRunGate
+                            org={tenantKey}
+                            isAdmin={isAdmin}
+                            onboardingPath={href("/onboarding")}
+                          >
+                            {children}
+                          </FirstRunGate>
                         </main>
                       </AdminGate>
                     </div>

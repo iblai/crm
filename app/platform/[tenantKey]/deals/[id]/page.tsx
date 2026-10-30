@@ -91,7 +91,9 @@ export default function DealDetailPage() {
   const [attachTag] = useAttachDealTagMutation();
   const [detachTag] = useDetachDealTagMutation();
 
-  const [pendingStage, setPendingStage] = useState<PipelineStage | null>(null);
+  // Kept while the dialog closes, so its words don't change under the closing animation.
+  const [pendingStage, setPendingStage] = useState<{ stage: PipelineStage; reopen: boolean }>();
+  const [confirmMove, setConfirmMove] = useState(false);
   const [lostOpen, setLostOpen] = useState(false);
   const [lostStage, setLostStage] = useState<PipelineStage | null>(null);
   const [confirmWon, setConfirmWon] = useState(false);
@@ -125,7 +127,7 @@ export default function DealDetailPage() {
     } catch (err) {
       toast.error(errorMessage(err, t("toast.moveFailed")));
     } finally {
-      setPendingStage(null);
+      setConfirmMove(false);
     }
   };
 
@@ -169,6 +171,10 @@ export default function DealDetailPage() {
 
   const closed = deal.status !== "open";
   const overdue = isOverdue(deal.expected_close_date, deal.status);
+  const askMove = (stage: PipelineStage) => {
+    setPendingStage({ stage, reopen: closed && !stage.is_won && !stage.is_lost });
+    setConfirmMove(true);
+  };
 
   const onStageSelect = (target: PipelineStage) => {
     if (target.id === deal.stage) return;
@@ -178,7 +184,7 @@ export default function DealDetailPage() {
       return;
     }
     if (target.is_won || closed) {
-      setPendingStage(target);
+      askMove(target);
       return;
     }
     void doMove(target.id, t("toast.moved", { stage: target.name }));
@@ -197,7 +203,7 @@ export default function DealDetailPage() {
           )}
         >
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="flex min-w-0 flex-1 items-start gap-3">
+            <div className="flex min-w-0 flex-1 basis-72 items-start gap-3">
               <EntityAvatar name={deal.title} seed={deal.id} kind="deal" size="lg" />
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
@@ -252,7 +258,7 @@ export default function DealDetailPage() {
                         variant="outline"
                         size="sm"
                         disabled={!firstOpenStage || moving}
-                        onClick={() => firstOpenStage && setPendingStage(firstOpenStage)}
+                        onClick={() => firstOpenStage && askMove(firstOpenStage)}
                       />
                     }
                   >
@@ -492,30 +498,35 @@ export default function DealDetailPage() {
 
       {/* ------------------------------------------------------- dialogs */}
       <ConfirmDialog
-        open={!!pendingStage}
-        onOpenChange={(o) => !o && setPendingStage(null)}
+        open={confirmMove}
+        onOpenChange={setConfirmMove}
         title={
-          closed && pendingStage && !pendingStage.is_won && !pendingStage.is_lost
+          pendingStage?.reopen
             ? t("confirm.reopenTitle")
-            : t("confirm.moveTitle", { stage: pendingStage?.name ?? t("confirm.stage") })
+            : t("confirm.moveTitle", { stage: pendingStage?.stage.name ?? t("confirm.stage") })
         }
         description={
-          closed && pendingStage && !pendingStage.is_won && !pendingStage.is_lost
-            ? t("confirm.reopenDescription", { stage: pendingStage.name })
-            : t(pendingStage?.is_won ? "confirm.moveWonDescription" : "confirm.moveDescription", {
-                title: deal.title,
-                stage: pendingStage?.name ?? t("confirm.thisStage"),
-              })
+          pendingStage?.reopen
+            ? t("confirm.reopenDescription", { stage: pendingStage.stage.name })
+            : t(
+                pendingStage?.stage.is_won
+                  ? "confirm.moveWonDescription"
+                  : "confirm.moveDescription",
+                {
+                  title: deal.title,
+                  stage: pendingStage?.stage.name ?? t("confirm.thisStage"),
+                },
+              )
         }
-        confirmLabel={t("confirm.move")}
+        confirmLabel={pendingStage?.reopen ? t("actions.reopen") : t("confirm.move")}
         loading={moving}
         onConfirm={() =>
           pendingStage
             ? doMove(
-                pendingStage.id,
-                closed && !pendingStage.is_won
+                pendingStage.stage.id,
+                pendingStage.reopen
                   ? t("toast.reopened")
-                  : t("toast.moved", { stage: pendingStage.name }),
+                  : t("toast.moved", { stage: pendingStage.stage.name }),
               )
             : undefined
         }

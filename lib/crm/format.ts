@@ -82,6 +82,22 @@ export function formatRelative(value?: string | null, locale?: string, now: Date
   return rtf.format(0, "second");
 }
 
+/** The DM's audit log writes a time in UTC without a zone: `2026-10-30 18:38:05.243985`. */
+const AUDIT_STAMP = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d+)?$/;
+
+/** One side of a history change as the record shows it; `name` reads codes and ids, `null` is empty. */
+export function formatHistoryValue(
+  value: string,
+  locale: string,
+  name?: (value: string) => string | undefined,
+) {
+  // The DM renders a null as the string "None".
+  if (!value || value === "None") return null;
+  if (AUDIT_STAMP.test(value)) return formatDateTime(`${value}Z`, locale);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return formatDate(value, locale);
+  return name?.(value) ?? value;
+}
+
 export type ScheduleKind = "unscheduled" | "today" | "tomorrow" | "overdue" | "date";
 
 /** Where a scheduled activity stands; the caller words it (`activities.schedule.*`). */

@@ -124,7 +124,7 @@ export default function TagsPage() {
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}
-          label={t("paginationLabel")}
+          label={t("paginationLabel", { count: data?.count ?? 0 })}
         />
       </div>
 

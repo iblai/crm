@@ -2,7 +2,7 @@
  * Journey 18 — Sample data on the community organization
  *
  * A user who belongs to no organization but the community one browses the CRM
- * on its sample data: the notice, sample rows on every list and record, no
+ * on its sample data: the notice, sample rows on every list and record, the
  * admin surface, and a write that opens the upgrade dialog instead of reaching
  * the platform. The member's session is told it belongs to `main` alone, in
  * storage and by the routed membership lists. Nothing reaches the checkout:
@@ -60,9 +60,7 @@ test.describe("Journey 18: Sample Data — the community organization", () => {
     await onMain(memberPage);
     await expect(memberPage.getByTestId("sample-notice")).toContainText("sample data");
     await expect(
-      memberPage
-        .getByTestId("sample-notice")
-        .getByRole("button", { name: "Create your organization" }),
+      memberPage.getByTestId("sample-notice").getByRole("button", { name: "Create Your Platform" }),
     ).toBeVisible();
     await expect(memberPage.locator("#main-content")).toContainText("Advisory retainer", {
       timeout: 30_000,
@@ -122,14 +120,14 @@ test.describe("Journey 18: Sample Data — the community organization", () => {
     expect(writes).toEqual([]);
   });
 
-  test("smp-05: the sample grants no admin surface: no Settings row, no Admin mode switch", async ({
+  test("smp-05: the sample is everyone's to administer: the Settings row and the Admin mode switch", async ({
     memberPage,
   }) => {
     await onMain(memberPage);
     const shell = new Shell(memberPage);
     await expect(shell.navRow("People")).toBeVisible({ timeout: 30_000 });
-    await expect(shell.navRow("Settings")).toHaveCount(0);
-    await expect(shell.adminMode).toHaveCount(0);
+    await expect(shell.navRow("Settings")).toBeVisible();
+    await expect(shell.adminMode).toBeVisible();
   });
 
   test("smp-06: the upgrade dialog's Upgrade for free opens the CRM's $0 checkout", async ({
@@ -149,7 +147,7 @@ test.describe("Journey 18: Sample Data — the community organization", () => {
     await onMain(memberPage);
     await memberPage
       .getByTestId("sample-notice")
-      .getByRole("button", { name: "Create your organization" })
+      .getByRole("button", { name: "Create Your Platform" })
       .click();
     await memberPage.getByRole("dialog").getByRole("button", { name: "Upgrade for free" }).click();
     await expect
@@ -159,8 +157,6 @@ test.describe("Journey 18: Sample Data — the community organization", () => {
     const back = new URL(params.get("redirect_url") ?? "");
     expect(back.searchParams.get("app")).toBe("crm");
     expect(back.searchParams.get("redirect-to")).toBe(appUrl);
-    expect(new URL(params.get("cancel_url") ?? "").searchParams.get("redirect-to")).toBe(
-      `${appUrl}/join`,
-    );
+    expect(params.get("cancel_url")).toBe(params.get("redirect_url"));
   });
 });

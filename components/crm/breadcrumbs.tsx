@@ -7,6 +7,7 @@ import { ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSession } from "@/hooks/use-session";
 import { isUnnamedTenant, shortTenantKey, tenantDisplayName } from "@/lib/iblai/tenant";
+import { cn } from "@/lib/utils";
 
 export interface Crumb {
   label: ReactNode;
@@ -84,7 +85,11 @@ export function Breadcrumbs() {
       {items.map((item, i) => {
         const last = i === items.length - 1;
         return (
-          <span key={i} className="flex min-w-0 items-center">
+          // A section crumb is one short word: only the organization and the record truncate.
+          <span
+            key={i}
+            className={cn("flex items-center", i > 0 && !last ? "shrink-0" : "min-w-0")}
+          >
             {i > 0 ? <ChevronRight className="mx-1 size-3.5 shrink-0 text-gray-300" /> : null}
             {item.href && !last ? (
               <Link

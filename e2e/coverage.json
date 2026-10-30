@@ -1,14 +1,14 @@
 {
   "version": 2,
-  "lastUpdated": "2026-10-30",
+  "lastUpdated": "2026-10-31",
   "summary": {
-    "totalCheckpoints": 113,
-    "coveredCheckpoints": 113,
+    "totalCheckpoints": 130,
+    "coveredCheckpoints": 130,
     "pendingCheckpoints": 0,
     "deprecatedCheckpoints": 0,
     "percent": 100,
-    "totalJourneys": 18,
-    "activeJourneys": 18
+    "totalJourneys": 19,
+    "activeJourneys": 19
   },
   "journeys": [
     {
@@ -17,6 +17,7 @@
       "spec": "01-authentication.spec.ts",
       "sourceFiles": [
         "app/page.tsx",
+        "components/tenant-redirect.tsx",
         "app/join/page.tsx",
         "app/error/[code]/page.tsx",
         "app/mobile-sso-login/page.tsx",
@@ -175,12 +176,17 @@
         },
         {
           "id": "pal-05",
-          "description": "a query that matches nothing lists no record groups",
+          "description": "a query that matches nothing says so and lists nothing",
           "status": "covered"
         },
         {
           "id": "pal-06",
           "description": "Escape closes the palette",
+          "status": "covered"
+        },
+        {
+          "id": "pal-07",
+          "description": "typing a page’s name and Enter opens that page",
           "status": "covered"
         }
       ]
@@ -832,8 +838,8 @@
         "app/platform/[tenantKey]/deals/page.tsx",
         "app/platform/[tenantKey]/activities/page.tsx",
         "app/platform/[tenantKey]/tags/page.tsx",
-        "components/crm/sample-notice.tsx",
-        "components/crm/upgrade-modal.tsx",
+        "components/house/sample-notice.tsx",
+        "components/house/upgrade-modal.tsx",
         "lib/crm/sample/respond.ts",
         "lib/crm/permissions.ts"
       ],
@@ -860,12 +866,113 @@
         },
         {
           "id": "smp-05",
-          "description": "the sample grants no admin surface: no Settings row, no Admin mode switch",
+          "description": "the sample is everyone's to administer: the Settings row and the Admin mode switch",
           "status": "covered"
         },
         {
           "id": "smp-06",
           "description": "the upgrade dialog's Upgrade for free opens the CRM's $0 checkout",
+          "status": "covered"
+        }
+      ]
+    },
+    {
+      "id": "house",
+      "name": "House",
+      "spec": "19-house.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/onboarding/[[...agentId]]/page.tsx",
+        "components/house/first-run-gate.tsx",
+        "components/house/onboarding-page.tsx",
+        "components/house/organization-preview.tsx",
+        "components/house/sample-notice.tsx",
+        "components/house/upgrade-modal.tsx",
+        "components/house/credit-badge.tsx",
+        "components/crm/app-sidebar.tsx",
+        "components/crm/top-bar.tsx",
+        "components/crm/account-sheet.tsx",
+        "lib/iblai/house-journeys.ts",
+        "providers/iblai-providers.tsx"
+      ],
+      "checkpoints": [
+        {
+          "id": "house-01",
+          "description": "lands on the community platform inside the shell, with the admin cluster shown",
+          "status": "covered"
+        },
+        {
+          "id": "house-02",
+          "description": "a trial-gated click opens the SDK upgrade dialog, and Escape closes it",
+          "status": "covered"
+        },
+        {
+          "id": "house-03",
+          "description": "the platform is previewed, and Join goes to the auth page's join for it",
+          "status": "covered"
+        },
+        {
+          "id": "house-04",
+          "description": "Create Your Own Platform is ibl.ai's $0 sign-up with this app nested in the return address",
+          "status": "covered"
+        },
+        {
+          "id": "house-05",
+          "description": "a readably keyed platform is not asked its name: the first run is sector, team, done, and the home holds afterwards",
+          "status": "covered"
+        },
+        {
+          "id": "house-06",
+          "description": "an admin who finished it stays home",
+          "status": "covered"
+        },
+        {
+          "id": "house-07",
+          "description": "a member is sent to the platform's form, answers it, sees the final step and lands home",
+          "status": "covered"
+        },
+        {
+          "id": "house-08",
+          "description": "with nothing configured, /onboarding says so and Continue goes home",
+          "status": "covered"
+        },
+        {
+          "id": "house-09",
+          "description": "Back to My Platform leaves the preview for the user's own platform home",
+          "status": "covered"
+        },
+        {
+          "id": "house-10",
+          "description": "Management › Onboarding opens for the admin, its agent links based on this app's onboarding route",
+          "status": "covered"
+        },
+        {
+          "id": "house-11",
+          "description": "a named platform whose sector is set gets only the team step and the finish",
+          "status": "covered"
+        },
+        {
+          "id": "house-12",
+          "description": "the community platform shows the sample: the admin rows, a filled People list and the notice",
+          "status": "covered"
+        },
+        {
+          "id": "house-13",
+          "description": "a write on the sample opens the upgrade dialog",
+          "status": "covered"
+        },
+        {
+          "id": "house-14",
+          "description": "the upgrade dialog's Upgrade for free opens this app's $0 checkout",
+          "status": "covered"
+        },
+        {
+          "id": "house-15",
+          "description": "still on the community platform while the platform lists their own, the SDK moves them to it",
+          "status": "covered"
+        },
+        {
+          "id": "house-16",
+          "description": "Upgrade Plan asks for a pricing page that returns through the sign-in app",
           "status": "covered"
         }
       ]

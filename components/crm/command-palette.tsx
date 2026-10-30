@@ -79,7 +79,7 @@ function CommandPalette({
   const [query, setQuery] = useState("");
 
   const q = useDebounced(query.trim(), 250);
-  const { data, error } = useSearchQuery({ q, limit: 6 }, { skip: !open || !q });
+  const { data, error, isFetching } = useSearchQuery({ q, limit: 6 }, { skip: !open || !q });
   const matchedPeople = q ? (data?.persons ?? []) : [];
   const matchedOrgs = q ? (data?.organizations ?? []) : [];
   const matchedDeals = q ? (data?.deals ?? []) : [];
@@ -89,6 +89,29 @@ function CommandPalette({
     setQuery("");
     router.push(href(path));
   };
+
+  // Commands narrow to what is typed, so Enter opens the typed page.
+  const typed = query.trim().toLowerCase();
+  const shows = (label: string) => label.toLowerCase().includes(typed);
+  const creates = (
+    [
+      ["newPerson", "/people?new=1"],
+      ["newOrganization", "/organizations?new=1"],
+      ["newDeal", "/deals?new=1"],
+      ["newActivity", "/activities?new=1"],
+    ] as const
+  ).filter(([key]) => shows(t(key)));
+  const pages = (
+    [
+      ["home", "", Home],
+      ["people", "/people", Users],
+      ["organizations", "/organizations", Building2],
+      ["deals", "/deals", Handshake],
+      ["activities", "/activities", CalendarCheck2],
+      ["tags", "/tags", Tag],
+      ["settings", "/settings", Settings],
+    ] as const
+  ).filter(([key]) => shows(tn(key)));
 
   return (
     <CommandDialog
@@ -105,7 +128,7 @@ function CommandPalette({
           onValueChange={setQuery}
         />
         <CommandList className="max-h-[60vh]">
-          <CommandEmpty>{t("noResults")}</CommandEmpty>
+          {query.trim() === q && !isFetching ? <CommandEmpty>{t("noResults")}</CommandEmpty> : null}
           {q && error ? (
             <p role="alert" className="text-destructive px-3 py-2 text-xs">
               {errorMessage(error, tc("errorGeneric"))}
@@ -162,43 +185,24 @@ function CommandPalette({
             </CommandGroup>
           ) : null}
           <CommandSeparator />
-          <CommandGroup heading={tc("create")}>
-            <CommandItem value="new person" onSelect={() => go("/people?new=1")}>
-              <Plus className="size-4" /> {t("newPerson")}
-            </CommandItem>
-            <CommandItem value="new organization" onSelect={() => go("/organizations?new=1")}>
-              <Plus className="size-4" /> {t("newOrganization")}
-            </CommandItem>
-            <CommandItem value="new deal" onSelect={() => go("/deals?new=1")}>
-              <Plus className="size-4" /> {t("newDeal")}
-            </CommandItem>
-            <CommandItem value="new activity" onSelect={() => go("/activities?new=1")}>
-              <Plus className="size-4" /> {t("newActivity")}
-            </CommandItem>
-          </CommandGroup>
-          <CommandGroup heading={t("goTo")}>
-            <CommandItem value="go home" onSelect={() => go("")}>
-              <Home className="size-4" /> {tn("home")}
-            </CommandItem>
-            <CommandItem value="go people" onSelect={() => go("/people")}>
-              <Users className="size-4" /> {tn("people")}
-            </CommandItem>
-            <CommandItem value="go organizations" onSelect={() => go("/organizations")}>
-              <Building2 className="size-4" /> {tn("organizations")}
-            </CommandItem>
-            <CommandItem value="go deals" onSelect={() => go("/deals")}>
-              <Handshake className="size-4" /> {tn("deals")}
-            </CommandItem>
-            <CommandItem value="go activities" onSelect={() => go("/activities")}>
-              <CalendarCheck2 className="size-4" /> {tn("activities")}
-            </CommandItem>
-            <CommandItem value="go tags" onSelect={() => go("/tags")}>
-              <Tag className="size-4" /> {tn("tags")}
-            </CommandItem>
-            <CommandItem value="go settings" onSelect={() => go("/settings")}>
-              <Settings className="size-4" /> {tn("settings")}
-            </CommandItem>
-          </CommandGroup>
+          {creates.length ? (
+            <CommandGroup heading={tc("create")}>
+              {creates.map(([key, path]) => (
+                <CommandItem key={key} value={key} onSelect={() => go(path)}>
+                  <Plus className="size-4" /> {t(key)}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ) : null}
+          {pages.length ? (
+            <CommandGroup heading={t("goTo")}>
+              {pages.map(([key, path, Icon]) => (
+                <CommandItem key={key} value={`go ${key}`} onSelect={() => go(path)}>
+                  <Icon className="size-4" /> {tn(key)}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ) : null}
         </CommandList>
         <div className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-gray-100 px-3 py-2 text-[11px]">
           <span>

@@ -62,7 +62,7 @@
       "mineHint": "Les miennes — les activités dont vous êtes responsable",
       "newHint": "Consignez un appel ou une note, ou planifiez une tâche ou une réunion",
       "openHint": "Ouvert — encore à faire",
-      "paginationLabel": "activités",
+      "paginationLabel": "{count, plural, one {activité} other {activités}}",
       "rangeLabel": "Plage de dates",
       "scopeLabel": "Portée par responsable",
       "statusLabel": "Statut"
@@ -236,7 +236,7 @@
       "emptyTitle": "Aucune organisation pour l’instant",
       "noMatchFilters": "Aucune organisation ne correspond à ces filtres",
       "noMatchFiltersHint": "Essayez un autre nom, responsable ou étiquette.",
-      "paginationLabel": "organisations",
+      "paginationLabel": "{count, plural, one {organisation} other {organisations}}",
       "searchLabel": "Rechercher des organisations",
       "searchPlaceholder": "Rechercher des organisations par nom…"
     },
@@ -466,7 +466,7 @@
       "kanbanView": "Vue kanban",
       "newHint": "Ouvrez une affaire pour une personne ; elle démarre à la première étape",
       "noMatches": "Aucune affaire ne correspond à ces filtres.",
-      "paginationLabel": "affaires",
+      "paginationLabel": "{count, plural, one {affaire} other {affaires}}",
       "searchLabel": "Rechercher des affaires par titre",
       "searchPlaceholder": "Rechercher des affaires…",
       "tableView": "Vue tableau",
@@ -801,7 +801,7 @@
       "noMatchFiltersHint": "Essayez une autre étape du cycle de vie, un autre responsable ou une autre étiquette.",
       "noMatchSearch": "Personne ne correspond à « {query} »",
       "noMatchSearchHint": "La recherche parcourt le nom, l’e-mail, le poste et l’identifiant externe de chaque personne. Essayez une autre orthographe ou effacez la recherche.",
-      "paginationLabel": "personnes",
+      "paginationLabel": "{count, plural, one {personne} other {personnes}}",
       "searchLabel": "Rechercher des personnes",
       "searchPlaceholder": "Rechercher par nom, e-mail, poste…"
     },
@@ -954,10 +954,7 @@
     "organization": "Organisation",
     "switchedBack": "Vous ne pouvez pas voir les données du CRM dans {from}, vous êtes donc maintenant dans {to}.",
     "toggleSidebar": "Afficher ou masquer la barre latérale",
-    "toggleSidebarHint": "Réduire ou développer la barre latérale (⌘B)",
-    "sample": {
-      "body": "Vous consultez des données fictives : des personnes, des organisations et des affaires inventées. Votre propre organisation démarre vide et vous appartient."
-    }
+    "toggleSidebarHint": "Réduire ou développer la barre latérale (⌘B)"
   },
   "tags": {
     "card": {
@@ -996,7 +993,7 @@
     },
     "newTag": "Nouvelle étiquette",
     "newTagHint": "Créez une étiquette à associer aux personnes, aux organisations et aux affaires",
-    "paginationLabel": "étiquettes",
+    "paginationLabel": "{count, plural, one {étiquette} other {étiquettes}}",
     "searchLabel": "Rechercher des étiquettes",
     "searchPlaceholder": "Rechercher des étiquettes…"
   },
@@ -1030,5 +1027,28 @@
     "updateView": "Mettre à jour la vue",
     "updated": "Vue « {name} » mise à jour",
     "yes": "Oui"
+  },
+  "houseJourneys": {
+    "preview": {
+      "body": "Vous n’êtes pas encore membre de {name}. Rejoignez-la, ou créez votre propre plateforme.",
+      "join": "Rejoindre {name}",
+      "create": "Créer votre propre plateforme",
+      "back": "Retour à ma plateforme"
+    },
+    "onboarding": {
+      "meetTitle": "Rencontrez {name}",
+      "meetBody": "L’agent de votre plateforme est prêt quand vous l’êtes.",
+      "allSetTitle": "Tout est prêt",
+      "allSetBody": "{workspace} est prête. Entrez.",
+      "allSetMember": "Merci : votre plateforme a ce qu’il lui faut. Entrez.",
+      "workspace": "Votre plateforme",
+      "continue": "Continuer",
+      "complete": "Terminer",
+      "back": "Retour"
+    },
+    "sample": {
+      "body": "Vous consultez des données fictives : des personnes, des organisations et des affaires inventées. Votre propre plateforme démarre vide et vous appartient.",
+      "create": "Créer votre plateforme"
+    }
   }
 }

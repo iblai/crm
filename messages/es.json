@@ -62,7 +62,7 @@
       "mineHint": "Mías: actividades de las que eres responsable",
       "newHint": "Registra una llamada o una nota, o programa una tarea o una reunión",
       "openHint": "Abierto: aún pendiente",
-      "paginationLabel": "actividades",
+      "paginationLabel": "{count, plural, one {actividad} other {actividades}}",
       "rangeLabel": "Rango de fechas",
       "scopeLabel": "Ámbito del responsable",
       "statusLabel": "Estado"
@@ -236,7 +236,7 @@
       "emptyTitle": "Aún no hay organizaciones",
       "noMatchFilters": "Ninguna organización coincide con estos filtros",
       "noMatchFiltersHint": "Prueba con otro nombre, responsable o etiqueta.",
-      "paginationLabel": "organizaciones",
+      "paginationLabel": "{count, plural, one {organización} other {organizaciones}}",
       "searchLabel": "Buscar organizaciones",
       "searchPlaceholder": "Buscar organizaciones por nombre…"
     },
@@ -466,7 +466,7 @@
       "kanbanView": "Vista kanban",
       "newHint": "Abre un negocio para una persona; empieza en la primera etapa",
       "noMatches": "Ningún negocio coincide con estos filtros.",
-      "paginationLabel": "negocios",
+      "paginationLabel": "{count, plural, one {negocio} other {negocios}}",
       "searchLabel": "Buscar negocios por título",
       "searchPlaceholder": "Buscar negocios…",
       "tableView": "Vista de tabla",
@@ -801,7 +801,7 @@
       "noMatchFiltersHint": "Prueba con otra etapa del ciclo de vida, otro responsable u otra etiqueta.",
       "noMatchSearch": "Nadie coincide con “{query}”",
       "noMatchSearchHint": "La búsqueda recorre el nombre, el correo, el cargo y el identificador externo de todas las personas. Prueba otra grafía o borra la búsqueda.",
-      "paginationLabel": "personas",
+      "paginationLabel": "{count, plural, one {persona} other {personas}}",
       "searchLabel": "Buscar personas",
       "searchPlaceholder": "Buscar por nombre, correo, cargo…"
     },
@@ -954,10 +954,7 @@
     "organization": "Organización",
     "switchedBack": "No puedes ver los datos del CRM en {from}, así que ahora estás en {to}.",
     "toggleSidebar": "Mostrar u ocultar la barra lateral",
-    "toggleSidebarHint": "Contrae o expande la barra lateral (⌘B)",
-    "sample": {
-      "body": "Estás viendo datos de muestra: personas, organizaciones y negocios ficticios. Tu propia organización empieza vacía y es tuya para dirigirla."
-    }
+    "toggleSidebarHint": "Contrae o expande la barra lateral (⌘B)"
   },
   "tags": {
     "card": {
@@ -996,7 +993,7 @@
     },
     "newTag": "Nueva etiqueta",
     "newTagHint": "Crea una etiqueta que puedes asignar a personas, organizaciones y negocios",
-    "paginationLabel": "etiquetas",
+    "paginationLabel": "{count, plural, one {etiqueta} other {etiquetas}}",
     "searchLabel": "Buscar etiquetas",
     "searchPlaceholder": "Buscar etiquetas…"
   },
@@ -1030,5 +1027,28 @@
     "updateView": "Actualizar vista",
     "updated": "Vista «{name}» actualizada",
     "yes": "Sí"
+  },
+  "houseJourneys": {
+    "preview": {
+      "body": "Todavía no eres miembro de {name}. Únete, o crea una plataforma propia.",
+      "join": "Unirse a {name}",
+      "create": "Crear tu propia plataforma",
+      "back": "Volver a mi plataforma"
+    },
+    "onboarding": {
+      "meetTitle": "Conoce a {name}",
+      "meetBody": "El agente de tu plataforma está listo cuando tú lo estés.",
+      "allSetTitle": "Todo listo",
+      "allSetBody": "{workspace} está lista. Adelante.",
+      "allSetMember": "Gracias: tu plataforma ya tiene lo que necesita. Adelante.",
+      "workspace": "Tu plataforma",
+      "continue": "Continuar",
+      "complete": "Completar",
+      "back": "Atrás"
+    },
+    "sample": {
+      "body": "Estás viendo datos de muestra: personas, organizaciones y negocios ficticios. Tu propia plataforma empieza vacía y es tuya para dirigirla.",
+      "create": "Crear tu plataforma"
+    }
   }
 }

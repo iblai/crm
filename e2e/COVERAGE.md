@@ -1,6 +1,6 @@
 # ibl.ai/crm E2E coverage — user journey checklist
 
-> Last updated: 2026-10-30 | 113 checkpoints (113 covered, 0 pending, 0 deprecated) | 18 journeys | 100% covered | Auth: admin + member storageState
+> Last updated: 2026-10-31 | 130 checkpoints (130 covered, 0 pending, 0 deprecated) | 19 journeys | 100% covered | Auth: admin + member storageState
 
 ## How this works
 
@@ -55,7 +55,7 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 
 ---
 
-## Journey 3: Command Palette (6 checkpoints) — `journeys/03-command-palette.spec.ts`
+## Journey 3: Command Palette (7 checkpoints) — `journeys/03-command-palette.spec.ts`
 
 **Source files:** `components/crm/command-palette.tsx`
 
@@ -63,8 +63,9 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 - [x] pal-02 the Go to group reaches People
 - [x] pal-03 the New person item opens the dialog, which creates the person
 - [x] pal-04 typing a name finds the person through server search and opens it
-- [x] pal-05 a query that matches nothing lists no record groups
+- [x] pal-05 a query that matches nothing says so and lists nothing
 - [x] pal-06 Escape closes the palette
+- [x] pal-07 typing a page’s name and Enter opens that page
 
 ---
 
@@ -250,13 +251,36 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 
 ## Journey 18: Sample Data (6 checkpoints) — `journeys/18-sample-data.spec.ts`
 
-**Source files:** `app/platform/[tenantKey]/page.tsx`, `app/platform/[tenantKey]/people/page.tsx`, `app/platform/[tenantKey]/people/[id]/page.tsx`, `app/platform/[tenantKey]/organizations/page.tsx`, `app/platform/[tenantKey]/deals/page.tsx`, `app/platform/[tenantKey]/activities/page.tsx`, `app/platform/[tenantKey]/tags/page.tsx`, `components/crm/sample-notice.tsx`, `components/crm/upgrade-modal.tsx`, `lib/crm/sample/respond.ts`, `lib/crm/permissions.ts`
+**Source files:** `app/platform/[tenantKey]/page.tsx`, `app/platform/[tenantKey]/people/page.tsx`, `app/platform/[tenantKey]/people/[id]/page.tsx`, `app/platform/[tenantKey]/organizations/page.tsx`, `app/platform/[tenantKey]/deals/page.tsx`, `app/platform/[tenantKey]/activities/page.tsx`, `app/platform/[tenantKey]/tags/page.tsx`, `components/house/sample-notice.tsx`, `components/house/upgrade-modal.tsx`, `lib/crm/sample/respond.ts`, `lib/crm/permissions.ts`
 
 - [x] smp-01 home carries the sample notice and the sample's recent deals
 - [x] smp-02 People lists the sample people and a person's record opens
 - [x] smp-03 Organizations, Deals, Activities and Tags show the sample's rows
 - [x] smp-04 creating a person opens the upgrade dialog and reaches no platform
-- [x] smp-05 the sample grants no admin surface: no Settings row, no Admin mode switch
+- [x] smp-05 the sample is everyone's to administer: the Settings row and the Admin mode switch
 - [x] smp-06 the upgrade dialog's Upgrade for free opens the CRM's $0 checkout (skips until web-containers carries `checkoutUrl`, iblai-web-frontend#2195)
+
+---
+
+## Journey 19: House (16 checkpoints) — `journeys/19-house.spec.ts`
+
+**Source files:** `app/platform/[tenantKey]/onboarding/[[...agentId]]/page.tsx`, `components/house/first-run-gate.tsx`, `components/house/onboarding-page.tsx`, `components/house/organization-preview.tsx`, `components/house/sample-notice.tsx`, `components/house/upgrade-modal.tsx`, `components/house/credit-badge.tsx`, `components/crm/app-sidebar.tsx`, `components/crm/top-bar.tsx`, `components/crm/account-sheet.tsx`, `lib/iblai/house-journeys.ts`, `providers/iblai-providers.tsx`
+
+- [x] house-01 lands on the community platform inside the shell, with the admin cluster shown
+- [x] house-02 a trial-gated click opens the SDK upgrade dialog, and Escape closes it
+- [x] house-03 the platform is previewed, and Join goes to the auth page's join for it
+- [x] house-04 Create Your Own Platform is ibl.ai's $0 sign-up with this app nested in the return address
+- [x] house-05 a readably keyed platform is not asked its name: the first run is sector, team, done, and the home holds afterwards
+- [x] house-06 an admin who finished it stays home
+- [x] house-07 a member is sent to the platform's form, answers it, sees the final step and lands home
+- [x] house-08 with nothing configured, /onboarding says so and Continue goes home
+- [x] house-09 Back to My Platform leaves the preview for the user's own platform home
+- [x] house-10 Management › Onboarding opens for the admin, its agent links based on this app's onboarding route
+- [x] house-11 a named platform whose sector is set gets only the team step and the finish
+- [x] house-12 the community platform shows the sample: the admin rows, a filled People list and the notice
+- [x] house-13 a write on the sample opens the upgrade dialog
+- [x] house-14 the upgrade dialog's Upgrade for free opens this app's $0 checkout
+- [x] house-15 still on the community platform while the platform lists their own, the SDK moves them to it
+- [x] house-16 Upgrade Plan asks for a pricing page that returns through the sign-in app
 
 ---

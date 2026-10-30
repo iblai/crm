@@ -69,6 +69,7 @@ export function useDashboardData(period: DashboardPeriod, locale: string) {
     error: overview.error,
     isLoading: overview.isLoading || (overview.isFetching && !overview.currentData),
     errors: { people: people.error, deals: deals.error, upNext: upNext.error },
+    loading: { people: people.isLoading, deals: deals.isLoading, upNext: upNext.isLoading },
     isFetching: overview.isFetching,
     currency,
     won,

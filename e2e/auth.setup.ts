@@ -1,4 +1,4 @@
-import { test as setup, type Locator, type Page } from "@playwright/test";
+import { test as setup, expect, type Locator, type Page } from "@playwright/test";
 import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
@@ -102,6 +102,35 @@ export async function signIn(page: Page, email: string, password: string, file: 
   await page.context().storageState({ path: path.join(AUTH_DIR, file) });
 }
 
+/**
+ * The admin's first run is the SDK setup flow (/iblai-vibe-house-journeys): walk
+ * it once, so the journeys open the CRM instead of the wizard from here on. The
+ * flow asks only what is missing: each step is taken when it shows.
+ */
+async function walkFirstRun(page: Page) {
+  await page.goto(APP_HOST);
+  await page.waitForURL(/\/platform\/[^/?#]+/, { timeout: 60_000 });
+  const orgName = page.getByLabel("Organization name");
+  const sector = page.getByRole("radio", { name: "Higher Education" });
+  const invite = page.getByRole("heading", { name: "Invite your team" });
+  const homeH1 = page.getByRole("heading", { level: 1, name: /^Home\b/ });
+  await expect(orgName.or(sector).or(invite).or(homeH1).first()).toBeVisible({ timeout: 90_000 });
+  if (await homeH1.isVisible()) return;
+  if (await orgName.isVisible()) {
+    await orgName.fill("E2E CRM");
+    await page.getByRole("button", { name: "Continue" }).click();
+  }
+  await expect(sector.or(invite).first()).toBeVisible({ timeout: 30_000 });
+  if (await sector.isVisible()) {
+    await sector.click();
+    await page.getByRole("button", { name: "Continue" }).click();
+  }
+  await expect(invite).toBeVisible({ timeout: 30_000 });
+  await page.getByRole("button", { name: /^(Continue|Skip for now)$/ }).click();
+  await page.getByRole("button", { name: "Complete" }).click();
+  await page.waitForURL((u) => !u.pathname.includes("/onboarding"), { timeout: 60_000 });
+}
+
 setup("authenticate", async ({ page }) => {
   const email = process.env.PLAYWRIGHT_USERNAME || "";
   const password = process.env.PLAYWRIGHT_PASSWORD || "";
@@ -112,6 +141,7 @@ setup("authenticate", async ({ page }) => {
   }
   // Keyed by project name (setup-chromium, …): the journeys and scripts/screenshots.mjs read it.
   await signIn(page, email, password, `user-${setup.info().project.name}.json`);
+  await walkFirstRun(page);
 });
 
 setup("authenticate the member", async ({ page, browserName }) => {
