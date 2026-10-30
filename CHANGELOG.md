@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.0](https://github.com/iblai/crm/compare/v1.5.0...v1.6.0) (2026-10-30)
+
+### Features
+
+* sample data on main, checkouts to the app URL, iblai-js 2.59.0 (profile fix) ([a5db3ab](https://github.com/iblai/crm/commit/a5db3ab00ecc33ed59a50557538fa642198de5c2))
+
 ## [1.5.0](https://github.com/iblai/crm/compare/v1.4.0...v1.5.0) (2026-10-27)
 
 ### Features
