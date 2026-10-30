@@ -38,6 +38,12 @@ describe("createOrganizationUrl", () => {
     expect(cancel.searchParams.get("redirect-to")).toBe(`${origin}/join`);
   });
 
+  it("is the direct join URL for the hosted CRM, byte for byte", () => {
+    expect(createOrganizationUrl(config.appUrl())).toBe(
+      "https://api.iblai.app/dm/api/service/stripe/checkout/redirect/credits-free-plan/?redirect_url=https%3A%2F%2Flogin.iblai.app%2Flogin%3Fapp%3Dcrm%26redirect-to%3Dhttps%253A%252F%252Fcrm.iblai.me&cancel_url=https%3A%2F%2Flogin.iblai.app%2Flogin%3Fapp%3Dcrm%26redirect-to%3Dhttps%253A%252F%252Fcrm.iblai.me%252Fjoin",
+    );
+  });
+
   it("encodes the login URL once more inside redirect_url", () => {
     expect(createOrganizationUrl(origin)).toContain("redirect-to%3Dhttps%253A%252F%252F");
   });

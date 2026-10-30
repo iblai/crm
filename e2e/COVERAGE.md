@@ -1,6 +1,6 @@
 # ibl.ai/crm E2E coverage — user journey checklist
 
-> Last updated: 2026-10-28 | 105 checkpoints (105 covered, 0 pending, 0 deprecated) | 17 journeys | 100% covered | Auth: admin + member storageState
+> Last updated: 2026-10-30 | 112 checkpoints (112 covered, 0 pending, 0 deprecated) | 18 journeys | 100% covered | Auth: admin + member storageState
 
 ## How this works
 
@@ -22,7 +22,7 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 
 ---
 
-## Journey 1: Authentication (9 checkpoints) — `journeys/01-authentication.spec.ts`
+## Journey 1: Authentication (10 checkpoints) — `journeys/01-authentication.spec.ts`
 
 **Source files:** `app/page.tsx`, `app/join/page.tsx`, `app/error/[code]/page.tsx`, `app/mobile-sso-login/page.tsx`, `app/api/auth-redirect/route.ts`, `providers/iblai-providers.tsx`, `lib/iblai/auth-utils.ts`, `lib/iblai/auth-redirect.ts`, `lib/iblai/tenant.ts`, `components/notice-card.tsx`
 
@@ -35,6 +35,7 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 - [x] auth-07 an unknown error code falls back to the generic title
 - [x] auth-08 the auth-redirect hop refuses any target but the Auth SPA
 - [x] auth-09 a malformed native sign-in payload lands on the 400 page
+- [x] auth-10 /join's Create your organization opens the $0 checkout that returns to this app
 
 ---
 
@@ -243,5 +244,18 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 **Source files:** `app/platform/[tenantKey]/page.tsx`, `app/platform/[tenantKey]/people/page.tsx`, `app/platform/[tenantKey]/organizations/page.tsx`, `app/platform/[tenantKey]/deals/page.tsx`, `app/platform/[tenantKey]/activities/page.tsx`, `app/platform/[tenantKey]/tags/page.tsx`, `app/platform/[tenantKey]/settings/page.tsx`, `app/platform/[tenantKey]/notifications/[[...id]]/page.tsx`
 
 - [x] a11y-01 every page has no serious or critical axe violations
+
+---
+
+## Journey 18: Sample Data (6 checkpoints) — `journeys/18-sample-data.spec.ts`
+
+**Source files:** `app/platform/[tenantKey]/page.tsx`, `app/platform/[tenantKey]/people/page.tsx`, `app/platform/[tenantKey]/people/[id]/page.tsx`, `app/platform/[tenantKey]/organizations/page.tsx`, `app/platform/[tenantKey]/deals/page.tsx`, `app/platform/[tenantKey]/activities/page.tsx`, `app/platform/[tenantKey]/tags/page.tsx`, `components/crm/sample-notice.tsx`, `components/crm/upgrade-modal.tsx`, `lib/crm/sample/respond.ts`, `lib/crm/permissions.ts`
+
+- [x] smp-01 home carries the sample notice and the sample's recent deals
+- [x] smp-02 People lists the sample people and a person's record opens
+- [x] smp-03 Organizations, Deals, Activities and Tags show the sample's rows
+- [x] smp-04 creating a person opens the upgrade dialog and reaches no platform
+- [x] smp-05 the sample grants no admin surface: no Settings row, no Admin mode switch
+- [x] smp-06 the upgrade dialog's Upgrade for free opens the CRM's $0 checkout (skips until web-containers carries `checkoutUrl`, iblai-web-frontend#2195)
 
 ---

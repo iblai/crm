@@ -57,6 +57,23 @@ describe("decideEntry", () => {
     expect(decideEntry([member, admin], noView, "acme")).toEqual({ switchTo: "globex" });
   });
 
+  it("lets a user with no rights on the community organization browse its sample data", () => {
+    const onMain = { "/platforms/main/": { can_write_crm_persons: true } };
+    expect(decideEntry([{ key: "main" }], onMain, "main", null, "main")).toBe("sample");
+    expect(decideEntry([{ key: "main" }], {}, "main", null, "main")).toBe("sample");
+    expect(decideEntry([], {}, "main", null, "main")).toBe("sample");
+  });
+
+  it("keeps the real community organization for its admins and CRM viewers, and moves the rest home", () => {
+    expect(decideEntry([{ key: "main", is_admin: true }], {}, "main", null, "main")).toBe("enter");
+    const viewer = { "/platforms/main/": { can_view_crm_persons: true } };
+    expect(decideEntry([{ key: "main" }], viewer, "main", null, "main")).toBe("enter");
+    expect(decideEntry([{ key: "main" }, admin], {}, "main", null, "main")).toEqual({
+      switchTo: "globex",
+    });
+    expect(decideEntry([member], noView, "acme", null, "main")).toBe("register");
+  });
+
   it("sends a user with nowhere to go to registration", () => {
     expect(decideEntry([member], noView, "acme")).toBe("register");
     expect(decideEntry([member], noView, "acme", null)).toBe("register");

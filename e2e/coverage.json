@@ -1,14 +1,14 @@
 {
   "version": 2,
-  "lastUpdated": "2026-10-28",
+  "lastUpdated": "2026-10-30",
   "summary": {
-    "totalCheckpoints": 105,
-    "coveredCheckpoints": 105,
+    "totalCheckpoints": 112,
+    "coveredCheckpoints": 112,
     "pendingCheckpoints": 0,
     "deprecatedCheckpoints": 0,
     "percent": 100,
-    "totalJourneys": 17,
-    "activeJourneys": 17
+    "totalJourneys": 18,
+    "activeJourneys": 18
   },
   "journeys": [
     {
@@ -71,6 +71,11 @@
         {
           "id": "auth-09",
           "description": "a malformed native sign-in payload lands on the 400 page",
+          "status": "covered"
+        },
+        {
+          "id": "auth-10",
+          "description": "/join's Create your organization opens the $0 checkout that returns to this app",
           "status": "covered"
         }
       ]
@@ -806,6 +811,56 @@
         {
           "id": "a11y-01",
           "description": "every page has no serious or critical axe violations",
+          "status": "covered"
+        }
+      ]
+    },
+    {
+      "id": "sample-data",
+      "name": "Sample Data",
+      "spec": "18-sample-data.spec.ts",
+      "sourceFiles": [
+        "app/platform/[tenantKey]/page.tsx",
+        "app/platform/[tenantKey]/people/page.tsx",
+        "app/platform/[tenantKey]/people/[id]/page.tsx",
+        "app/platform/[tenantKey]/organizations/page.tsx",
+        "app/platform/[tenantKey]/deals/page.tsx",
+        "app/platform/[tenantKey]/activities/page.tsx",
+        "app/platform/[tenantKey]/tags/page.tsx",
+        "components/crm/sample-notice.tsx",
+        "components/crm/upgrade-modal.tsx",
+        "lib/crm/sample/respond.ts",
+        "lib/crm/permissions.ts"
+      ],
+      "checkpoints": [
+        {
+          "id": "smp-01",
+          "description": "home carries the sample notice and the sample's recent deals",
+          "status": "covered"
+        },
+        {
+          "id": "smp-02",
+          "description": "People lists the sample people and a person's record opens",
+          "status": "covered"
+        },
+        {
+          "id": "smp-03",
+          "description": "Organizations, Deals, Activities and Tags show the sample's rows",
+          "status": "covered"
+        },
+        {
+          "id": "smp-04",
+          "description": "creating a person opens the upgrade dialog and reaches no platform",
+          "status": "covered"
+        },
+        {
+          "id": "smp-05",
+          "description": "the sample grants no admin surface: no Settings row, no Admin mode switch",
+          "status": "covered"
+        },
+        {
+          "id": "smp-06",
+          "description": "the upgrade dialog's Upgrade for free opens the CRM's $0 checkout",
           "status": "covered"
         }
       ]

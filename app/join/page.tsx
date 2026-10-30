@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { NOTICE_PRIMARY, NOTICE_SECONDARY, NoticeCard } from "@/components/notice-card";
+import config from "@/lib/iblai/config";
 import { createOrganizationUrl } from "@/lib/iblai/auth-redirect";
 import { handleLogout } from "@/lib/iblai/auth-utils";
 import { readUserEmail } from "@/lib/iblai/tenant";
@@ -20,7 +21,7 @@ export default function JoinPage() {
       <button
         type="button"
         onClick={() =>
-          window.location.assign(createOrganizationUrl(window.location.origin, readUserEmail()))
+          window.location.assign(createOrganizationUrl(config.appUrl(), readUserEmail()))
         }
         className={NOTICE_PRIMARY}
       >

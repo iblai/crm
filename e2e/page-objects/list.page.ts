@@ -75,8 +75,9 @@ export class ListPage {
     return this.rows.filter({ hasText: text });
   }
 
+  /** Clicks the row's own text: the row's middle can be a nested link (a person's organization). */
   async open(text: string) {
-    await this.row(text).first().click();
+    await this.row(text).first().getByText(text, { exact: true }).first().click();
   }
 
   /** The view picker button: the saved view's name, or "All". */

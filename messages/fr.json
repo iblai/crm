@@ -954,7 +954,10 @@
     "organization": "Organisation",
     "switchedBack": "Vous ne pouvez pas voir les données du CRM dans {from}, vous êtes donc maintenant dans {to}.",
     "toggleSidebar": "Afficher ou masquer la barre latérale",
-    "toggleSidebarHint": "Réduire ou développer la barre latérale (⌘B)"
+    "toggleSidebarHint": "Réduire ou développer la barre latérale (⌘B)",
+    "sample": {
+      "body": "Vous consultez des données fictives : des personnes, des organisations et des affaires inventées. Votre propre organisation démarre vide et vous appartient."
+    }
   },
   "tags": {
     "card": {

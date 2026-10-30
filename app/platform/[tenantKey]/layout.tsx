@@ -12,6 +12,9 @@ import { CommandPaletteProvider } from "@/components/crm/command-palette";
 import { AdminModeProvider, useCanManageCrm } from "@/components/crm/admin-mode";
 import { LanguagePreferenceSync } from "@/components/language-preference-sync";
 import { LoadingScreen } from "@/components/loading-screen";
+import { SampleNotice } from "@/components/crm/sample-notice";
+import { UpgradeModal } from "@/components/crm/upgrade-modal";
+import { useSampleMode } from "@/hooks/use-sample-mode";
 import { useSession } from "@/hooks/use-session";
 
 // The SDK sidebar remembers its desktop state in this cookie.
@@ -29,12 +32,14 @@ function readSidebarOpen(): boolean {
 export default function TenantLayout({ children }: { children: ReactNode }) {
   const { isAdmin, tenantKey } = useSession();
   const [sidebarOpen] = useState(readSidebarOpen);
+  const sample = useSampleMode();
 
   if (!tenantKey) return <LoadingScreen />;
 
   return (
     <AdminModeProvider isAdmin={isAdmin} tenantKey={tenantKey}>
       <LanguagePreferenceSync />
+      <UpgradeModal org={tenantKey} />
       <TooltipProvider>
         <AccountSheetProvider>
           <CommandPaletteProvider>
@@ -48,6 +53,7 @@ export default function TenantLayout({ children }: { children: ReactNode }) {
                   >
                     <div>
                       <TopBar />
+                      {sample ? <SampleNotice /> : null}
                       <AdminGate>
                         <main
                           id="main-content"

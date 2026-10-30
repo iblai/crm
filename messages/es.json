@@ -954,7 +954,10 @@
     "organization": "Organización",
     "switchedBack": "No puedes ver los datos del CRM en {from}, así que ahora estás en {to}.",
     "toggleSidebar": "Mostrar u ocultar la barra lateral",
-    "toggleSidebarHint": "Contrae o expande la barra lateral (⌘B)"
+    "toggleSidebarHint": "Contrae o expande la barra lateral (⌘B)",
+    "sample": {
+      "body": "Estás viendo datos de muestra: personas, organizaciones y negocios ficticios. Tu propia organización empieza vacía y es tuya para dirigirla."
+    }
   },
   "tags": {
     "card": {

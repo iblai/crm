@@ -13,6 +13,9 @@ import { createApi, fetchBaseQuery, type FetchBaseQueryError } from "@reduxjs/to
 import config from "@/lib/iblai/config";
 import { LOCAL_STORAGE_KEYS } from "@/lib/iblai/auth-utils";
 import { readCurrentTenantKey, tenantMismatch } from "@/lib/iblai/tenant";
+import { selectRbacPermissions, setOpenPricingModal } from "@iblai/iblai-js/web-utils";
+import { sampleSession, sampleVisitor } from "./sample/mode";
+import { NOT_FOUND, sampleResponse } from "./sample/respond";
 import { detailFromBody } from "./errors";
 import type {
   Activity,
@@ -117,6 +120,21 @@ const baseQuery: typeof rawBaseQuery = async (args, api, extra) => {
     // No detail: the caller's translated fallback shows while the navigation lands.
     const error: FetchBaseQueryError = { status: "CUSTOM_ERROR", error: "" };
     return { error };
+  }
+  // The community organization runs on the sample: reads answer locally, a write upgrades.
+  if (
+    typeof window !== "undefined" &&
+    sampleSession(selectRbacPermissions(api.getState() as never), window.location.pathname)
+  ) {
+    const request = typeof args === "string" ? { url: args } : args;
+    const data = sampleResponse(request.method ?? "GET", request.url, request.params, {
+      now: new Date(),
+      visitor: sampleVisitor(),
+    });
+    if (data !== undefined && data !== NOT_FOUND) return { data };
+    if (data === undefined) api.dispatch(setOpenPricingModal(true));
+    const error: CrmApiError = { status: data === NOT_FOUND ? 404 : "SAMPLE", detail: "" };
+    return { error: error as unknown as FetchBaseQueryError };
   }
   const result = await rawBaseQuery(args, api, extra);
   if (result.error) {

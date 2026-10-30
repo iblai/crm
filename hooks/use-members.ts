@@ -3,6 +3,9 @@
 import { useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { usePlatformUsersQuery } from "@iblai/iblai-js/data-layer";
+import { useSampleMode } from "@/hooks/use-sample-mode";
+import { sampleMembers } from "@/lib/crm/sample/data";
+import { sampleVisitor } from "@/lib/crm/sample/mode";
 import type { PlatformMember } from "@/lib/crm/types";
 
 /**
@@ -12,12 +15,20 @@ import type { PlatformMember } from "@/lib/crm/types";
  * showing a user id).
  */
 export function useMembers(tenantKey: string, options?: { skip?: boolean; query?: string }) {
+  // The sample's owners stand in for the community organization's directory.
+  const sample = useSampleMode();
   const { data, isLoading, isError } = usePlatformUsersQuery(
     { platform_key: tenantKey, page_size: 200, query: options?.query },
-    { skip: !tenantKey || options?.skip },
+    { skip: !tenantKey || options?.skip || sample },
   );
 
   const members = useMemo<PlatformMember[]>(() => {
+    if (sample) {
+      const q = (options?.query ?? "").toLowerCase();
+      return sampleMembers(sampleVisitor()).filter(
+        (m) => !q || `${m.name ?? ""} ${m.username}`.toLowerCase().includes(q),
+      );
+    }
     const results = (data as { results?: unknown } | undefined)?.results;
     const rows: Array<Record<string, unknown>> = Array.isArray(results)
       ? (results as Array<Record<string, unknown>>)
@@ -32,7 +43,7 @@ export function useMembers(tenantKey: string, options?: { skip?: boolean; query?
         name: typeof r.name === "string" && r.name ? r.name : undefined,
       }))
       .filter((m) => Number.isFinite(m.id));
-  }, [data]);
+  }, [data, sample, options?.query]);
 
   const byId = useMemo(() => new Map(members.map((m) => [m.id, m])), [members]);
 

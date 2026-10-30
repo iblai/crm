@@ -25,6 +25,7 @@ const env = {
   NEXT_PUBLIC_IBL_PLATFORM: process.env.NEXT_PUBLIC_IBL_PLATFORM,
   NEXT_PUBLIC_TAURI_CUSTOM_SCHEME: process.env.NEXT_PUBLIC_TAURI_CUSTOM_SCHEME,
   NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+  NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   NEXT_PUBLIC_SUPPORT_EMAIL: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
   NEXT_PUBLIC_HELP_CENTER_URL: process.env.NEXT_PUBLIC_HELP_CENTER_URL,
   NEXT_PUBLIC_DOCUMENTATION_URL: process.env.NEXT_PUBLIC_DOCUMENTATION_URL,
@@ -100,6 +101,8 @@ const config = {
   platformBaseDomain: () => domain(),
 
   appName: () => getEnv("NEXT_PUBLIC_APP_NAME", "ibl.ai/crm"),
+  /** This app's public URL: where ibl.ai's $0 checkout returns a new organization's admin. */
+  appUrl: () => getEnv("NEXT_PUBLIC_APP_URL", "https://crm.iblai.me").replace(/\/+$/, ""),
   supportEmail: () => getEnv("NEXT_PUBLIC_SUPPORT_EMAIL", "support@ibl.ai"),
   helpCenterUrl: () => getEnv("NEXT_PUBLIC_HELP_CENTER_URL", "https://ibl.ai/support"),
   documentationUrl: () => getEnv("NEXT_PUBLIC_DOCUMENTATION_URL", "https://ibl.ai/docs"),

@@ -15,6 +15,7 @@ const PUBLIC_KEYS = [
   "NEXT_PUBLIC_IBL_PLATFORM",
   "NEXT_PUBLIC_TAURI_CUSTOM_SCHEME",
   "NEXT_PUBLIC_APP_NAME",
+  "NEXT_PUBLIC_APP_URL",
   "NEXT_PUBLIC_SUPPORT_EMAIL",
   "NEXT_PUBLIC_HELP_CENTER_URL",
   "NEXT_PUBLIC_DOCUMENTATION_URL",
@@ -68,6 +69,7 @@ describe("hosted iblai.app defaults", () => {
     expect(config.baseWsUrl()).toBe("wss://asgi.data.iblai.app");
     expect(config.legacyLmsUrl()).toBe("https://learn.iblai.app");
     expect(config.appName()).toBe("ibl.ai/crm");
+    expect(config.appUrl()).toBe("https://crm.iblai.me");
     expect(config.supportEmail()).toBe("support@ibl.ai");
     expect(config.documentationUrl()).toBe("https://ibl.ai/docs");
     expect(config.helpCenterUrl()).toBe("https://ibl.ai/support");
@@ -92,6 +94,12 @@ describe("build-time env overrides", () => {
     expect(config.dmUrl()).toBe("https://api.example.org/dm");
     expect(config.lmsUrl()).toBe("https://api.example.org/lms");
     expect(config.axdUrl()).toBe("https://api.example.org/axd");
+  });
+
+  it("honors an explicit app URL, without its trailing slash", async () => {
+    process.env.NEXT_PUBLIC_APP_URL = "https://crm.example.edu/";
+    const config = await loadConfig();
+    expect(config.appUrl()).toBe("https://crm.example.edu");
   });
 
   it("honors the community org key and the sign-in app", async () => {

@@ -954,7 +954,10 @@
     "organization": "Organization",
     "switchedBack": "You can’t see CRM data in {from}, so you’re in {to} now.",
     "toggleSidebar": "Toggle sidebar",
-    "toggleSidebarHint": "Collapse or expand the sidebar (⌘B)"
+    "toggleSidebarHint": "Collapse or expand the sidebar (⌘B)",
+    "sample": {
+      "body": "You’re looking at sample data: fictional people, organizations and deals. Your own organization starts empty and is yours to run."
+    }
   },
   "tags": {
     "card": {

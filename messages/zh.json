@@ -954,7 +954,10 @@
     "organization": "组织",
     "switchedBack": "您无法查看 {from} 的 CRM 数据，因此现在您位于 {to}。",
     "toggleSidebar": "切换侧边栏",
-    "toggleSidebarHint": "折叠或展开侧边栏（⌘B）"
+    "toggleSidebarHint": "折叠或展开侧边栏（⌘B）",
+    "sample": {
+      "body": "您正在查看示例数据：虚构的联系人、组织和商机。您自己的组织从空白开始，由您管理。"
+    }
   },
   "tags": {
     "card": {

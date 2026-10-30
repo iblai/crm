@@ -13,6 +13,8 @@ export default defineConfig({
         "lib/crm/errors.ts",
         "lib/crm/format.ts",
         "lib/crm/permissions.ts",
+        "lib/crm/sample/data.ts",
+        "lib/crm/sample/respond.ts",
         "lib/crm/views.ts",
         "lib/iblai/tenant.ts",
         "lib/locale-cookie.ts",

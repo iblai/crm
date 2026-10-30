@@ -86,7 +86,8 @@ function orgLabel(key: string, generic: string): string {
 /**
  * Where a signed-in user may work: an organization whose CRM data they can
  * see. No access here → back to the one they came from, or one they
- * administer; none of their own → ibl.ai registration, then back here.
+ * administer; none of their own → ibl.ai registration, then back here — or,
+ * on the community organization, its sample data.
  */
 function OrganizationGate({ tenantKey, children }: { tenantKey: string; children: ReactNode }) {
   const t = useTranslations("shell");
@@ -103,6 +104,7 @@ function OrganizationGate({ tenantKey, children }: { tenantKey: string; children
     permissions,
     tenantKey,
     arrival.bouncedFrom ? null : arrival.from,
+    config.mainTenantKey(),
   );
   const register = entry === "register";
   const switchTo = typeof entry === "object" ? entry.switchTo : "";
@@ -110,7 +112,7 @@ function OrganizationGate({ tenantKey, children }: { tenantKey: string; children
     sessionStorage.removeItem(SWITCH_FROM);
     sessionStorage.removeItem(SWITCHED_BACK_FROM);
     if (register) {
-      window.location.replace(createOrganizationUrl(window.location.origin, readUserEmail()));
+      window.location.replace(createOrganizationUrl(config.appUrl(), readUserEmail()));
     } else if (switchTo) {
       sessionStorage.setItem(SWITCHED_BACK_FROM, tenantKey);
       void handleTenantSwitch(switchTo);

@@ -93,6 +93,29 @@ test.describe("Journey 1: Authentication — Unauthenticated", () => {
     await expect(page.getByRole("button", { name: "Create your organization" })).toBeVisible();
   });
 
+  test("auth-10: /join's Create your organization opens the $0 checkout that returns to this app", async ({
+    page,
+  }) => {
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://crm.iblai.me").replace(/\/+$/, "");
+    let checkout = "";
+    // Answered here, so the run never reaches the checkout.
+    await page.route(/credits-free-plan/, (route) => {
+      checkout = route.request().url();
+      return route.fulfill({ status: 204, body: "" });
+    });
+    await page.goto(`${APP_HOST}/join`);
+    await page.getByRole("button", { name: "Create your organization" }).click();
+    await expect
+      .poll(() => checkout)
+      .toContain("/api/service/stripe/checkout/redirect/credits-free-plan/");
+    const params = new URL(checkout).searchParams;
+    const back = new URL(params.get("redirect_url") ?? "");
+    const cancel = new URL(params.get("cancel_url") ?? "");
+    expect(back.searchParams.get("app")).toBe("crm");
+    expect(back.searchParams.get("redirect-to")).toBe(appUrl);
+    expect(cancel.searchParams.get("redirect-to")).toBe(`${appUrl}/join`);
+  });
+
   test("auth-06: the 403 and 404 pages name the problem and offer a way home", async ({ page }) => {
     await page.goto(`${APP_HOST}/error/403`);
     await expect(
