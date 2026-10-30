@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.7.1](https://github.com/iblai/crm/compare/v1.7.0...v1.7.1) (2026-10-30)
+
+### Chores
+
+* merge main ([ba9d231](https://github.com/iblai/crm/commit/ba9d231a1a2063073cda410b97398c807267d115))
+
 ## [1.7.0](https://github.com/iblai/crm/compare/v1.6.1...v1.7.0) (2026-10-30)
 
 ### Features
