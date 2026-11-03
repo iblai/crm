@@ -3,13 +3,14 @@
 Native builds of ibl.ai/crm are produced by the release workflows in
 [`.github/workflows/`](../.github/workflows/) and attached to GitHub Releases:
 
-| Surface                            | Workflow                                                                            | Trigger                                | Artifact                                  |
-| ---------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------- | ----------------------------------------- |
-| macOS (Universal)                  | [`tauri-release-macos-dmg.yml`](../.github/workflows/tauri-release-macos-dmg.yml)   | push an `app-v*` tag (or run manually) | signed & notarized `.dmg`                 |
-| Windows x64/arm64                  | [`tauri-release-windows.yml`](../.github/workflows/tauri-release-windows.yml)       | push an `app-v*` tag (or run manually) | signed NSIS `-setup.exe`                  |
-| Windows MSIX                       | [`tauri-build-windows-msix.yml`](../.github/workflows/tauri-build-windows-msix.yml) | run manually                           | `.msix` for sideloading / Microsoft Store |
-| Linux · macOS · Windows (unsigned) | [`tauri-build-desktop.yml`](../.github/workflows/tauri-build-desktop.yml)           | run manually                           | `.deb`, AppImage, `.app`, `.exe`          |
-| iOS                                | [`tauri-build-ios.yml`](../.github/workflows/tauri-build-ios.yml)                   | run manually                           | `.ipa` (App Store Connect export)         |
+| Surface                            | Workflow                                                                            | Trigger                                | Artifact                                   |
+| ---------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------------------ |
+| macOS (Universal)                  | [`tauri-release-macos-dmg.yml`](../.github/workflows/tauri-release-macos-dmg.yml)   | push an `app-v*` tag (or run manually) | signed & notarized `.dmg`                  |
+| Windows x64/arm64                  | [`tauri-release-windows.yml`](../.github/workflows/tauri-release-windows.yml)       | push an `app-v*` tag (or run manually) | signed NSIS `-setup.exe`                   |
+| Windows MSIX                       | [`tauri-build-windows-msix.yml`](../.github/workflows/tauri-build-windows-msix.yml) | run manually                           | `.msix` for sideloading / Microsoft Store  |
+| Linux · macOS · Windows (unsigned) | [`tauri-build-desktop.yml`](../.github/workflows/tauri-build-desktop.yml)           | run manually                           | AppImage, `.app` + `.dmg`, `.exe` + `.msi` |
+| iOS                                | [`tauri-build-ios.yml`](../.github/workflows/tauri-build-ios.yml)                   | run manually                           | `.ipa` (App Store Connect export)          |
+| Android                            | [`tauri-build-android.yml`](../.github/workflows/tauri-build-android.yml)           | run manually                           | unsigned `.aab` + `.apk`                   |
 
 The native app is versioned independently of the web app (its own `app-v<X>`
 line, from `src-tauri/tauri.conf.json`).

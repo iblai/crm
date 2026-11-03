@@ -4,10 +4,6 @@
 
 # ibl.ai/crm
 
-[![Watch the intro video](https://img.youtube.com/vi/F8TiTHwSaD0/maxresdefault.jpg)](https://www.youtube.com/watch?v=F8TiTHwSaD0)
-
-**▶︎ [Watch the intro video](https://www.youtube.com/watch?v=F8TiTHwSaD0)** &nbsp;·&nbsp; _Organizations, people, deals, activities and tags in under five minutes_
-
 **The open-source CRM for organizations on the ibl.ai platform.**
 
 People, organizations, deals, activities and tags — for every organization you belong to, with ibl.ai single sign-on and roles built in. One codebase. Every platform. Your data, your organization, your rules.
@@ -38,7 +34,13 @@ People, organizations, deals, activities and tags — for every organization you
 
 <br>
 
-[Why ibl.ai/crm](#why-iblaicrm) · [Every platform](#every-platform-one-codebase) · [Features](#features) · [Screenshots](#screenshots) · [Quick Start](#quick-start) · [Deployment](#deployment) · [Architecture](#architecture)
+[![Watch the intro video](https://img.youtube.com/vi/F8TiTHwSaD0/maxresdefault.jpg)](https://www.youtube.com/watch?v=F8TiTHwSaD0)
+
+**▶︎ [Watch the intro video](https://www.youtube.com/watch?v=F8TiTHwSaD0)** &nbsp;·&nbsp; _Organizations, people, deals, activities and tags in under five minutes_
+
+<br>
+
+[Why ibl.ai/crm](#why-iblaicrm) · [Every platform](#every-platform-one-codebase) · [Features](#features) · [Case studies](#case-studies) · [Screenshots](#screenshots) · [Quick Start](#quick-start) · [Deployment](#deployment) · [Architecture](#architecture)
 
 </div>
 
@@ -76,9 +78,9 @@ ibl.ai/crm meets your team wherever they are — the same product, native everyw
 | **Web**     | 🌐  | Coming soon at **crm.ibl.ai** — today, [run it locally](#quick-start) or [deploy it yourself](#deployment)                                                 |
 | **macOS**   | 🍎  | Native app (universal .dmg, Intel + Apple Silicon) — built by the [release workflow](.github/workflows/tauri-release-macos-dmg.yml); downloads coming soon |
 | **Windows** | 🪟  | Native app (x64 + ARM64 installer) — built by the [release workflow](.github/workflows/tauri-release-windows.yml); downloads coming soon                   |
-| **Linux**   | 🐧  | Native app (`.deb` / AppImage) — built by the [desktop build workflow](.github/workflows/tauri-build-desktop.yml); downloads coming soon                   |
+| **Linux**   | 🐧  | Native app (AppImage) — built by the [desktop build workflow](.github/workflows/tauri-build-desktop.yml); downloads coming soon                            |
 | **iOS**     | 📱  | Native app — built by the [iOS workflow](.github/workflows/tauri-build-ios.yml); App Store listing coming soon                                             |
-| **Android** | 🤖  | Coming soon — the Android project is not set up yet (`pnpm tauri android init`)                                                                            |
+| **Android** | 🤖  | Native app — built by the [Android workflow](.github/workflows/tauri-build-android.yml); Google Play listing coming soon                                   |
 
 </div>
 
@@ -126,11 +128,19 @@ The native apps are [Tauri 2](https://tauri.app) WebView shells around the hoste
 - **SSO & roles** — ibl.ai sign-in; CRM Viewer / User / Manager / Inviter roles assigned in the sidebar's Management dialog (the SDK's Management surface)
 - **Notifications** — person created, deal stage changed, person linked to user — in the bell and the notifications center
 - **⌘K** — one server-side search across people, organizations and deals; jump anywhere; create anything
-- **Native shells** — macOS, Windows, Linux and iOS via Tauri 2; Android and published builds coming soon
+- **Native shells** — macOS, Windows, Linux, iOS and Android via Tauri 2; published builds coming soon
 
 </td>
 </tr>
 </table>
+
+---
+
+## Case studies
+
+Universities, enterprises, and government agencies build on ibl.ai — deploying agents on their own infrastructure, with their own models, at a fraction of the cost of closed platforms.
+
+**[Read the case studies →](https://ibl.ai/case-studies)**
 
 ---
 
@@ -153,7 +163,7 @@ pnpm install --ignore-scripts
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). It sends you to [login.iblai.app](https://login.iblai.app), where Sign Up creates an organization at ibl.ai and brings you back signed in; you land on `/platform/<your-org>` — the CRM of the organization your session is scoped to. Use the switcher in the profile menu to move between organizations.
+Open [http://localhost:3000](http://localhost:3000). It sends you to [login.iblai.app](https://login.iblai.app), where Sign Up creates an organization at ibl.ai and brings you back signed in; you land on `/platform/<your-org>` — the CRM of the organization your session is scoped to. Use the switcher in the profile menu to move between organizations. A user whose only organization is the community one gets its trial-gated shell there, on a sample organization; an admin’s first visit opens the setup flow. See the full [Development Guide](docs/development.md) for setup, scripts, architecture and configuration.
 
 No configuration is required against hosted `iblai.app`: the service URLs default in [`lib/iblai/config.ts`](lib/iblai/config.ts). Copy `.env.example` to `.env.local` only to point at a self-hosted platform or to change the community org (`NEXT_PUBLIC_MAIN_TENANT_KEY`, default `main`).
 
@@ -165,23 +175,21 @@ Node.js 22+ and pnpm 12 (`corepack enable` picks the pinned version up from `pac
 
 ### Scripts
 
-| Command              | What it does                                                                                            |
-| -------------------- | ------------------------------------------------------------------------------------------------------- |
-| `pnpm dev`           | Dev server on port 3000                                                                                 |
-| `pnpm build`         | Production build (standalone output)                                                                    |
-| `pnpm start`         | Serve the production build                                                                              |
-| `pnpm typecheck`     | TypeScript 7                                                                                            |
-| `pnpm lint`          | oxlint, under a warning budget (`--max-warnings`)                                                       |
-| `pnpm format`        | oxfmt (`pnpm format:check` in CI)                                                                       |
-| `pnpm i18n:check`    | Same keys in the four catalogs; no “tenant”, no “company”, no ASCII apostrophe                          |
-| `pnpm test`          | Vitest unit tests (`pnpm test:coverage` in CI: 85 % lines on `lib/`)                                    |
-| `pnpm test:e2e`      | Playwright journeys, Chromium and a phone (`pnpm test:e2e:all` for every browser)                       |
-| `pnpm e2e:accounts`  | Once: the two e2e test accounts in the throwaway organization `iblai.env` names                         |
-| `pnpm e2e:coverage`  | The journey registry (`e2e/coverage.json`) against the specs and the app's pages                        |
-| `pnpm release`       | release-it: version from the commits, CHANGELOG, tag, GitHub Release (CI runs it on every push to main) |
-| `pnpm tauri dev`     | Desktop shell in dev mode (needs Rust)                                                                  |
-| `pnpm tauri build`   | Desktop installer for the current platform                                                              |
-| `pnpm tauri ios dev` | iOS simulator (needs Xcode)                                                                             |
+| Command                          | What it does                                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`                       | Dev server on port 3000                                                                                 |
+| `pnpm build`                     | Production build (standalone output)                                                                    |
+| `pnpm start`                     | Serve the production build                                                                              |
+| `pnpm typecheck`                 | TypeScript 7                                                                                            |
+| `pnpm lint`                      | oxlint, under a warning budget (`--max-warnings`)                                                       |
+| `pnpm format`                    | oxfmt (`pnpm format:check` in CI)                                                                       |
+| `pnpm i18n:check`                | Same keys in the four catalogs; no “tenant”, no “company”, no ASCII apostrophe                          |
+| `pnpm test`                      | Vitest unit tests (`pnpm test:coverage` in CI: 85 % lines on `lib/`)                                    |
+| `pnpm test:e2e`                  | Playwright journeys, Chromium and a phone (`pnpm test:e2e:all` for every browser)                       |
+| `pnpm e2e:accounts`              | Once: the two e2e test accounts in the throwaway organization `iblai.env` names                         |
+| `pnpm e2e:coverage`              | The journey registry (`e2e/coverage.json`) against the specs and the app's pages                        |
+| `pnpm release`                   | release-it: version from the commits, CHANGELOG, tag, GitHub Release (CI runs it on every push to main) |
+| `pnpm tauri:dev` / `tauri:build` | Desktop shell (needs Rust); `pnpm tauri:dev:ios` / `tauri:dev:android` for a simulator or emulator      |
 
 ---
 
@@ -241,16 +249,16 @@ IBL_TENANT=acme pnpm tauri build   # a build meant for the "acme" organization
 
 All app config is `NEXT_PUBLIC_*` and optional against hosted `iblai.app`. Defaults live in [`lib/iblai/config.ts`](lib/iblai/config.ts).
 
-| Variable                           | Default                   | Description                                                                         |
-| ---------------------------------- | ------------------------- | ----------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_API_BASE_URL`         | `https://api.iblai.app`   | Consolidated API; `/dm` (CRM), `/lms`, `/axd` are derived from it                   |
-| `NEXT_PUBLIC_AUTH_URL`             | `https://login.iblai.app` | The hosted Auth SPA                                                                 |
-| `NEXT_PUBLIC_PLATFORM_BASE_DOMAIN` | `iblai.app`               | Base domain; with no API base, services resolve to their own subdomains             |
-| `NEXT_PUBLIC_MAIN_TENANT_KEY`      | `main`                    | The community organization — the default when nothing else resolves                 |
-| `NEXT_PUBLIC_IBL_PLATFORM`         | `crm`                     | `app=` sent to the Auth SPA (its `crm` app: CRM copy, Sign Up goes to registration) |
-| `NEXT_PUBLIC_TAURI_CUSTOM_SCHEME`  | `iblai-crm`               | Deep-link scheme the native shells return through after SSO                         |
-| `NEXT_PUBLIC_DEFAULT_CURRENCY`     | `USD`                     | Currency preselected on new deals                                                   |
-| `NEXT_PUBLIC_ENABLE_RBAC`          | `false`                   | Gate SDK admin surfaces on RBAC policies as well as the admin flag                  |
+| Variable                           | Default                   | Description                                                                               |
+| ---------------------------------- | ------------------------- | ----------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_BASE_URL`         | `https://api.iblai.app`   | Consolidated API; `/dm` (CRM), `/lms`, `/axd` are derived from it                         |
+| `NEXT_PUBLIC_AUTH_URL`             | `https://login.iblai.app` | The hosted Auth SPA                                                                       |
+| `NEXT_PUBLIC_PLATFORM_BASE_DOMAIN` | `iblai.app`               | Base domain; with no API base, services resolve to their own subdomains                   |
+| `NEXT_PUBLIC_MAIN_TENANT_KEY`      | `main`                    | The community organization — the trial-gated shell for a user who belongs to nothing else |
+| `NEXT_PUBLIC_IBL_PLATFORM`         | `crm`                     | `app=` sent to the Auth SPA (its `crm` app: CRM copy, Sign Up goes to registration)       |
+| `NEXT_PUBLIC_TAURI_CUSTOM_SCHEME`  | `iblai-crm`               | Deep-link scheme the native shells return through after SSO                               |
+| `NEXT_PUBLIC_DEFAULT_CURRENCY`     | `USD`                     | Currency preselected on new deals                                                         |
+| `NEXT_PUBLIC_ENABLE_RBAC`          | `false`                   | Gate SDK admin surfaces on RBAC policies as well as the admin flag                        |
 
 ---
 
@@ -295,7 +303,7 @@ User → React pages → RTK Query (lib/crm/api.ts) → https://api.iblai.app/dm
                            └── /data-layer       platform users · org metadata
 ```
 
-Sign-in is the platform's hosted round trip (`login.<domain>/login?app=crm&redirect-to=<origin>&tenant=<org>` → `/sso-login-complete?data=…`). `TenantProvider` compares the organization in the URL with the one the session is scoped to and re-authenticates when they differ, handing back an org-scoped token pair. The CRM API infers the organization from that token — there is no `?platform_key=` — so every record you see belongs to the organization in the URL. A signed-in user who administers no organization and holds no CRM role in the one they entered is sent to ibl.ai registration (the free plan `ibl.ai/join` resolves to) and comes back signed in to the organization it created. A user who switches to an organization whose CRM data they cannot see is switched back. Details: [`docs/development.md`](docs/development.md).
+Sign-in is the platform's hosted round trip (`login.<domain>/login?app=crm&redirect-to=<origin>&tenant=<org>` → `/sso-login-complete?data=…`). `TenantProvider` compares the organization in the URL with the one the session is scoped to and re-authenticates when they differ, handing back an org-scoped token pair. The CRM API infers the organization from that token — there is no `?platform_key=` — so every record you see belongs to the organization in the URL. A route organization the user does not belong to is previewed — its name and logo, Join, Create Your Own Platform — while the app runs on their own organization underneath. On the community organization everyone browses the sample data. A signed-in user who holds no CRM role in the organization they entered is sent back to the one they came from, or to one they administer; with neither, to ibl.ai registration (the free plan `ibl.ai/join` resolves to), coming back signed in to the organization it created. Details: [`docs/development.md`](docs/development.md).
 
 ### The CRM API
 
@@ -305,15 +313,21 @@ Ten Platform-scoped resources under `/dm/api/crm/`: persons, organizations, pipe
 
 ## Testing
 
-```bash
-pnpm test            # Vitest — formatting, saved views, tenant resolution, SSO landing, config
-pnpm i18n:check      # en / es / fr / zh catalogs carry the same keys and the house vocabulary
-pnpm test:coverage   # the unit tests with the coverage gate CI runs
-pnpm e2e:accounts    # once: an admin and a CRM User member in the throwaway organization iblai.env names
-pnpm test:e2e        # Playwright journeys, Chromium + a phone (pnpm test:e2e:all for every browser)
-pnpm test:e2e:ui     # interactive UI mode
-pnpm e2e:coverage    # the journey registry against the specs and the app's pages
-```
+This project is covered by Vitest unit tests in [`__tests__/`](__tests__/) and Playwright end-to-end journeys in [`e2e/`](e2e/). **Run the journeys for any change** so nothing regresses:
+
+| Command                | What it does                                                                                                    |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `pnpm test`            | Vitest — formatting, saved views, permissions, organization resolution, SSO landing, config, the house journeys |
+| `pnpm i18n:check`      | en / es / fr / zh catalogs carry the same keys and the house vocabulary                                         |
+| `pnpm test:coverage`   | The unit tests with the coverage gate CI runs                                                                   |
+| `pnpm e2e:accounts`    | Once: an admin and a CRM User member in the throwaway organization `iblai.env` names                            |
+| `pnpm test:e2e`        | Playwright journeys, Chromium + a phone                                                                         |
+| `pnpm test:e2e:all`    | The same journeys in every browser                                                                              |
+| `pnpm test:e2e:ui`     | Interactive UI mode                                                                                             |
+| `pnpm test:e2e:headed` | Run with a visible browser                                                                                      |
+| `pnpm e2e:coverage`    | The journey registry against the specs and the app’s pages                                                      |
+
+See [e2e/COVERAGE.md](e2e/COVERAGE.md) for current coverage. Coverage must not regress — add or update a journey whenever you change user-facing behavior.
 
 The Playwright suite has the OS's shape — numbered journeys in `e2e/journeys/`, page objects, a coverage registry (`e2e/coverage.json`, `e2e/COVERAGE.md`) with a checker — and signs in once per browser through the real Auth SPA (`e2e/auth.setup.ts`) as the two accounts `pnpm e2e:accounts` creates in a throwaway organization, never `main`. Get that organization's `iblai.env` from `/iblai-vibe-connect` run from an empty directory with `--origin http://localhost:3000` and move it here. Every record the journeys create is `E2E`-prefixed and swept at the end of the run. See [`e2e/README.md`](e2e/README.md).
 

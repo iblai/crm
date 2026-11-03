@@ -65,4 +65,3 @@ CLAUDE.local.md
 *.key
 *.keystore
 *.jks
-src-tauri/gen/
