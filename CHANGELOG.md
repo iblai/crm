@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.3](https://github.com/iblai/crm/compare/v1.7.2...v1.7.3) (2026-11-03)
+
+### Chores
+
+* read the language from the stored user metadata instead of querying it on every load ([e08742c](https://github.com/iblai/crm/commit/e08742c06c8fcdb8793439206abe9e5ae6311e19))
+* restore the blank line oxfmt wants under COVERAGE.md's title ([64c7d3a](https://github.com/iblai/crm/commit/64c7d3ab7d38b8464f96505bc90e4447066832d8))
+
 ## [1.7.2](https://github.com/iblai/crm/compare/v1.7.1...v1.7.2) (2026-11-02)
 
 ### Documentation
