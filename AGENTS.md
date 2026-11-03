@@ -21,7 +21,9 @@ seeds), `iblai-vibe-auth` → "Going multi-org", `iblai-vibe-admin`,
 ## Rules
 
 1. **Organization from the URL.** Never hard-code a tenant. Read it with
-   `useSession().tenantKey`; build links with `useSession().href(path)`.
+   `useSession().tenantKey`; build links with `useSession().href(path)`. The
+   signed-in user's metadata comes from the stored `user_metadata` key
+   (`useStoredUserMetadata`), never a query.
 2. **SDK components first.** The shell is the SDK's `SidebarProvider →
 PlatformSidebar + SidebarInset` (`components/crm/app-sidebar.tsx`), loading
    is the SDK `Spinner`; profile dropdown, notifications, Account /
