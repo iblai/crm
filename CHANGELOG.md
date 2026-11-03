@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8.0](https://github.com/iblai/crm/compare/v1.7.3...v1.8.0) (2026-11-03)
+
+### Features
+
+* house Tauri shell (desktop, iOS, Android), mobile init, shell CI; README in the OS shape ([6fb0f34](https://github.com/iblai/crm/commit/6fb0f34198080a8be77661ef2eb0cde658210256))
+
 ## [1.7.3](https://github.com/iblai/crm/compare/v1.7.2...v1.7.3) (2026-11-03)
 
 ### Chores
