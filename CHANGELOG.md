@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.2](https://github.com/iblai/crm/compare/v1.7.1...v1.7.2) (2026-11-02)
+
+### Documentation
+
+* touch test in Chrome via /iblai-vibe-ops-test; add chrome-devtools MCP, headers redacted ([42ff610](https://github.com/iblai/crm/commit/42ff6108c8ad9cbbfedb362182612b613c752cd5))
+
+## [1.7.1](https://github.com/iblai/crm/compare/v1.7.0...v1.7.1) (2026-10-30)
+
+### Chores
+
+* merge main ([ba9d231](https://github.com/iblai/crm/commit/ba9d231a1a2063073cda410b97398c807267d115))
+
 ## [1.7.0](https://github.com/iblai/crm/compare/v1.6.1...v1.7.0) (2026-10-30)
 
 ### Features
