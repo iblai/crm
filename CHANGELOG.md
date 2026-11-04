@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8.1](https://github.com/iblai/crm/compare/v1.8.0...v1.8.1) (2026-11-04)
+
+### Tests
+
+* shell smoke, touch and clear scripts for every platform; check the shell on three OSes ([2c89e99](https://github.com/iblai/crm/commit/2c89e99cdf577099bda50256161c5f2512d5d779))
+
 ## [1.8.0](https://github.com/iblai/crm/compare/v1.7.3...v1.8.0) (2026-11-03)
 
 ### Features
