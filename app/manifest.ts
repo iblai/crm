@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "ibl.ai/crm",
-    short_name: "ibl.ai CRM",
+    short_name: "CRM",
     description: "The open-source CRM for organizations on the ibl.ai platform.",
     start_url: "/",
     display: "standalone",
