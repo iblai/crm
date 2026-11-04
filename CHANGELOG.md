@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8.5](https://github.com/iblai/crm/compare/v1.8.4...v1.8.5) (2026-11-04)
+
+### Chores
+
+* a .vercelignore keeps secrets, test sessions and the native shell off a CLI deploy ([f4507ff](https://github.com/iblai/crm/commit/f4507ff7680209077306c825e425206dc1cf95ad))
+
 ## [1.8.4](https://github.com/iblai/crm/compare/v1.8.3...v1.8.4) (2026-11-04)
 
 ### Bug Fixes
