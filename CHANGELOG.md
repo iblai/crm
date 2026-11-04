@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8.4](https://github.com/iblai/crm/compare/v1.8.3...v1.8.4) (2026-11-04)
+
+### Bug Fixes
+
+* the app is named "<App>" on every installer and launcher, not "ibl.ai <App>" ([e00d39e](https://github.com/iblai/crm/commit/e00d39e6d9a05ea4d8ac7a6370313fadac98c4a5))
+
 ## [1.8.3](https://github.com/iblai/crm/compare/v1.8.2...v1.8.3) (2026-11-04)
 
 ### Bug Fixes
