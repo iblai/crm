@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8.3](https://github.com/iblai/crm/compare/v1.8.2...v1.8.3) (2026-11-04)
+
+### Bug Fixes
+
+* shells load the app's iblai.me host in dev and builds; the ibl.ai icon like the OS everywhere ([b33f84c](https://github.com/iblai/crm/commit/b33f84c0aeeefacee398142c327948a92617adf1))
+
 ## [1.8.2](https://github.com/iblai/crm/compare/v1.8.1...v1.8.2) (2026-11-04)
 
 ### Bug Fixes
