@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8.2](https://github.com/iblai/crm/compare/v1.8.1...v1.8.2) (2026-11-04)
+
+### Bug Fixes
+
+* mobile touch tests load the app's iblai.me host, not frontendDist ([cde9e2c](https://github.com/iblai/crm/commit/cde9e2c894d19422240e7fdfdc41a08d9728c4db))
+
 ## [1.8.1](https://github.com/iblai/crm/compare/v1.8.0...v1.8.1) (2026-11-04)
 
 ### Tests
