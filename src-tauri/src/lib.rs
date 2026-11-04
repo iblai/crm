@@ -966,25 +966,27 @@ mod tests {
 
     #[test]
     fn a_sign_in_return_on_either_scheme_lands_on_the_app() {
-        let app = u("https://crm.ibl.ai/");
+        let app = u("https://crm.iblai.me/");
         let back = |s: &str| sign_in_return(&u(s), &app).map(|t| t.to_string());
         assert_eq!(
             back("iblai-crm:///sso-login-complete?redirect-path=/p/x?y=1&data=%7B%7D"),
-            Some("https://crm.ibl.ai/sso-login-complete?redirect-path=/p/x?y=1&data=%7B%7D".into())
+            Some(
+                "https://crm.iblai.me/sso-login-complete?redirect-path=/p/x?y=1&data=%7B%7D".into()
+            )
         );
         assert_eq!(
             back("iblai-mentor:///sso-login-complete?data=%7B%7D&redirect-path=/"),
-            Some("https://crm.ibl.ai/sso-login-complete?data=%7B%7D&redirect-path=/".into())
+            Some("https://crm.iblai.me/sso-login-complete?data=%7B%7D&redirect-path=/".into())
         );
         assert_eq!(
             back("iblai-crm://sso-login-complete?data=x"),
-            Some("https://crm.ibl.ai/sso-login-complete?data=x".into())
+            Some("https://crm.iblai.me/sso-login-complete?data=x".into())
         );
         assert_eq!(
             back("iblai-crm:///mobile-sso-login?data=x"),
-            Some("https://crm.ibl.ai/mobile-sso-login?data=x".into())
+            Some("https://crm.iblai.me/mobile-sso-login?data=x".into())
         );
-        assert_eq!(back("https://crm.ibl.ai/sso-login-complete?data=x"), None);
+        assert_eq!(back("https://crm.iblai.me/sso-login-complete?data=x"), None);
         assert_eq!(back("iblai-crm:///settings?data=x"), None);
         assert_eq!(back("iblai-crm://?data=x"), None);
     }

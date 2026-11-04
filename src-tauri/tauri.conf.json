@@ -4,9 +4,8 @@
   "identifier": "ai.ibl.crm",
   "version": "0.2.0",
   "build": {
-    "devUrl": "http://localhost:3000",
-    "beforeDevCommand": "pnpm dev",
-    "frontendDist": "https://crm.ibl.ai"
+    "devUrl": "https://crm.iblai.me",
+    "frontendDist": "https://crm.iblai.me"
   },
   "bundle": {
     "active": true,
@@ -50,7 +49,11 @@
   },
   "plugins": {
     "deep-link": {
-      "mobile": [{ "scheme": ["iblai-crm"] }]
+      "mobile": [
+        {
+          "scheme": ["iblai-crm"]
+        }
+      ]
     }
   },
   "app": {
