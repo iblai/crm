@@ -665,10 +665,6 @@
     "signOut": "Cerrar sesión",
     "title": "Crea tu organización"
   },
-  "language": {
-    "hint": "Idioma de esta y las demás aplicaciones de ibl.ai",
-    "label": "Idioma"
-  },
   "nav": {
     "activities": "Actividades",
     "organizations": "Organizaciones",

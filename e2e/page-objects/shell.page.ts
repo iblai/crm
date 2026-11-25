@@ -1,5 +1,5 @@
 import { expect, type Locator, type Page } from "@playwright/test";
-import { PAGES, SDK } from "../fixtures/test-data";
+import { PAGES, SDK, SDK_LANGUAGE } from "../fixtures/test-data";
 import {
   confirm,
   dialog,
@@ -13,7 +13,7 @@ import {
 
 /**
  * The shell: the SDK sidebar (rows, Favorites, footer), the top bar
- * (toggle, breadcrumb, Admin mode switch, language, bell, profile) and ⌘K.
+ * (toggle, breadcrumb, Admin mode switch, credits, bell, profile) and ⌘K.
  */
 export class Shell {
   readonly nav: Locator;
@@ -22,9 +22,10 @@ export class Shell {
   readonly toggleSidebar: Locator;
   readonly breadcrumb: Locator;
   readonly adminMode: Locator;
-  readonly language: Locator;
+  readonly credits: Locator;
   readonly bell: Locator;
   readonly profile: Locator;
+  readonly settings: Locator;
   readonly palette: Locator;
   readonly paletteInput: Locator;
   private org?: string;
@@ -37,9 +38,11 @@ export class Shell {
     this.toggleSidebar = page.getByRole("button", { name: "Toggle sidebar" });
     this.breadcrumb = page.getByRole("navigation", { name: "Breadcrumb" });
     this.adminMode = page.getByRole("switch", { name: "Admin mode" });
-    this.language = page.getByRole("combobox", { name: /^(Language|Idioma|Langue|语言)$/ }).first();
+    this.credits = page.getByTestId(SDK.credits);
     this.bell = page.getByRole("button", { name: /^\d+ Notifications?$/ });
     this.profile = page.getByRole("button", { name: SDK.profile });
+    // The SDK account dialog every footer row opens, on that row's page.
+    this.settings = page.getByRole("dialog", { name: SDK.settings, exact: true });
     this.palette = dialog(page, "Search");
     this.paletteInput = page.getByPlaceholder("Search people, organizations, deals…");
   }
@@ -109,9 +112,30 @@ export class Shell {
     await expect(this.adminMode).toHaveAttribute("aria-checked", String(on));
   }
 
-  async setLanguage(code: "en" | "es" | "fr" | "zh") {
-    await expect(this.language).toBeEnabled({ timeout: 30_000 });
-    await this.language.selectOption(code);
+  /** Choose the language as a user does: profile menu → Profile → Language → Save Changes. */
+  async setLanguage(code: keyof typeof SDK_LANGUAGE.option) {
+    const { page } = this;
+    await page.getByRole("button", { name: SDK_LANGUAGE.profile }).click();
+    await page.getByRole("menuitem", { name: SDK_LANGUAGE.profileItem }).click();
+    const profile = page.getByRole("dialog").filter({ has: page.locator("#language") });
+    const language = profile.locator("#language");
+    await expect(language).toBeEnabled({ timeout: 30_000 });
+    await language.click();
+    await page
+      .getByRole("listbox")
+      .getByRole("option", { name: SDK_LANGUAGE.option[code] })
+      .click();
+    await profile.getByRole("button", { name: SDK_LANGUAGE.save }).click();
+    // The save refreshes the stored profile, which the app's language sync follows.
+    await page.waitForFunction(
+      (saved) =>
+        JSON.parse(localStorage.getItem("user_metadata") ?? "{}")?.public_metadata?.language ===
+        saved,
+      code,
+      { timeout: 30_000 },
+    );
+    await page.keyboard.press("Escape");
+    await expect(profile).toHaveCount(0);
   }
 
   async openSheet() {

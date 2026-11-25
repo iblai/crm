@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "lastUpdated": "2026-10-31",
+  "lastUpdated": "2026-11-26",
   "summary": {
-    "totalCheckpoints": 130,
-    "coveredCheckpoints": 130,
+    "totalCheckpoints": 132,
+    "coveredCheckpoints": 132,
     "pendingCheckpoints": 0,
     "deprecatedCheckpoints": 0,
     "percent": 100,
@@ -97,7 +97,6 @@
         "components/crm/top-bar.tsx",
         "components/crm/breadcrumbs.tsx",
         "components/crm/user-menu.tsx",
-        "components/crm/language-menu.tsx",
         "components/crm/admin-mode.tsx",
         "components/crm/admin-mode-switch.tsx",
         "components/crm/account-sheet.tsx",
@@ -128,7 +127,7 @@
         },
         {
           "id": "nav-05",
-          "description": "admin switches the language to Spanish and back",
+          "description": "admin switches the language to Spanish in the Profile dialog and back",
           "status": "covered"
         },
         {
@@ -138,12 +137,22 @@
         },
         {
           "id": "nav-07",
-          "description": "the footer's Management opens the Management dialog, not a page",
+          "description": "the footer's Management opens the organization settings on Management, not a page",
           "status": "covered"
         },
         {
           "id": "nav-08",
-          "description": "the footer's Integrations and Advanced open their dialogs and Support links out",
+          "description": "the footer's Secrets, API and Advanced open the organization settings on their page and Support links out",
+          "status": "covered"
+        },
+        {
+          "id": "nav-09",
+          "description": "the top bar holds the Admin mode switch, the bell and the profile in the OS's order, 64 px tall, without overflow",
+          "status": "covered"
+        },
+        {
+          "id": "nav-10",
+          "description": "Organizations opens the sign-in app's chooser in its own tab and this tab stays put",
           "status": "covered"
         }
       ]
@@ -736,7 +745,7 @@
         },
         {
           "id": "mob-07",
-          "description": "the sheet carries the language select and the Admin mode switch",
+          "description": "the sheet carries the Admin mode switch and no language select",
           "status": "covered"
         }
       ]
@@ -972,7 +981,7 @@
         },
         {
           "id": "house-16",
-          "description": "Upgrade Plan asks for a pricing page that returns through the sign-in app",
+          "description": "Change Plan opens the plan picker, whose pricing page returns through the sign-in app",
           "status": "covered"
         }
       ]

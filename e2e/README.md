@@ -75,7 +75,8 @@ e2e/
 
 - The first tap on "Toggle sidebar" right after a sheet row navigated is swallowed on a phone:
   `shell.openSheet()` retries.
-- The language select writes the choice to the profile for every ibl.ai app of that user.
+- The Profile dialog's language is the user's in every ibl.ai app: `shell.setLanguage` is always
+  restored in `finally`.
 - The home page waits for the DM overview reads; the per-test budget is 90 s for that reason.
 - The SDK localizes its landmark names with the UI language ("Navegación principal" in Spanish):
   `SDK.nav` in `fixtures/test-data.ts` lists them.

@@ -27,7 +27,6 @@ import { useAdminMode, useCanManageCrm } from "@/components/crm/admin-mode";
 import { AdminModeSwitch } from "@/components/crm/admin-mode-switch";
 import { useCommandPalette } from "@/components/crm/command-palette";
 import { FavoritesSection } from "@/components/crm/favorites-section";
-import { LanguageMenu } from "@/components/crm/language-menu";
 import { NavRow } from "@/components/crm/nav-row";
 import { useSession } from "@/hooks/use-session";
 import config from "@/lib/iblai/config";
@@ -46,7 +45,7 @@ export function AppSidebar() {
   const dispatch = useDispatch();
   // On the community organization the admin cluster is shown and every click upgrades.
   const trial = isTrialUser(tenantKey, tenants);
-  const { adminMode } = useAdminMode();
+  const { isAdmin: canAdmin, adminMode } = useAdminMode();
   const { isMobile, setOpenMobile } = useSidebar();
   const { open: openPalette } = useCommandPalette();
   const { openTab, openInvite } = useAccountSheet();
@@ -117,15 +116,14 @@ export function AppSidebar() {
     });
   }
 
-  // The top bar's switch and language menu are desktop-only; the sheet carries them on phones.
-  if (isMobile) {
+  // The top bar's switch is desktop-only; the sheet carries it on phones.
+  if (isMobile && canAdmin) {
     sections.push({ type: "divider", id: "preferences-divider" });
     sections.push({
       type: "custom",
       id: "preferences",
       render: () => (
-        <div className="flex items-center justify-between gap-3 px-2 py-1">
-          <LanguageMenu className="flex items-center gap-1" />
+        <div className="px-2 py-1">
           <AdminModeSwitch />
         </div>
       ),

@@ -26,15 +26,33 @@ export const SDK = {
   profile: "More options",
   profileItem: "Profile",
   account: "Account",
+  organizations: "Organizations",
   logOut: "Log Out",
   collapse: "Collapse sidebar",
   expand: "Expand sidebar",
   viewAll: "View all",
   management: "Management",
-  integrations: "Integrations",
+  api: "API",
+  secrets: "Secrets",
   advanced: "Advanced",
+  settings: "Organization settings",
   support: "Support",
   inboxTab: "Inbox tab",
+  credits: "credit-balance-trigger",
+  changePlan: "Change Plan",
+  planPicker: /^(Choose|Change) Your Plan$/,
+} as const;
+
+/** The SDK profile menu and dialog in the languages its Language field lists: a restore runs translated. */
+export const SDK_LANGUAGE = {
+  profile: /^(More options|Más opciones|Plus d['’]options)$/,
+  profileItem: /^(Profile|Perfil|Profil)$/,
+  save: /^(Save Changes|Guardar cambios|Enregistrer les modifications)$/,
+  option: {
+    en: /^(English|Inglés|Anglais)$/,
+    es: /^(Spanish|Español|Espagnol)$/,
+    fr: /^(French|Francés|Français)$/,
+  },
 } as const;
 
 /** The pages under `/platform/<org>` and their h1, for the sweeps (phone, console, axe). */

@@ -12,13 +12,13 @@ import { UserMenu } from "@/components/crm/user-menu";
 import { AdminModeSwitch } from "@/components/crm/admin-mode-switch";
 import { useAdminMode } from "@/components/crm/admin-mode";
 import { CreditBadge } from "@/components/house/credit-badge";
-import { LanguageMenu } from "@/components/crm/language-menu";
 import { Breadcrumbs } from "@/components/crm/breadcrumbs";
 import { useSession } from "@/hooks/use-session";
 
 /**
- * The top bar — the OS's navbar shape (h-16, white, `#D0E0FF` hairline):
- * sidebar toggle + breadcrumbs on the left; the credit badge, Admin switch,
+ * The top bar — the OS's navbar shape and type (h-16, white, `#D0E0FF` hairline,
+ * the system font at 14 px medium `#646464`):
+ * sidebar toggle + breadcrumbs on the left; the Admin switch, the credit badge,
  * the SDK notification bell and the SDK profile dropdown on the right.
  */
 export function TopBar() {
@@ -36,7 +36,7 @@ export function TopBar() {
   );
 
   return (
-    <header className="z-10 flex h-14 shrink-0 items-center justify-between gap-3 border-b border-[#D0E0FF] bg-white pr-3 pl-2 md:h-16 md:pr-4">
+    <header className="z-10 flex h-16 shrink-0 items-center justify-between gap-3 border-b border-[#D0E0FF] bg-white pr-4 pl-2 font-[ui-sans-serif,system-ui,sans-serif]">
       <div className="flex min-w-0 items-center gap-1">
         <Tooltip>
           <TooltipTrigger
@@ -44,7 +44,7 @@ export function TopBar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="cursor-pointer text-[#5f5f61]"
+                className="cursor-pointer text-[#646464]"
                 onClick={toggleSidebar}
                 aria-label={t("toggleSidebar")}
               />
@@ -56,23 +56,24 @@ export function TopBar() {
         </Tooltip>
         <Breadcrumbs />
       </div>
-      <div className="flex items-center gap-3 md:gap-5">
-        <CreditBadge
-          org={tenantKey}
-          isLiveAdmin={isAdmin && adminMode}
-          className="hidden md:flex"
-        />
+      <div className="flex items-center gap-0 md:gap-6">
         <AdminModeSwitch className="hidden md:flex" />
-        <LanguageMenu className="hidden items-center gap-1 md:flex" />
-        {tenantKey && username ? (
-          <NotificationDropdown
+        <div className="flex items-center gap-2">
+          <CreditBadge
             org={tenantKey}
-            userId={username}
-            isAdmin={isAdmin}
-            onViewNotifications={handleViewNotifications}
+            isLiveAdmin={isAdmin && adminMode}
+            className="hidden md:flex"
           />
-        ) : null}
-        <UserMenu />
+          {tenantKey && username ? (
+            <NotificationDropdown
+              org={tenantKey}
+              userId={username}
+              isAdmin={isAdmin}
+              onViewNotifications={handleViewNotifications}
+            />
+          ) : null}
+          <UserMenu />
+        </div>
       </div>
     </header>
   );

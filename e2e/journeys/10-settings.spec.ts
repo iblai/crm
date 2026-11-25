@@ -110,9 +110,9 @@ test.describe("Journey 10: Settings — Admin", () => {
       await expect(settings.main.getByRole("cell", { name: role, exact: true })).toBeVisible();
     }
     await settings.manageRoles.click();
-    await expect(page.getByRole("dialog", { name: SDK.management })).toBeVisible({
-      timeout: 30_000,
-    });
+    await expect(
+      shell.settings.getByRole("heading", { name: SDK.management, exact: true }),
+    ).toBeVisible({ timeout: 30_000 });
     await page.keyboard.press("Escape");
   });
 });

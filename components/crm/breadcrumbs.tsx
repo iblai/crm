@@ -81,7 +81,10 @@ export function Breadcrumbs() {
   ];
 
   return (
-    <nav aria-label={t("breadcrumbs.label")} className="flex min-w-0 items-center text-sm">
+    <nav
+      aria-label={t("breadcrumbs.label")}
+      className="flex min-w-0 items-center text-sm font-medium"
+    >
       {items.map((item, i) => {
         const last = i === items.length - 1;
         return (
@@ -90,11 +93,11 @@ export function Breadcrumbs() {
             key={i}
             className={cn("flex items-center", i > 0 && !last ? "shrink-0" : "min-w-0")}
           >
-            {i > 0 ? <ChevronRight className="mx-1 size-3.5 shrink-0 text-gray-300" /> : null}
+            {i > 0 ? <ChevronRight className="mx-1 size-3.5 shrink-0 text-[#646464]" /> : null}
             {item.href && !last ? (
               <Link
                 href={item.href}
-                className="max-w-[10rem] truncate text-[#646464] hover:text-gray-900 sm:max-w-[16rem]"
+                className="max-w-[10rem] truncate text-[#646464] hover:text-[#484848] sm:max-w-[16rem]"
               >
                 {item.label}
               </Link>
@@ -102,7 +105,7 @@ export function Breadcrumbs() {
               <span
                 className={
                   last
-                    ? "max-w-[12rem] truncate font-medium text-gray-900 sm:max-w-[20rem]"
+                    ? "max-w-[12rem] truncate text-[#646464] sm:max-w-[20rem]"
                     : "max-w-[10rem] truncate text-[#646464]"
                 }
                 aria-current={last ? "page" : undefined}

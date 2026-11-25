@@ -4,7 +4,7 @@
  * Every page without sideways overflow, the sidebar sheet, the search
  * palette taking over from the sheet, the dashboard actions, a tall dialog
  * on a short screen, document scrolling under a touch, and the sheet's
- * preferences row.
+ * Admin mode switch.
  */
 import { test, expect } from "../fixtures/crm-test";
 import { PAGES } from "../fixtures/test-data";
@@ -90,12 +90,12 @@ test.describe("Journey 14: Mobile View — Admin", () => {
       .toBeGreaterThan(200);
   });
 
-  test("mob-07: the sheet carries the language select and the Admin mode switch", async ({
+  test("mob-07: the sheet carries the Admin mode switch and no language select", async ({
     shell,
   }) => {
     await shell.goto("");
     await shell.openSheet();
-    await expect(shell.sheet.getByRole("combobox", { name: /Language|Idioma/ })).toBeVisible();
     await expect(shell.sheet.getByRole("switch", { name: "Admin mode" })).toBeVisible();
+    await expect(shell.sheet.getByRole("combobox")).toHaveCount(0);
   });
 });

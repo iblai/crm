@@ -151,7 +151,6 @@ test.describe("Journey 6: Deals — Admin", () => {
     await deals.shell.menuItem("Owner").click();
     await deals.main.getByRole("combobox", { name: "Owner" }).click();
     // The listbox's first option is the empty "Unassigned", which sends no owner; pick a member.
-    // (The language select's native options are in the DOM too: only the open listbox counts.)
     await page.getByRole("listbox").getByRole("option", { name: /E2E/ }).first().click();
     await request;
   });

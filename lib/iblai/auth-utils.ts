@@ -7,6 +7,7 @@ import {
   redirectToAuthSpa as sdkRedirectToAuthSpa,
   handleLogout as sdkHandleLogout,
   handleTenantSwitch as sdkHandleTenantSwitch,
+  openTenantSwitcher,
   clearCurrentTenantCookie,
 } from "@iblai/iblai-js/web-utils";
 
@@ -93,7 +94,6 @@ export async function redirectToAuthSpa(
     },
     redirectPathStorageKey: LOCAL_STORAGE_KEYS.REDIRECT_TO,
     hasNonExpiredAuthToken,
-    preserveTokenKey: LOCAL_STORAGE_KEYS.EDX_TOKEN_KEY,
     authRedirectProxy: "/api/auth-redirect",
     isNativeApp: () => isTauri(),
     scheme: config.tauriCustomScheme(),
@@ -120,10 +120,16 @@ export async function handleTenantSwitch(tenantKey: string, saveRedirect = false
   await sdkHandleTenantSwitch(tenantKey, {
     authUrl: config.authUrl(),
     redirectPathStorageKey: LOCAL_STORAGE_KEYS.REDIRECT_TO,
-    preserveTokenKey: LOCAL_STORAGE_KEYS.EDX_TOKEN_KEY,
     tenantStorageKey: LOCAL_STORAGE_KEYS.TENANT,
     queryParams: { tenant: QUERY_PARAMS.TENANT, redirectTo: QUERY_PARAMS.REDIRECT_TO },
     saveRedirect,
     clearCurrentTenantCookie,
   });
+}
+
+/** Open the Auth SPA's organization chooser in its own tab, remembering where the user was. */
+export function openOrganizationChooser(tenantKey: string) {
+  const from = readCurrentTenantKey();
+  if (from) sessionStorage.setItem(SWITCH_FROM, from);
+  openTenantSwitcher({ authUrl: config.authUrl(), tenant: tenantKey, popup: true });
 }

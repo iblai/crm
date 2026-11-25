@@ -43,11 +43,14 @@ Nothing is required against hosted `iblai.app`. Copy `.env.example` to
 4. `/` resolves the session's org (`lib/iblai/tenant.ts#pickLandingTenant`)
    and goes to `/platform/<org>`.
 5. `TenantProvider` gets `requestedTenant` from the route and `currentTenant`
-   from storage. When they differ it re-authenticates against the requested
-   org and hands back a fresh org-scoped token pair (`saveUserTokens`).
-6. Switching orgs (the SDK profile dropdown) calls the SDK's
-   `handleTenantSwitch`, which clears storage, broadcasts to other tabs and
-   re-enters the Auth SPA with `tenant=<new>`.
+   from storage. When they differ it hands the switch to the Auth SPA, which
+   mints the requested org's tokens and returns the user here.
+6. Switching orgs is the SDK profile dropdown's Organizations entry: the Auth
+   SPA's chooser opens in its own tab (`lib/iblai/auth-utils.ts#openOrganizationChooser`
+   remembers the org being left) and the pick drives this tab to
+   `/sso-login-complete` on the new org. A switch the app or the SDK starts
+   itself goes through `handleTenantSwitch`, which clears storage, broadcasts
+   to other tabs and re-enters the Auth SPA with `tenant=<new>`.
 7. A user who administers no organization and holds no CRM permission in the one
    being entered is sent to ibl.ai registration (`lib/iblai/auth-redirect.ts#createOrganizationUrl`,
    the DM free-plan checkout `ibl.ai/join` resolves to) with a return through the
@@ -84,8 +87,10 @@ components live under `components/crm/<module>/`.
 
 The UI is in English, Spanish, French and Chinese. The active language comes
 from the shared `openedx-language-preference` cookie (set by any ibl.ai app),
-then this app's `NEXT_LOCALE` cookie, then English; the top bar has a selector
-that writes both. Strings live in `messages/{en,es,fr,zh}.json`;
+then this app's `NEXT_LOCALE` cookie, then English. The user chooses it in the
+profile menu's Profile dialog (Language, which lists English, Spanish and French);
+`components/language-preference-sync.tsx` writes both cookies from the saved
+profile. Strings live in `messages/{en,es,fr,zh}.json`;
 `pnpm i18n:check` fails when the four files disagree, when a value says “tenant” or
 “company”, or when it uses an ASCII apostrophe instead of `’`.
 

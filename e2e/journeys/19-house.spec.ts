@@ -6,12 +6,12 @@
  * the community one (house-01, -02, -12, -13, -14), a visitor on one they do
  * not belong to (house-03, -04, -09), an admin's first run (house-05, -06,
  * -10, -11), a member's (house-07, -08), the session a $0 checkout returns to
- * (house-15) and the credit menu's checkout (house-16). Organization-wide
+ * (house-15) and the credit menu's plan picker (house-16). Organization-wide
  * state is served with page.route and never written; the accounts' own
  * metadata writes are answered by the route too, so they stay fresh.
  */
 import { test, expect } from "../fixtures/crm-test";
-import { APP_HOST, MEMBER_EMAIL, MEMBER_PASSWORD } from "../fixtures/test-data";
+import { APP_HOST, MEMBER_EMAIL, MEMBER_PASSWORD, SDK } from "../fixtures/test-data";
 import { Dialogs } from "../page-objects/dialogs.page";
 import { ListPage } from "../page-objects/list.page";
 import { Shell } from "../page-objects/shell.page";
@@ -422,12 +422,12 @@ test.describe("Journey 19: House — the session a $0 checkout returns to", () =
   });
 });
 
-test.describe("Journey 19: House — the credit menu's checkout", () => {
-  test("house-16: Upgrade Plan asks for a pricing page that returns through the sign-in app", async ({
+test.describe("Journey 19: House — the credit menu's plan picker", () => {
+  test("house-16: Change Plan opens the plan picker, whose pricing page returns through the sign-in app", async ({
     page,
   }) => {
     let session = "";
-    // The admin's organization behind the paywall, on a free trial: the badge offers Upgrade Plan.
+    // The admin's organization behind the paywall, on a plan: the badge offers Change Plan.
     await page.route(/\/api\/core\/users\/platforms\//, async (route) => {
       const res = await route.fetch();
       const all = (await res.json()) as { key: string }[];
@@ -442,8 +442,8 @@ test.describe("Journey 19: House — the credit menu's checkout", () => {
           platform_key: new URL(route.request().url()).searchParams.get("platform_key"),
           available_credits: 100,
           has_credits: true,
-          current_plan: "Free Trial",
-          free_trial: true,
+          plan_key: "free",
+          plan_name: "Free",
         },
       }),
     );
@@ -455,8 +455,19 @@ test.describe("Journey 19: House — the credit menu's checkout", () => {
     const own = await gotoHome(page);
     // The badge reads the stored membership this first load wrote.
     await page.goto(platformUrl(own));
-    await page.getByRole("button", { name: /credits remaining/i }).click({ timeout: 30_000 });
-    await page.getByRole("button", { name: "Upgrade Plan" }).click();
+    const shell = new Shell(page);
+    await expect(shell.credits).toBeVisible({ timeout: 30_000 });
+    // With the badge on, the bar reads Admin mode switch, credits, bell: the OS's order.
+    const lefts: number[] = [];
+    for (const control of [shell.adminMode, shell.credits, shell.bell]) {
+      lefts.push((await control.boundingBox())!.x);
+    }
+    expect(lefts).toEqual([...lefts].sort((a, b) => a - b));
+    await shell.credits.click();
+    await page.getByRole("button", { name: SDK.changePlan, exact: true }).click();
+    await expect(
+      page.getByRole("dialog").filter({ has: page.getByRole("heading", { name: SDK.planPicker }) }),
+    ).toBeVisible({ timeout: 15_000 });
     await expect.poll(() => session).toContain("/stripe/pricing-page-session/");
     const back = new URL(new URL(session).searchParams.get("redirect_url") ?? "");
     expect(back.searchParams.get("app")).toBe(APP);

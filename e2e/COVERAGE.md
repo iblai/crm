@@ -1,6 +1,6 @@
 # ibl.ai/crm E2E coverage — user journey checklist
 
-> Last updated: 2026-10-31 | 130 checkpoints (130 covered, 0 pending, 0 deprecated) | 19 journeys | 100% covered | Auth: admin + member storageState
+> Last updated: 2026-11-26 | 132 checkpoints (132 covered, 0 pending, 0 deprecated) | 19 journeys | 100% covered | Auth: admin + member storageState
 
 ## How this works
 
@@ -40,18 +40,20 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 
 ---
 
-## Journey 2: Shell and Navigation (8 checkpoints) — `journeys/02-shell-navigation.spec.ts`
+## Journey 2: Shell and Navigation (10 checkpoints) — `journeys/02-shell-navigation.spec.ts`
 
-**Source files:** `app/platform/[tenantKey]/layout.tsx`, `components/crm/app-sidebar.tsx`, `components/crm/nav-row.tsx`, `components/crm/top-bar.tsx`, `components/crm/breadcrumbs.tsx`, `components/crm/user-menu.tsx`, `components/crm/language-menu.tsx`, `components/crm/admin-mode.tsx`, `components/crm/admin-mode-switch.tsx`, `components/crm/account-sheet.tsx`, `components/crm/page-header.tsx`, `components/language-preference-sync.tsx`, `lib/locale-cookie.ts`
+**Source files:** `app/platform/[tenantKey]/layout.tsx`, `components/crm/app-sidebar.tsx`, `components/crm/nav-row.tsx`, `components/crm/top-bar.tsx`, `components/crm/breadcrumbs.tsx`, `components/crm/user-menu.tsx`, `components/crm/admin-mode.tsx`, `components/crm/admin-mode-switch.tsx`, `components/crm/account-sheet.tsx`, `components/crm/page-header.tsx`, `components/language-preference-sync.tsx`, `lib/locale-cookie.ts`
 
 - [x] nav-01 admin clicks every sidebar row and reaches its page
 - [x] nav-02 the breadcrumb roots at the organization and ends at the page
 - [x] nav-03 admin collapses the sidebar to the rail and expands it back
 - [x] nav-04 the profile menu offers Profile, Account and Log Out
-- [x] nav-05 admin switches the language to Spanish and back
+- [x] nav-05 admin switches the language to Spanish in the Profile dialog and back
 - [x] nav-06 User mode hides Settings and Management, survives a reload and bounces /settings home
-- [x] nav-07 the footer's Management opens the Management dialog, not a page
-- [x] nav-08 the footer's Integrations and Advanced open their dialogs and Support links out
+- [x] nav-07 the footer's Management opens the organization settings on Management, not a page
+- [x] nav-08 the footer's Secrets, API and Advanced open the organization settings on their page and Support links out
+- [x] nav-09 the top bar holds the Admin mode switch, the bell and the profile in the OS's order, 64 px tall, without overflow
+- [x] nav-10 Organizations opens the sign-in app's chooser in its own tab and this tab stays put
 
 ---
 
@@ -217,7 +219,7 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 - [x] mob-04 the dashboard actions are in view and open their dialog
 - [x] mob-05 a tall dialog scrolls to its submit button on a short screen
 - [x] mob-06 the home page scrolls as one document under a touch on its header
-- [x] mob-07 the sheet carries the language select and the Admin mode switch
+- [x] mob-07 the sheet carries the Admin mode switch and no language select
 
 ---
 
@@ -281,6 +283,6 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 - [x] house-13 a write on the sample opens the upgrade dialog
 - [x] house-14 the upgrade dialog's Upgrade for free opens this app's $0 checkout
 - [x] house-15 still on the community platform while the platform lists their own, the SDK moves them to it
-- [x] house-16 Upgrade Plan asks for a pricing page that returns through the sign-in app
+- [x] house-16 Change Plan opens the plan picker, whose pricing page returns through the sign-in app
 
 ---

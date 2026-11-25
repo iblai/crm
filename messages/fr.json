@@ -665,10 +665,6 @@
     "signOut": "Se déconnecter",
     "title": "Créez votre organisation"
   },
-  "language": {
-    "hint": "Langue de cette application et des autres applications ibl.ai",
-    "label": "Langue"
-  },
   "nav": {
     "activities": "Activités",
     "organizations": "Organisations",
