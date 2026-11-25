@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.9.0](https://github.com/iblai/crm/compare/v1.8.5...v1.9.0) (2026-11-25)
+
+### Features
+
+* follow the latest OS shell on iblai-js 3.1.0 and drop the language select ([48ea280](https://github.com/iblai/crm/commit/48ea28018376b53b7fffb663764b9d83ad011ae8))
+
 ## [1.8.5](https://github.com/iblai/crm/compare/v1.8.4...v1.8.5) (2026-11-04)
 
 ### Chores
