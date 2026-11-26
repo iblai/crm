@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.9.1](https://github.com/iblai/crm/compare/v1.9.0...v1.9.1) (2026-11-26)
+
+### Bug Fixes
+
+* confirm closing board moves; edit deal person and pipeline; guard bare SSO and admin invites ([fa1bd8c](https://github.com/iblai/crm/commit/fa1bd8c7749d73b94def285f261f0e09053697c5))
+
+### CI
+
+* remove workflows unused for two months ([0f6485a](https://github.com/iblai/crm/commit/0f6485aa8d239a11c1e6879d662a0bea98e561f2))
+
 ## [1.9.0](https://github.com/iblai/crm/compare/v1.8.5...v1.9.0) (2026-11-25)
 
 ### Features
