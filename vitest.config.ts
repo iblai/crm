@@ -10,6 +10,7 @@ export default defineConfig({
       // The pure modules the unit tests own; components and the API slice are exercised by e2e.
       include: [
         "lib/crm/activities.ts",
+        "lib/crm/deals.ts",
         "lib/crm/errors.ts",
         "lib/crm/format.ts",
         "lib/crm/permissions.ts",

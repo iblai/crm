@@ -119,6 +119,27 @@ test.describe("Journey 4: People — Admin", () => {
     await expect(confirm).toBeHidden();
   });
 
+  test("ppl-13: the invitation offers Invite as admin to an admin in Admin mode only", async ({
+    page,
+    record,
+    shell,
+  }) => {
+    const confirm = page.getByRole("alertdialog", { name: `Invite ${name} to the platform?` });
+    const asAdmin = confirm.getByText("Invite as admin", { exact: true });
+    await page.goto(personUrl);
+    await record.invite.click();
+    await expect(asAdmin).toBeVisible();
+    await confirm.getByRole("button", { name: "Cancel" }).click();
+    await expect(confirm).toBeHidden();
+
+    await shell.setAdminMode(false);
+    await record.invite.click();
+    await expect(confirm).toBeVisible();
+    await expect(asAdmin).toHaveCount(0);
+    await confirm.getByRole("button", { name: "Cancel" }).click();
+    await shell.setAdminMode(true);
+  });
+
   test("ppl-08: More actions offers link, merge and delete; Link to user opens its dialog", async ({
     page,
     record,

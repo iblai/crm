@@ -18,8 +18,11 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { InfoTip } from "@/components/crm/info-tip";
+import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { DealCard, DraggableDealCard } from "@/components/crm/deals/deal-card";
-import { errorMessage, useMoveDealStageMutation } from "@/lib/crm/api";
+import { LostDialog } from "@/components/crm/deals/lost-dialog";
+import { errorMessage, useMarkDealLostMutation, useMoveDealStageMutation } from "@/lib/crm/api";
+import { stageTransition } from "@/lib/crm/deals";
 import { formatCompactCurrency } from "@/lib/crm/format";
 import config from "@/lib/iblai/config";
 import type { Deal, DealBoard as DealBoardData, DealBoardStage } from "@/lib/crm/types";
@@ -29,7 +32,8 @@ import { cn } from "@/lib/utils";
  * The pipeline board from `/deals/board/`: one column per stage with the
  * server's count and totals, cards dragged between them with @dnd-kit. A move
  * is applied locally first and reverted with a toast if the API refuses it;
- * the card's "Move to…" menu does the same without dragging.
+ * the card's "Move to…" menu does the same without dragging. A lost stage asks
+ * for the reason, a won stage or a reopen for a confirmation, before anything moves.
  */
 export function DealBoard({
   board,
@@ -43,10 +47,14 @@ export function DealBoard({
   const t = useTranslations("deals");
   const stages = useMemo(() => (board?.stages ?? []).map((s) => s.stage), [board]);
   const deals = useMemo(() => (board?.stages ?? []).flatMap((s) => s.deals), [board]);
-  const [moveStage] = useMoveDealStageMutation();
+  const [moveStage, { isLoading: moving }] = useMoveDealStageMutation();
+  const [markLost, { isLoading: losing }] = useMarkDealLostMutation();
   const [activeId, setActiveId] = useState<number | null>(null);
   /** dealId → optimistic stage id, held until the server agrees. */
   const [pending, setPending] = useState<Record<number, number>>({});
+  /** The move waiting on its dialog; kept while the dialog closes, so its words don't change. */
+  const [asked, setAsked] = useState<{ deal: Deal; stage: Stage; reopen: boolean }>();
+  const [dialog, setDialog] = useState<"lost" | "confirm" | null>(null);
   const dealsRef = useRef(deals);
   dealsRef.current = deals;
 
@@ -89,12 +97,12 @@ export function DealBoard({
 
   const activeDeal = activeId ? deals.find((d) => d.id === activeId) : undefined;
 
-  const move = async (deal: Deal, stageId: number) => {
-    const from = stageOf(deal);
-    if (from === stageId) return;
+  /** Shows the deal in `stageId` while `request` runs; false (and back) when the API refuses. */
+  const apply = async (deal: Deal, stageId: number, request: () => Promise<unknown>) => {
     setPending((p) => ({ ...p, [deal.id]: stageId }));
     try {
-      await moveStage({ id: deal.id, stage_id: stageId }).unwrap();
+      await request();
+      return true;
     } catch (err) {
       setPending((p) => {
         const next = { ...p };
@@ -102,7 +110,39 @@ export function DealBoard({
         return next;
       });
       toast.error(errorMessage(err, t("toast.moveFailed")));
+      return false;
     }
+  };
+
+  const move = (deal: Deal, stageId: number) => {
+    const stage = stages.find((s) => s.id === stageId);
+    if (!stage) return;
+    const kind = stageTransition({ stage: stageOf(deal), status: deal.status }, stage);
+    if (kind === "none") return;
+    if (kind === "move") {
+      void apply(deal, stageId, () => moveStage({ id: deal.id, stage_id: stageId }).unwrap());
+      return;
+    }
+    setAsked({ deal, stage, reopen: kind === "reopen" });
+    setDialog(kind === "lost" ? "lost" : "confirm");
+  };
+
+  const confirmAsked = async () => {
+    if (!asked) return;
+    const { deal, stage } = asked;
+    const moved = await apply(deal, stage.id, () =>
+      moveStage({ id: deal.id, stage_id: stage.id }).unwrap(),
+    );
+    if (moved) setDialog(null);
+  };
+
+  const loseAsked = async (reason: string) => {
+    if (!asked) return;
+    const { deal, stage } = asked;
+    const lost = await apply(deal, stage.id, () =>
+      markLost({ id: deal.id, lost_reason: reason, stage_code: stage.code }).unwrap(),
+    );
+    if (lost) setDialog(null);
   };
 
   const onDragStart = (e: DragStartEvent) =>
@@ -116,7 +156,7 @@ export function DealBoard({
     const stageId = (e.over?.data.current as { stageId?: number } | undefined)?.stageId;
     if (!dealId || !stageId) return;
     const deal = dealsRef.current.find((d) => d.id === dealId);
-    if (deal) void move(deal, stageId);
+    if (deal) move(deal, stageId);
   };
 
   if (isLoading && !board) {
@@ -142,45 +182,76 @@ export function DealBoard({
   }
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={pointerWithin}
-      onDragStart={onDragStart}
-      onDragCancel={() => setActiveId(null)}
-      onDragEnd={onDragEnd}
-    >
-      <div
-        className={cn(
-          "flex h-full min-h-0 items-stretch gap-3 overflow-x-auto overflow-y-hidden p-4",
-          className,
-        )}
+    <>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={pointerWithin}
+        onDragStart={onDragStart}
+        onDragCancel={() => setActiveId(null)}
+        onDragEnd={onDragEnd}
       >
-        {columns.map(({ column, deals: rows }) => (
-          <BoardColumn
-            key={column.stage.id}
-            column={column}
-            deals={rows}
-            stages={stages}
-            rottenDays={board.pipeline.rotten_days}
-            onMove={move}
-          />
-        ))}
-      </div>
-      <DragOverlay dropAnimation={null}>
-        {activeDeal ? (
-          <DealCard
-            deal={activeDeal}
-            personName={activeDeal.person_name}
-            organizationName={activeDeal.organization_name ?? undefined}
-            stale={activeDeal.is_stale}
-            rottenDays={board.pipeline.rotten_days}
-            overlay
-          />
-        ) : null}
-      </DragOverlay>
-    </DndContext>
+        <div
+          className={cn(
+            "flex h-full min-h-0 items-stretch gap-3 overflow-x-auto overflow-y-hidden p-4",
+            className,
+          )}
+        >
+          {columns.map(({ column, deals: rows }) => (
+            <BoardColumn
+              key={column.stage.id}
+              column={column}
+              deals={rows}
+              stages={stages}
+              rottenDays={board.pipeline.rotten_days}
+              onMove={move}
+            />
+          ))}
+        </div>
+        <DragOverlay dropAnimation={null}>
+          {activeDeal ? (
+            <DealCard
+              deal={activeDeal}
+              personName={activeDeal.person_name}
+              organizationName={activeDeal.organization_name ?? undefined}
+              stale={activeDeal.is_stale}
+              rottenDays={board.pipeline.rotten_days}
+              overlay
+            />
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+
+      <LostDialog
+        open={dialog === "lost"}
+        onOpenChange={(open) => setDialog(open ? "lost" : null)}
+        loading={losing}
+        onConfirm={loseAsked}
+      />
+      <ConfirmDialog
+        open={dialog === "confirm"}
+        onOpenChange={(open) => setDialog(open ? "confirm" : null)}
+        title={
+          asked?.reopen
+            ? t("confirm.reopenTitle")
+            : t("confirm.moveTitle", { stage: asked?.stage.name ?? t("confirm.stage") })
+        }
+        description={
+          asked?.reopen
+            ? t("confirm.reopenDescription", { stage: asked.stage.name })
+            : t("confirm.moveWonDescription", {
+                title: asked?.deal.title ?? "",
+                stage: asked?.stage.name ?? t("confirm.thisStage"),
+              })
+        }
+        confirmLabel={asked?.reopen ? t("actions.reopen") : t("confirm.move")}
+        loading={moving}
+        onConfirm={confirmAsked}
+      />
+    </>
   );
 }
+
+type Stage = DealBoardStage["stage"];
 
 function BoardColumn({
   column,

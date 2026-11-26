@@ -2,8 +2,8 @@
   "version": 2,
   "lastUpdated": "2026-11-26",
   "summary": {
-    "totalCheckpoints": 132,
-    "coveredCheckpoints": 132,
+    "totalCheckpoints": 135,
+    "coveredCheckpoints": 135,
     "pendingCheckpoints": 0,
     "deprecatedCheckpoints": 0,
     "percent": 100,
@@ -71,7 +71,7 @@
         },
         {
           "id": "auth-09",
-          "description": "a malformed native sign-in payload lands on the 400 page",
+          "description": "a malformed or missing native sign-in payload lands on the 400 page",
           "status": "covered"
         },
         {
@@ -263,6 +263,11 @@
           "status": "covered"
         },
         {
+          "id": "ppl-13",
+          "description": "the invitation offers Invite as admin to an admin in Admin mode only",
+          "status": "covered"
+        },
+        {
           "id": "ppl-08",
           "description": "More actions offers link, merge and delete; Link to user opens its dialog",
           "status": "covered"
@@ -354,7 +359,9 @@
         "components/crm/deals/stage-stepper.tsx",
         "components/crm/deals/owner-avatar.tsx",
         "components/crm/deals/owner-filter.tsx",
-        "components/crm/deals/use-lookups.ts"
+        "components/crm/deals/use-lookups.ts",
+        "lib/crm/deals.ts",
+        "components/crm/search-picker.tsx"
       ],
       "checkpoints": [
         {
@@ -395,6 +402,16 @@
         {
           "id": "deal-08",
           "description": "the board's owner filter narrows the request",
+          "status": "covered"
+        },
+        {
+          "id": "deal-10",
+          "description": "on the board, Lost asks why and a reopen or Won asks first; nothing moves before",
+          "status": "covered"
+        },
+        {
+          "id": "deal-11",
+          "description": "the deal page changes the person and, while open, the pipeline",
           "status": "covered"
         },
         {

@@ -19,12 +19,13 @@ function MobileSsoLoginContent() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const data = searchParams.get("data");
-    if (!data) return;
-    let parsed: Record<string, string> = {};
+    let parsed: Record<string, string> | null = null;
     try {
-      parsed = JSON.parse(data);
+      parsed = JSON.parse(searchParams.get("data") ?? "");
     } catch {
+      // A missing or malformed payload is the 400 below.
+    }
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
       window.location.href = "/error/400";
       return;
     }

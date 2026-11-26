@@ -35,16 +35,22 @@ export function SearchPicker({
   placeholder,
   disabled,
   invalid,
+  required,
+  label,
   size = "default",
   className,
 }: {
   kind: Kind;
   value: string | null | undefined;
+  /** The selected record's name when the caller already has it: shown at once, no lookup. */
+  label?: string | null;
   /** `hit.organization` is the picked person's organization. */
   onChange: (id: string | null, hit?: { organization?: string | null }) => void;
   placeholder?: string;
   disabled?: boolean;
   invalid?: boolean;
+  /** No clear row: the value can be replaced, not removed. */
+  required?: boolean;
   size?: "sm" | "default";
   className?: string;
 }) {
@@ -58,11 +64,11 @@ export function SearchPicker({
     isFetching,
     error,
   } = useSearchQuery({ q, limit: 10 }, { skip: q.length === 0 });
-  const person = useGetPersonQuery(value ?? "", { skip: kind !== "person" || !value });
+  const person = useGetPersonQuery(value ?? "", { skip: kind !== "person" || !value || !!label });
   const organization = useGetOrganizationQuery(value ?? "", {
-    skip: kind !== "organization" || !value,
+    skip: kind !== "organization" || !value || !!label,
   });
-  const selectedLabel = kind === "person" ? person.data?.name : organization.data?.name;
+  const selectedLabel = label || (kind === "person" ? person.data?.name : organization.data?.name);
   const results =
     kind === "person"
       ? (data?.persons ?? []).map((p) => ({
@@ -122,7 +128,7 @@ export function SearchPicker({
                       : t("noMatches")}
               </p>
             ) : null}
-            {value ? (
+            {value && !required ? (
               <CommandGroup>
                 <CommandItem
                   value="__clear"

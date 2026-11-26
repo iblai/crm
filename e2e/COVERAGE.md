@@ -1,6 +1,6 @@
 # ibl.ai/crm E2E coverage — user journey checklist
 
-> Last updated: 2026-11-26 | 132 checkpoints (132 covered, 0 pending, 0 deprecated) | 19 journeys | 100% covered | Auth: admin + member storageState
+> Last updated: 2026-11-26 | 135 checkpoints (135 covered, 0 pending, 0 deprecated) | 19 journeys | 100% covered | Auth: admin + member storageState
 
 ## How this works
 
@@ -34,7 +34,7 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 - [x] auth-06 the 403 and 404 pages name the problem and offer a way home
 - [x] auth-07 an unknown error code falls back to the generic title
 - [x] auth-08 the auth-redirect hop refuses any target but the Auth SPA
-- [x] auth-09 a malformed native sign-in payload lands on the 400 page
+- [x] auth-09 a malformed or missing native sign-in payload lands on the 400 page
 - [x] auth-10 /join's Create your organization opens the $0 checkout that returns to this app
 - [x] auth-11 back from the $0 checkout on the community organization's session, the SDK moves the admin to their own
 
@@ -71,7 +71,7 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 
 ---
 
-## Journey 4: People (12 checkpoints) — `journeys/04-people.spec.ts`
+## Journey 4: People (13 checkpoints) — `journeys/04-people.spec.ts`
 
 **Source files:** `app/platform/[tenantKey]/people/page.tsx`, `app/platform/[tenantKey]/people/[id]/page.tsx`, `components/crm/people/people-table.tsx`, `components/crm/people/person-dialog.tsx`, `components/crm/people/person-invite-dialog.tsx`, `components/crm/people/person-link-user-dialog.tsx`, `components/crm/people/person-merge-dialog.tsx`, `components/crm/people/deals-mini-table.tsx`, `components/crm/people/crm-error.ts`, `components/crm/inline-field.tsx`, `components/crm/history-tab.tsx`, `components/crm/favorite-button.tsx`, `components/crm/favorites-section.tsx`, `components/crm/tag-picker.tsx`, `components/crm/tag-chip.tsx`, `components/crm/pagination-bar.tsx`, `components/crm/confirm-dialog.tsx`, `components/crm/badges.tsx`, `components/crm/entity-avatar.tsx`, `components/crm/owner-select.tsx`
 
@@ -82,6 +82,7 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 - [x] ppl-05 the lifecycle select moves the person to Qualified
 - [x] ppl-06 the tag picker creates a tag and attaches it
 - [x] ppl-07 Invite to platform needs an email, then opens the invitation confirm
+- [x] ppl-13 the invitation offers Invite as admin to an admin in Admin mode only
 - [x] ppl-08 More actions offers link, merge and delete; Link to user opens its dialog
 - [x] ppl-09 merging a duplicate folds it into the person
 - [x] ppl-10 a person with a deal cannot be deleted until the deal goes
@@ -104,9 +105,9 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 
 ---
 
-## Journey 6: Deals (9 checkpoints) — `journeys/06-deals.spec.ts`
+## Journey 6: Deals (11 checkpoints) — `journeys/06-deals.spec.ts`
 
-**Source files:** `app/platform/[tenantKey]/deals/page.tsx`, `app/platform/[tenantKey]/deals/[id]/page.tsx`, `components/crm/deals/deal-dialog.tsx`, `components/crm/deals/deal-board.tsx`, `components/crm/deals/deal-card.tsx`, `components/crm/deals/deals-table.tsx`, `components/crm/deals/lost-dialog.tsx`, `components/crm/deals/stage-stepper.tsx`, `components/crm/deals/owner-avatar.tsx`, `components/crm/deals/owner-filter.tsx`, `components/crm/deals/use-lookups.ts`
+**Source files:** `app/platform/[tenantKey]/deals/page.tsx`, `app/platform/[tenantKey]/deals/[id]/page.tsx`, `components/crm/deals/deal-dialog.tsx`, `components/crm/deals/deal-board.tsx`, `components/crm/deals/deal-card.tsx`, `components/crm/deals/deals-table.tsx`, `components/crm/deals/lost-dialog.tsx`, `components/crm/deals/stage-stepper.tsx`, `components/crm/deals/owner-avatar.tsx`, `components/crm/deals/owner-filter.tsx`, `components/crm/deals/use-lookups.ts`, `lib/crm/deals.ts`, `components/crm/search-picker.tsx`
 
 - [x] deal-01 admin creates a deal for a person from the Deals page
 - [x] deal-02 the board shows the new deal in the first stage
@@ -116,6 +117,8 @@ member holding the CRM User role); every record they create is `E2E`-prefixed an
 - [x] deal-06 the Activity tab logs a call on the deal
 - [x] deal-07 the History tab records the stage changes
 - [x] deal-08 the board's owner filter narrows the request
+- [x] deal-10 on the board, Lost asks why and a reopen or Won asks first; nothing moves before
+- [x] deal-11 the deal page changes the person and, while open, the pipeline
 - [x] deal-09 admin deletes the deal
 
 ---

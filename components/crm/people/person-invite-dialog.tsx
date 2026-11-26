@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useAdminMode } from "@/components/crm/admin-mode";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { useToastApiError } from "@/components/crm/people/crm-error";
 import { errorStatus, useInvitePersonMutation } from "@/lib/crm/api";
@@ -25,6 +26,8 @@ export function PersonInviteDialog({
   const t = useTranslations("people");
   const toastApiError = useToastApiError();
   const [invite, { isLoading }] = useInvitePersonMutation();
+  // Making someone a platform admin is offered to an admin in Admin mode only.
+  const { adminMode } = useAdminMode();
   const [asAdmin, setAsAdmin] = useState(false);
 
   useEffect(() => {
@@ -33,7 +36,10 @@ export function PersonInviteDialog({
 
   const confirm = async () => {
     try {
-      const res = await invite({ id: person.id, body: { is_admin: asAdmin } }).unwrap();
+      const res = await invite({
+        id: person.id,
+        body: { is_admin: adminMode && asAdmin },
+      }).unwrap();
       onOpenChange(false);
       toast.success(
         t("invite.sent", { email: res.invitation_email || person.primary_email || "" }),
@@ -65,18 +71,20 @@ export function PersonInviteDialog({
               b: (chunks) => <span className="font-medium text-gray-900">{chunks}</span>,
             })}
           </span>
-          <label
-            htmlFor="invite-as-admin"
-            className="mt-3 inline-flex items-center gap-2 text-sm text-gray-900"
-          >
-            <Checkbox
-              id="invite-as-admin"
-              checked={asAdmin}
-              onCheckedChange={(checked) => setAsAdmin(checked)}
-              disabled={isLoading}
-            />
-            {t("invite.asAdmin")}
-          </label>
+          {adminMode ? (
+            <label
+              htmlFor="invite-as-admin"
+              className="mt-3 inline-flex items-center gap-2 text-sm text-gray-900"
+            >
+              <Checkbox
+                id="invite-as-admin"
+                checked={asAdmin}
+                onCheckedChange={(checked) => setAsAdmin(checked)}
+                disabled={isLoading}
+              />
+              {t("invite.asAdmin")}
+            </label>
+          ) : null}
         </>
       }
       confirmLabel={t("invite.submit")}

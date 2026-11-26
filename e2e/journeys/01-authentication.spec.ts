@@ -66,10 +66,15 @@ test.describe("Journey 1: Authentication — Admin", () => {
     expect(nothing.status()).toBe(400);
   });
 
-  test("auth-09: a malformed native sign-in payload lands on the 400 page", async ({ page }) => {
-    await page.goto(`${APP_HOST}/mobile-sso-login?data=x`);
-    await page.waitForURL(/\/error\/400/, { timeout: 30_000 });
-    await expect(page.getByRole("heading", { level: 1, name: "Bad request" })).toBeVisible();
+  test("auth-09: a malformed or missing native sign-in payload lands on the 400 page", async ({
+    page,
+  }) => {
+    // Unparseable, not an object, and absent (it used to spin forever).
+    for (const query of ["?data=x", "?data=null", ""]) {
+      await page.goto(`${APP_HOST}/mobile-sso-login${query}`);
+      await page.waitForURL(/\/error\/400/, { timeout: 30_000 });
+      await expect(page.getByRole("heading", { level: 1, name: "Bad request" })).toBeVisible();
+    }
   });
 
   test("auth-11: back from the $0 checkout on the community organization's session, the SDK moves the admin to their own", async ({

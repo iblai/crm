@@ -48,6 +48,7 @@ import {
   useMoveDealStageMutation,
   useUpdateDealMutation,
 } from "@/lib/crm/api";
+import { stageTransition } from "@/lib/crm/deals";
 import { formatCurrency, formatDate, formatDateTime, formatRelative } from "@/lib/crm/format";
 import type { DealInput, PipelineStage } from "@/lib/crm/types";
 import { cn } from "@/lib/utils";
@@ -177,18 +178,26 @@ export default function DealDetailPage() {
   };
 
   const onStageSelect = (target: PipelineStage) => {
-    if (target.id === deal.stage) return;
-    if (target.is_lost) {
+    const kind = stageTransition(deal, target);
+    if (kind === "lost") {
       setLostStage(target);
       setLostOpen(true);
-      return;
-    }
-    if (target.is_won || closed) {
+    } else if (kind === "move") {
+      void doMove(target.id, t("toast.moved", { stage: target.name }));
+    } else if (kind !== "none") {
       askMove(target);
-      return;
     }
-    void doMove(target.id, t("toast.moved", { stage: target.name }));
   };
+
+  // Another pipeline is a PATCH of both fields: `move-stage/` refuses another pipeline's stage.
+  const otherPipelineStages = lookups.pipelines
+    .filter((p) => p.id !== deal.pipeline)
+    .flatMap((p) =>
+      openStages(p).map((s) => ({
+        value: String(s.id),
+        label: t("fields.pipelineStage", { pipeline: p.name, stage: s.name }),
+      })),
+    );
 
   return (
     <div className="flex-1 overflow-auto">
@@ -345,13 +354,31 @@ export default function DealDetailPage() {
             </h2>
             <dl className="divide-y divide-gray-100">
               <FieldRow label={t("fields.person")}>
-                <Link
-                  href={href(`/people/${deal.person}`)}
-                  className="inline-flex min-w-0 items-center gap-1.5 text-[#0058cc] hover:underline"
-                >
-                  <EntityAvatar name={deal.person_name} seed={deal.person} size="xs" />
-                  <span className="truncate">{deal.person_name}</span>
-                </Link>
+                <div className="space-y-1">
+                  <SearchPicker
+                    kind="person"
+                    value={deal.person}
+                    label={deal.person_name}
+                    required
+                    onChange={(id, hit) => {
+                      if (!id) return;
+                      // The server refuses a person from another organization unless both change.
+                      void patch(
+                        deal.organization
+                          ? { person: id, organization: hit?.organization ?? null }
+                          : { person: id },
+                      );
+                    }}
+                    size="sm"
+                    className="h-8 border-transparent bg-transparent shadow-none hover:bg-gray-50"
+                  />
+                  <Link
+                    href={href(`/people/${deal.person}`)}
+                    className="ml-1.5 text-xs text-[#0058cc] hover:underline"
+                  >
+                    {t("detail.openPerson")}
+                  </Link>
+                </div>
               </FieldRow>
 
               <FieldRow label={t("fields.organization")}>
@@ -359,6 +386,7 @@ export default function DealDetailPage() {
                   <SearchPicker
                     kind="organization"
                     value={deal.organization}
+                    label={deal.organization_name}
                     onChange={(id) => void patch({ organization: id })}
                     placeholder={t("fields.noOrganization")}
                     size="sm"
@@ -376,7 +404,21 @@ export default function DealDetailPage() {
               </FieldRow>
 
               <FieldRow label={t("fields.pipeline")}>
-                <span className="text-gray-700">{pipeline?.name ?? `#${deal.pipeline}`}</span>
+                {closed || otherPipelineStages.length === 0 ? (
+                  <span className="text-gray-700">{pipeline?.name ?? `#${deal.pipeline}`}</span>
+                ) : (
+                  <InlineSelect
+                    value={String(deal.stage)}
+                    options={[
+                      { value: String(deal.stage), label: pipeline?.name ?? `#${deal.pipeline}` },
+                      ...otherPipelineStages,
+                    ]}
+                    onSave={(v) => {
+                      const target = lookups.stageById.get(Number(v));
+                      return target && patch({ pipeline: target.pipeline, stage: target.id });
+                    }}
+                  />
+                )}
               </FieldRow>
 
               <FieldRow label={t("fields.stage")} hint={t("detail.stageHint")}>
